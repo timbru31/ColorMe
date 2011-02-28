@@ -1,0 +1,12 @@
+name: ColorMe
+main: com.sparkedia.valrix.ColorMe.ColorMe
+version: 1.0
+author: Valrix
+description: Sets custom prefix to individual players
+commands:
+  color:
+    description: Give player name a color
+    usage: |
+           Incorrect usage of command /<command>. Examples:
+           /<command> <player_name> <color>
+           /<command> list - lists all possible colors
