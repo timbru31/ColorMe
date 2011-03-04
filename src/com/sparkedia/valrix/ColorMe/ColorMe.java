@@ -22,7 +22,7 @@ public class ColorMe extends JavaPlugin {
 	
 	public void onDisable() {
 		PluginDescriptionFile pdf = this.getDescription();
-		log.info("["+pdf.getName()+"] v"+pdf.getVersion()+" has been disabled.");
+		log.info("["+pName+"] v"+pdf.getVersion()+" has been disabled.");
 	}
 
 	public void onEnable() {
