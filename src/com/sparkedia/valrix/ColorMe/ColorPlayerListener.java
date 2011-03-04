@@ -6,7 +6,7 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerListener;
 
 public class ColorPlayerListener extends PlayerListener {
-	public ColorMe plugin;
+	protected ColorMe plugin;
 	
 	public ColorPlayerListener(ColorMe plugin) {
 		this.plugin = plugin;
