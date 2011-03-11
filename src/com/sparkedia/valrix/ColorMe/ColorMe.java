@@ -50,10 +50,10 @@ public class ColorMe extends JavaPlugin {
 		}
 		
 		// /color <color/name> [name] (name is optional since you can color your own name)
-		getCommand("color").setExecutor(new CommandExecutor() {
+		getCommand("colorme").setExecutor(new CommandExecutor() {
 			public boolean onCommand(CommandSender sender, Command cmd, String cmdLabel, String[] args) {
 				if (sender instanceof Player) {
-					if (cmd.getName().equalsIgnoreCase("color")) {
+					if (cmd.getName().equalsIgnoreCase("colorme")) {
 						if (((Player)sender).isOp() || !config.getBoolean("OP")) { //only OP can use unless OP=false
 							if (args.length == 1) {
 								if (args[0].equalsIgnoreCase("list")) {
@@ -83,7 +83,7 @@ public class ColorMe extends JavaPlugin {
 									return true;
 								} else {
 									// only chose a color (hopefully, let's check)
-									String col = args[0];
+									String col = args[0].toLowerCase();
 									String color;
 									for (int i = 0; i <= 15; i++) {
 										color = ChatColor.getByCode(i).name().toLowerCase().replace("_", "");
@@ -93,14 +93,18 @@ public class ColorMe extends JavaPlugin {
 											return true;
 										}
 									}
-									((Player)sender).sendMessage("Could not find the color");
+									((Player)sender).sendMessage(ChatColor.RED+"Could not find that color.");
 									return true;
 								}
 							} else if (args.length == 2) {
 								// /color <color> [name]
-								String col = args[0];
-								String name = args[1];
-								colors.setString(name, col); //name=color
+								// Only OP can change another player's
+								String name = args[1].toLowerCase();
+								if ((colors.keyExists(name) && ((Player)sender).isOp()) || (colors.keyExists(name) && name.equalsIgnoreCase(((Player)sender).getName().toLowerCase()))) {
+									String col = args[0].toLowerCase();
+									colors.setString(name, col); //name=color
+									return true;
+								}
 								return true;
 							}
 						}

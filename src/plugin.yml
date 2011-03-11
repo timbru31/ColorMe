@@ -4,6 +4,10 @@ version: 1.1
 author: Valrix
 description: Sets custom prefix to individual players
 commands:
-    color:
+    colorme:
         description: Give player name a color
-        usage: /<command>
+        usage: |
+               <> = Required [] = Optional
+               /<command> list - Shows list of colors
+               /<command> <name> - Remove color
+               /<command> <color> [name] - Set color
