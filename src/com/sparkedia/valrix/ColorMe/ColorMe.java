@@ -100,13 +100,17 @@ public class ColorMe extends JavaPlugin {
 								// /color <color> [name]
 								// Only OP can change another player's
 								String name = args[1].toLowerCase();
-								if ((colors.keyExists(name) && ((Player)sender).isOp()) || (colors.keyExists(name) && name.equalsIgnoreCase(((Player)sender).getName().toLowerCase()))) {
+								if (((Player)sender).isOp() || name.equalsIgnoreCase(((Player)sender).getName().toLowerCase())) {
 									String col = args[0].toLowerCase();
 									colors.setString(name, col); //name=color
+									((Player)sender).sendMessage("Gave "+name+" the color "+col);
 									return true;
 								}
 								return true;
 							}
+						} else {
+							((Player)sender).sendMessage("You're not an OP or /colorme isn't allowed.");
+							return true;
 						}
 					}
 				}
