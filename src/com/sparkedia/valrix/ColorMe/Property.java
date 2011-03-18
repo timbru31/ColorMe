@@ -78,6 +78,13 @@ public final class Property {
 		save();
 	}
 	
+	public boolean isEmpty() {
+		if (this.properties.isEmpty()) {
+			return true;
+		}
+		return false;
+	}
+	
 	// STRING
 	public String getString(String key) {
 		if (this.properties.containsKey(key)) {
