@@ -27,7 +27,7 @@ public class ColorMe extends JavaPlugin {
 
 	public void onEnable() {
 		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvent(Event.Type.PLAYER_CHAT, this.pListener, Event.Priority.Normal, this);
+		pm.registerEvent(Event.Type.PLAYER_CHAT, this.pListener, Event.Priority.Highest, this);
 		
 		PluginDescriptionFile pdf = this.getDescription();
 		pName = pdf.getName();
