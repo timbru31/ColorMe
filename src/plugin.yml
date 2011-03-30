@@ -1,6 +1,6 @@
 name: ColorMe
 main: com.sparkedia.valrix.ColorMe.ColorMe
-version: 1.3
+version: 1.4
 author: Valrix
 description: Sets custom prefix to individual players
 commands:
