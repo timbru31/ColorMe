@@ -14,9 +14,9 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ColorMe extends JavaPlugin {
-	private final ColorPlayerListener pListener = new ColorPlayerListener(this);
-	protected static final Logger log = Logger.getLogger("Minecraft");
-	public static Property colors = null;
+	private ColorPlayerListener pListener;
+	protected Logger log;
+	public Property colors = null;
 	public String pName = null;
 	private Property config = null; // need at least one config option for non-OP use
 	
@@ -26,16 +26,15 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	public void onEnable() {
-		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvent(Event.Type.PLAYER_CHAT, this.pListener, Event.Priority.Highest, this);
+		log = this.getServer().getLogger();
 		
 		PluginDescriptionFile pdf = this.getDescription();
 		pName = pdf.getName();
-		log.info("["+pName+"] v"+pdf.getVersion()+" has been enabled.");
 		
 		if (!this.getDataFolder().isDirectory()) {
 			this.getDataFolder().mkdir();
 		}
+		
 		if (colors == null) {
 			colors = new Property(this.getDataFolder()+"/players.color", this);
 		}
@@ -48,6 +47,15 @@ public class ColorMe extends JavaPlugin {
 				config = new Property(this.getDataFolder()+"/config.txt", this);
 			}
 		}
+		
+		pListener = new ColorPlayerListener(this);
+		
+		PluginManager pm = getServer().getPluginManager();
+		pm.registerEvent(Event.Type.PLAYER_CHAT, pListener, Event.Priority.Highest, this);
+		
+		pListener = new ColorPlayerListener(this);
+		
+		log.info("["+pName+"] v"+pdf.getVersion()+" has been enabled.");
 		
 		// /color <color/name> [name] (name is optional since you can color your own name)
 		getCommand("colorme").setExecutor(new CommandExecutor() {
@@ -77,9 +85,9 @@ public class ColorMe extends JavaPlugin {
 									((Player)sender).sendMessage(msg1);
 									((Player)sender).sendMessage(msg2);
 									return true;
-								} else if (ColorMe.colors.keyExists(args[0].toLowerCase())) { //player's name
+								} else if (colors.keyExists(args[0].toLowerCase())) { //player's name
 									// if just a name is found, remove color preset
-									ColorMe.colors.remove(args[0].toLowerCase());
+									colors.remove(args[0].toLowerCase());
 									return true;
 								} else {
 									// only chose a color (hopefully, let's check)

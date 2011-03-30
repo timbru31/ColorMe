@@ -7,16 +7,18 @@ import org.bukkit.event.player.PlayerListener;
 
 public class ColorPlayerListener extends PlayerListener {
 	protected ColorMe plugin;
+	private Property colors;
 	
 	public ColorPlayerListener(ColorMe plugin) {
 		this.plugin = plugin;
+		this.colors = plugin.colors;
 	}
 	
 	public void onPlayerChat(PlayerChatEvent event) {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
-		if (ColorMe.colors.keyExists(name)) {
-			String color = ColorMe.colors.getString(name);
+		if (colors.keyExists(name)) {
+			String color = colors.getString(name);
 			for (int i = 0; i <= 15; i++) {
 				String col = ChatColor.getByCode(i).name();
 				if (color.equalsIgnoreCase(col.toLowerCase().replace("_", ""))) {
