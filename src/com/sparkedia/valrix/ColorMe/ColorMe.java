@@ -16,7 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class ColorMe extends JavaPlugin {
 	private ColorPlayerListener pListener;
 	protected Logger log;
-	public Property colors = null;
+	public Property colors;
 	public String pName = null;
 	private Property config = null; // need at least one config option for non-OP use
 	
@@ -35,9 +35,8 @@ public class ColorMe extends JavaPlugin {
 			this.getDataFolder().mkdir();
 		}
 		
-		if (colors == null) {
-			colors = new Property(this.getDataFolder()+"/players.color", this);
-		}
+		colors = new Property(this.getDataFolder()+"/players.color", this);
+		
 		if (config == null) {
 			//Does the config exist, if not then make a new blank one
 			if (!(new File(this.getDataFolder()+"/config.txt").exists())) {
@@ -125,5 +124,26 @@ public class ColorMe extends JavaPlugin {
 				return false;
 			}
 		});
+	}
+	
+	public String getColor(String name) {
+		name = name.toLowerCase();
+		if (colors.keyExists(name)) {
+			return colors.getString(name);
+		}
+		return "";
+	}
+	
+	public boolean setColor(String name, String color) {
+		name = name.toLowerCase();
+		String col;
+		for (int i = 0; i <= 15; i++) {
+			col = ChatColor.getByCode(i).name().toLowerCase().replace("_", "");
+			if (color.equalsIgnoreCase(col)) {
+				colors.setString(name, color);
+				return true;
+			}
+		}
+		return false;
 	}
 }
