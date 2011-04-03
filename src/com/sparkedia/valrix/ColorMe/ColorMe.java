@@ -146,4 +146,12 @@ public class ColorMe extends JavaPlugin {
 		}
 		return false;
 	}
+	
+	public boolean hasColor(String name) {
+		name = name.toLowerCase();
+		if (!colors.getString(name).isEmpty()) {
+			return true;
+		}
+		return false;
+	}
 }
