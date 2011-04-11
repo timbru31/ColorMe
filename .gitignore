@@ -3,6 +3,8 @@
 /.project
 
 .DS_Store
+.gitignore
 
 /bin
 /target
+/ColorMe.jardesc
