@@ -263,6 +263,7 @@ public class ColorMe extends JavaPlugin {
 			col = ChatColor.getByCode(i).name().toLowerCase().replace("_", "");
 			if (color.equalsIgnoreCase(col)) {
 				colors.setString(name, color);
+				colors.save();
 				return true;
 			}
 		}
@@ -281,6 +282,7 @@ public class ColorMe extends JavaPlugin {
 		name = name.toLowerCase();
 		if (colors.keyExists(name)) {
 			colors.remove(name);
+			colors.save();
 			return true;
 		}
 		return false;
