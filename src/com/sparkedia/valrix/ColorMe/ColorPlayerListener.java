@@ -18,16 +18,18 @@ public class ColorPlayerListener extends PlayerListener {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 		if (colors.keyExists(name)) {
-			String color = colors.getString(name);
-			for (int i = 0; i <= 15; i++) {
-				String col = ChatColor.getByCode(i).name();
-				if (color.equalsIgnoreCase(col.toLowerCase().replace("_", ""))) {
-					player.setDisplayName(ChatColor.valueOf(col)+ChatColor.stripColor(player.getDisplayName())+ChatColor.WHITE);
-					break;
+			if (colors.keyExists(name)) {
+				String color = colors.getString(name);
+				for (int i = 0; i <= 15; i++) {
+					String col = ChatColor.getByCode(i).name();
+					if (color.equalsIgnoreCase(col.toLowerCase().replace("_", ""))) {
+						player.setDisplayName(ChatColor.valueOf(col)+ChatColor.stripColor(player.getDisplayName())+ChatColor.WHITE);
+						break;
+					}
 				}
+			} else {
+				player.setDisplayName(ChatColor.stripColor(player.getDisplayName()));
 			}
-		} else {
-			player.setDisplayName(ChatColor.stripColor(player.getDisplayName()));
 		}
 	}
 }

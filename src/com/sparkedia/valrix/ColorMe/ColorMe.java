@@ -193,8 +193,8 @@ public class ColorMe extends JavaPlugin {
 							}
 						} else if (args.length == 2) {
 							// /colorme <name> <color>
-							if (hasColor(args[0]) && (player.isOp() || (!config.getBoolean("OP") && args[0].equalsIgnoreCase(player.getName().toLowerCase())))) {
-								// Name exists. Are OP or is allowed to set own color
+							if (player.isOp() || (!config.getBoolean("OP") && args[0].equalsIgnoreCase(player.getName().toLowerCase()))) {
+								// sender is OP *or* OP=false *and* setting own name
 								setColor(args[0], args[1]);
 								if (iconomy && args[0].equalsIgnoreCase(player.getName())) {
 									double cost = config.getDouble("cost");
@@ -281,7 +281,7 @@ public class ColorMe extends JavaPlugin {
 	public boolean removeColor(String name) {
 		name = name.toLowerCase();
 		if (colors.keyExists(name)) {
-			colors.remove(name);
+			colors.setString(name, "");
 			colors.save();
 			return true;
 		}
