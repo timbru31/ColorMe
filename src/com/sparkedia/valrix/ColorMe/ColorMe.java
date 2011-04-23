@@ -29,10 +29,12 @@ public class ColorMe extends JavaPlugin {
 	private PermissionHandler permission;
 	private boolean iconomy = false;
 	
+	@Override
 	public void onDisable() {
 		log.info('['+pName+"] v"+getDescription().getVersion()+" has been disabled.");
 	}
 
+	@Override
 	public void onEnable() {
 		log = getServer().getLogger();
 		
