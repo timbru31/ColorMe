@@ -14,6 +14,7 @@ public class ColorPlayerListener extends PlayerListener {
 		this.colors = plugin.colors;
 	}
 	
+	@Override
 	public void onPlayerChat(PlayerChatEvent event) {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
