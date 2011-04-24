@@ -1,6 +1,6 @@
 name: ColorMe
 main: com.sparkedia.valrix.ColorMe.ColorMe
-version: 1.9
+version: 2.0
 author: Valrix
 description: Sets custom color to player's name
 commands:

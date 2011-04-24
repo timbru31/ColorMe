@@ -134,8 +134,10 @@ public final class Property {
 						bw.newLine();
 					} else {
 						// Otherwise write the key and value pair as key=value
-						bw.write(escape(key)+'='+val);
-						bw.newLine();
+						if (!key.equalsIgnoreCase(pName+"Version") && !key.equalsIgnoreCase(pName+"Type")) {
+							bw.write(escape(key)+'='+val);
+							bw.newLine();
+						}
 					}
 				}
 			}

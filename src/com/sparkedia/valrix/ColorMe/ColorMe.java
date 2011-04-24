@@ -31,7 +31,7 @@ public class ColorMe extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		log.info('['+pName+"] v"+getDescription().getVersion()+" has been disabled.");
+		log.info('['+pName+"] has been disabled.");
 	}
 
 	@Override
@@ -41,9 +41,7 @@ public class ColorMe extends JavaPlugin {
 		pName = getDescription().getName();
 		df = getDataFolder();
 		
-		if (!df.isDirectory()) {
-			df.mkdir();
-		}
+		if (!df.isDirectory()) df.mkdir();
 
 		colors = new Property(df+"/players.color", "color", this);
 
@@ -148,7 +146,7 @@ public class ColorMe extends JavaPlugin {
 							}
 							return true;
 						}
-					} else if (player.isOp() || !config.getBoolean("OP")) {
+					} else if (player.isOp() || (!player.isOp() && !config.getBoolean("OP"))) {
 						// Permissions isn't enabled
 						if (args.length == 1) {
 							if (args[0].equalsIgnoreCase("list")) {
@@ -167,17 +165,13 @@ public class ColorMe extends JavaPlugin {
 								}
 								player.sendMessage(msg);
 								return true;
-							} else if (hasColor(args[0]) && (player.isOp() || !config.getBoolean("OP"))) {
+							} else if (hasColor(args[0]) && ((player.isOp() || (!player.isOp() && !config.getBoolean("OP"))) || args[0].equalsIgnoreCase(player.getName().toLowerCase()))) {
 								// Only people with permission to remove another's color or the color owner can remove
-								if (args[0].equalsIgnoreCase(player.getName().toLowerCase())) {
-									removeColor(args[0]);
-								}
+								removeColor(args[0]);
 								return true;
 							} else if (!hasColor(args[0])) {
-								// Don't let them set the color equal to their own name
-								if (args[0].equalsIgnoreCase(player.getName().toLowerCase())) return true;
 								// If not trying to remove a color they don't already have...
-								if (player.isOp() || !config.getBoolean("OP")) {
+								if (player.isOp() || (!player.isOp() && !config.getBoolean("OP"))) {
 									// Set a color for the user calling the command if they have permission
 									setColor(player.getName(), args[0]);
 									if (iconomy) {
@@ -195,7 +189,7 @@ public class ColorMe extends JavaPlugin {
 							}
 						} else if (args.length == 2) {
 							// /colorme <name> <color>
-							if (player.isOp() || (!config.getBoolean("OP") && args[0].equalsIgnoreCase(player.getName().toLowerCase()))) {
+							if (player.isOp() || (!player.isOp() && !config.getBoolean("OP") && args[0].equalsIgnoreCase(player.getName().toLowerCase()))) {
 								// sender is OP *or* OP=false *and* setting own name
 								setColor(args[0], args[1]);
 								if (iconomy && args[0].equalsIgnoreCase(player.getName())) {
@@ -274,7 +268,7 @@ public class ColorMe extends JavaPlugin {
 	
 	public boolean hasColor(String name) {
 		name = name.toLowerCase();
-		if (!colors.getString(name).isEmpty()) {
+		if (colors.getString(name).length() > 0) {
 			return true;
 		}
 		return false;
