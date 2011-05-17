@@ -11,23 +11,24 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.TextWrapper;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.Event.Type;
+import org.bukkit.event.Event.Priority;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.nijiko.coelho.iConomy.iConomy;
-import com.nijiko.coelho.iConomy.system.Account;
+import com.iConomy.iConomy;
+import com.iConomy.system.Account;
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class ColorMe extends JavaPlugin {
-	private ColorPlayerListener pListener;
 	protected Logger log;
 	public Property colors;
 	public String pName;
 	public File df;
 	private Property config; // need at least one config option for non-OP use
 	private PermissionHandler permission;
-	private boolean iconomy = false;
+	public iConomy iconomy = null;
 	
 	@Override
 	public void onDisable() {
@@ -65,22 +66,19 @@ public class ColorMe extends JavaPlugin {
 				config.rebuild(tmp);
 			}
 		}
-
-		if (getServer().getPluginManager().getPlugin("Permissions") != null) {
-			permission = ((Permissions)getServer().getPluginManager().getPlugin("Permissions")).getHandler();
-		} else {
+		
+		PluginManager pm = getServer().getPluginManager();
+		
+		if (pm.getPlugin("Permissions") != null)
+			permission = ((Permissions)pm.getPlugin("Permissions")).getHandler();
+		else
 			log.info('['+pName+"]: Permission system not detected. Defaulting to OP permissions.");
-		}
 		
-		if (getServer().getPluginManager().getPlugin("iConomy") != null) {
-			iconomy = true;
-		} else {
-			log.info('['+pName+"]: iConomy not detected. Disabling iConomy support.");
-		}
+		pm.registerEvent(Type.PLAYER_CHAT, new ColorPlayerListener(this), Priority.Highest, this);
 		
-		pListener = new ColorPlayerListener(this);
-		
-		getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, pListener, Event.Priority.Highest, this);
+		ColorServer cs = new ColorServer(this);
+		pm.registerEvent(Type.PLUGIN_ENABLE, cs, Priority.Monitor, this);
+		pm.registerEvent(Type.PLUGIN_DISABLE, cs, Priority.Monitor, this);
 		
 		log.info('['+pName+"] v"+getDescription().getVersion()+" has been enabled.");
 		
@@ -116,12 +114,12 @@ public class ColorMe extends JavaPlugin {
 								if (permission.has(player, "colorme.self")) {
 									// Set a color for the user calling the command if they have permission
 									setColor(player.getName(), args[0]);
-									if (iconomy) {
+									if (iconomy != null) {
 										double cost = config.getDouble("cost");
-										Account acct = iConomy.getBank().getAccount(player.getName());
-										if (cost > 0 && acct.getBalance()-cost > 0) {
-											acct.subtract(cost);
-											player.sendMessage(ChatColor.RED.toString()+cost+' '+iConomy.getBank().getCurrency()+" has been charged to your account.");
+										Account acct = iConomy.getAccount(player.getName());
+										if (cost > 0 && acct.getHoldings().hasEnough(cost)) {
+											acct.getHoldings().subtract(cost);
+											player.sendMessage(ChatColor.RED.toString()+"You have been charged "+iConomy.format(cost)+'.');
 										}
 									}
 									return true;
@@ -134,12 +132,12 @@ public class ColorMe extends JavaPlugin {
 							if ((hasColor(args[0]) && (permission.has(player, "colorme.other"))) || (args[0].equalsIgnoreCase(player.getName().toLowerCase()) && permission.has(player, "colorme.self"))) {
 								// Name exists. They have permission to set another's color or can set own.
 								setColor(args[0], args[1]);
-								if (iconomy && args[0].equalsIgnoreCase(player.getName())) {
+								if (iconomy != null && args[0].equalsIgnoreCase(player.getName())) {
 									double cost = config.getDouble("cost");
-									Account acct = iConomy.getBank().getAccount(player.getName());
-									if (cost > 0 && acct.getBalance()-cost > 0) {
-										acct.subtract(cost);
-										player.sendMessage(ChatColor.RED.toString()+cost+' '+iConomy.getBank().getCurrency()+" has been charged to your account.");
+									Account acct = iConomy.getAccount(player.getName());
+									if (cost > 0 && acct.getHoldings().hasEnough(cost)) {
+										acct.getHoldings().subtract(cost);
+										player.sendMessage(ChatColor.RED.toString()+"You have been charged "+iConomy.format(cost)+'.');
 									}
 								}
 								return true;
@@ -174,12 +172,12 @@ public class ColorMe extends JavaPlugin {
 								if (player.isOp() || (!player.isOp() && !config.getBoolean("OP"))) {
 									// Set a color for the user calling the command if they have permission
 									setColor(player.getName(), args[0]);
-									if (iconomy) {
+									if (iconomy != null) {
 										double cost = config.getDouble("cost");
-										Account acct = iConomy.getBank().getAccount(player.getName());
-										if (cost > 0 && acct.getBalance()-cost > 0) {
-											acct.subtract(cost);
-											player.sendMessage(ChatColor.RED.toString()+cost+' '+iConomy.getBank().getCurrency()+ChatColor.DARK_PURPLE+" has been charged to your account.");
+										Account acct = iConomy.getAccount(player.getName());
+										if (cost > 0 && acct.getHoldings().hasEnough(cost)) {
+											acct.getHoldings().subtract(cost);
+											player.sendMessage(ChatColor.RED.toString()+"You have been charged "+iConomy.format(cost)+'.');
 										}
 									}
 									return true;
@@ -192,12 +190,12 @@ public class ColorMe extends JavaPlugin {
 							if (player.isOp() || (!player.isOp() && !config.getBoolean("OP") && args[0].equalsIgnoreCase(player.getName().toLowerCase()))) {
 								// sender is OP *or* OP=false *and* setting own name
 								setColor(args[0], args[1]);
-								if (iconomy && args[0].equalsIgnoreCase(player.getName())) {
+								if (iconomy != null && args[0].equalsIgnoreCase(player.getName())) {
 									double cost = config.getDouble("cost");
-									Account acct = iConomy.getBank().getAccount(player.getName());
-									if (cost > 0 && acct.getBalance()-cost > 0) {
-										acct.subtract(cost);
-										player.sendMessage(ChatColor.RED.toString()+cost+' '+iConomy.getBank().getCurrency()+ChatColor.DARK_PURPLE+" has been charged to your account.");
+									Account acct = iConomy.getAccount(player.getName());
+									if (cost > 0 && acct.getHoldings().hasEnough(cost)) {
+										acct.getHoldings().subtract(cost);
+										player.sendMessage(ChatColor.RED.toString()+"You have been charged "+iConomy.format(cost)+'.');
 									}
 								}
 								return true;
@@ -245,20 +243,15 @@ public class ColorMe extends JavaPlugin {
 	}
 	
 	public String getColor(String name) {
-		name = name.toLowerCase();
-		if (colors.keyExists(name)) {
-			return colors.getString(name);
-		}
-		return "";
+		return (colors.keyExists(name.toLowerCase())) ? colors.getString(name.toLowerCase()) : "";
 	}
 	
 	public boolean setColor(String name, String color) {
-		name = name.toLowerCase();
 		String col;
 		for (int i = 0; i <= 15; i++) {
 			col = ChatColor.getByCode(i).name().toLowerCase().replace("_", "");
 			if (color.equalsIgnoreCase(col)) {
-				colors.setString(name, color);
+				colors.setString(name.toLowerCase(), color);
 				colors.save();
 				return true;
 			}
@@ -267,17 +260,12 @@ public class ColorMe extends JavaPlugin {
 	}
 	
 	public boolean hasColor(String name) {
-		name = name.toLowerCase();
-		if (colors.getString(name).length() > 0) {
-			return true;
-		}
-		return false;
+		return (colors.getString(name.toLowerCase()).length() > 0) ? true : false;
 	}
 	
 	public boolean removeColor(String name) {
-		name = name.toLowerCase();
-		if (colors.keyExists(name)) {
-			colors.setString(name, "");
+		if (colors.keyExists(name.toLowerCase())) {
+			colors.setString(name.toLowerCase(), "");
 			colors.save();
 			return true;
 		}
