@@ -1,6 +1,6 @@
 name: ColorMe
 main: com.sparkedia.valrix.ColorMe.ColorMe
-version: 2.0
+version: 2.1
 author: Valrix
 description: Sets custom color to player's name
 commands:
@@ -10,4 +10,5 @@ commands:
                <> = Required [] = Optional
                /<command> list - Shows list of colors
                /<command> <name> - Remove color
-               /<command> <color> [name] - Set color
+               /<command> <name> <color> - Set color
+               /<command> <color> - Set your own color
