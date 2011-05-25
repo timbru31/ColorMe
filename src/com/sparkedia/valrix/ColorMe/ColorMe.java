@@ -74,7 +74,7 @@ public class ColorMe extends JavaPlugin {
 		else
 			log.info('['+pName+"]: Permission system not detected. Defaulting to OP permissions.");
 		
-		pm.registerEvent(Type.PLAYER_CHAT, new ColorPlayerListener(this), Priority.Highest, this);
+		pm.registerEvent(Type.PLAYER_CHAT, new ColorPlayerListener(this), Priority.Lowest, this);
 		
 		ColorServer cs = new ColorServer(this);
 		pm.registerEvent(Type.PLUGIN_ENABLE, cs, Priority.Monitor, this);
@@ -106,28 +106,31 @@ public class ColorMe extends JavaPlugin {
 								}
 								player.sendMessage(msg);
 								return true;
-							} else if ((hasColor(args[0]) && (permission.has(player, "colorme.remove"))) || args[0].equalsIgnoreCase(player.getName().toLowerCase())) {
+							}
+							if ((hasColor(args[0]) && (permission.has(player, "colorme.remove"))) || args[0].equalsIgnoreCase(player.getName().toLowerCase())) {
 								// Only people with permission to remove another's color or the color owner can remove
 								removeColor(args[0]);
 								return true;
-							} else {
-								if (permission.has(player, "colorme.self")) {
-									// Set a color for the user calling the command if they have permission
-									setColor(player.getName(), args[0]);
-									if (iconomy != null) {
-										double cost = config.getDouble("cost");
-										Account acct = iConomy.getAccount(player.getName());
-										if (cost > 0 && acct.getHoldings().hasEnough(cost)) {
-											acct.getHoldings().subtract(cost);
-											player.sendMessage(ChatColor.RED.toString()+"You have been charged "+iConomy.format(cost)+'.');
-										}
+							}
+							if (permission.has(player, "colorme.self")) {
+								// Set a color for the user calling the command if they have permission
+								setColor(player.getName(), args[0]);
+								if (iconomy != null) {
+									double cost = config.getDouble("cost");
+									Account acct = iConomy.getAccount(player.getName());
+									if (cost > 0 && acct.getHoldings().hasEnough(cost)) {
+										acct.getHoldings().subtract(cost);
+										player.sendMessage(ChatColor.RED.toString()+"You have been charged "+iConomy.format(cost)+'.');
+										return true;
 									}
+									player.sendMessage(ChatColor.RED.toString()+"It costs "+iConomy.format(cost)+" to color your name.");
 									return true;
 								}
-								player.sendMessage("You don't have permission to color your own name.");
-								return true;
 							}
-						} else if (args.length == 2) {
+							player.sendMessage("You don't have permission to color your own name.");
+							return true;
+						}
+						if (args.length == 2) {
 							// /colorme <name> <color>
 							if ((hasColor(args[0]) && (permission.has(player, "colorme.other"))) || (args[0].equalsIgnoreCase(player.getName().toLowerCase()) && permission.has(player, "colorme.self"))) {
 								// Name exists. They have permission to set another's color or can set own.
@@ -138,13 +141,16 @@ public class ColorMe extends JavaPlugin {
 									if (cost > 0 && acct.getHoldings().hasEnough(cost)) {
 										acct.getHoldings().subtract(cost);
 										player.sendMessage(ChatColor.RED.toString()+"You have been charged "+iConomy.format(cost)+'.');
+										return true;
 									}
+									// Not enough
+									return true;
 								}
-								return true;
 							}
 							return true;
 						}
-					} else if (player.isOp() || (!player.isOp() && !config.getBoolean("OP"))) {
+					}
+					if (player.isOp() || (!player.isOp() && !config.getBoolean("OP"))) {
 						// Permissions isn't enabled
 						if (args.length == 1) {
 							if (args[0].equalsIgnoreCase("list")) {
@@ -163,11 +169,13 @@ public class ColorMe extends JavaPlugin {
 								}
 								player.sendMessage(msg);
 								return true;
-							} else if (hasColor(args[0]) && ((player.isOp() || (!player.isOp() && !config.getBoolean("OP"))) || args[0].equalsIgnoreCase(player.getName().toLowerCase()))) {
+							}
+							if (hasColor(args[0]) && ((player.isOp() || (!player.isOp() && !config.getBoolean("OP"))) || args[0].equalsIgnoreCase(player.getName().toLowerCase()))) {
 								// Only people with permission to remove another's color or the color owner can remove
 								removeColor(args[0]);
 								return true;
-							} else if (!hasColor(args[0])) {
+							}
+							if (!hasColor(args[0])) {
 								// If not trying to remove a color they don't already have...
 								if (player.isOp() || (!player.isOp() && !config.getBoolean("OP"))) {
 									// Set a color for the user calling the command if they have permission
@@ -185,7 +193,8 @@ public class ColorMe extends JavaPlugin {
 								player.sendMessage("You don't have permission to set your name color.");
 								return true;
 							}
-						} else if (args.length == 2) {
+						}
+						if (args.length == 2) {
 							// /colorme <name> <color>
 							if (player.isOp() || (!player.isOp() && !config.getBoolean("OP") && args[0].equalsIgnoreCase(player.getName().toLowerCase()))) {
 								// sender is OP *or* OP=false *and* setting own name
@@ -203,7 +212,8 @@ public class ColorMe extends JavaPlugin {
 							return true;
 						}
 					}
-				} else if (sender instanceof ConsoleCommandSender) {
+				}
+				if (sender instanceof ConsoleCommandSender) {
 					// /colorme <name> [color]
 					if (args.length == 1) {
 						if (args[0].equalsIgnoreCase("list")) {
@@ -222,18 +232,18 @@ public class ColorMe extends JavaPlugin {
 							}
 							sender.sendMessage(msg);
 							return true;
-						} else {
-							if (hasColor(args[0])) {
-								removeColor(args[0]);
-								sender.sendMessage("Removed color from "+args[0]);
-							} else {
-								sender.sendMessage(args[0]+" doesn't have a colored name.");
-							}
+						}
+						if (hasColor(args[0])) {
+							removeColor(args[0]);
+							sender.sendMessage("Removed color from "+args[0]);
 							return true;
 						}
-					} else if (args.length == 2) {
+						sender.sendMessage(args[0]+" doesn't have a colored name.");
+						return true;
+					}
+					if (args.length == 2) {
 						setColor(args[0], args[1]);
-						sender.sendMessage("Colored "+args[0]+"\'s name "+args[1]);
+						sender.sendMessage("Colored "+args[0]+"'s name "+args[1]);
 						return true;
 					}
 				}
