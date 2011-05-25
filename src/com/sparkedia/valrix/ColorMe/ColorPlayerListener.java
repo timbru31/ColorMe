@@ -23,12 +23,10 @@ public class ColorPlayerListener extends PlayerListener {
 			for (int i = 0; i <= 15; i++) {
 				String col = ChatColor.getByCode(i).name();
 				if (color.equalsIgnoreCase(col.toLowerCase().replace("_", ""))) {
-					player.setDisplayName(ChatColor.valueOf(col)+ChatColor.stripColor(player.getDisplayName())+ChatColor.WHITE);
+					player.setDisplayName(ChatColor.valueOf(col)+ChatColor.stripColor(player.getName())+ChatColor.WHITE);
 					break;
 				}
 			}
-		} else {
-			player.setDisplayName(ChatColor.stripColor(player.getDisplayName()));
 		}
 	}
 }
