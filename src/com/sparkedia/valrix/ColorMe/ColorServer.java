@@ -19,7 +19,7 @@ public class ColorServer extends ServerListener {
 		if (plugin.iconomy != null) {
 			if (e.getPlugin().getDescription().getName().equals("iConomy")) {
 				plugin.iconomy = null;
-				System.out.println('['+plugin.pName+"] un-hooked from iConomy.");
+				plugin.log.info('['+plugin.pName+"] un-hooked from iConomy.");
 			}
 		}
 	}
@@ -32,7 +32,7 @@ public class ColorServer extends ServerListener {
 			if (iconomy != null) {
 				if (iconomy.isEnabled() && iconomy.getClass().getName().equals("com.iConomy.iConomy")) {
 					plugin.iconomy = (iConomy)iconomy;
-					System.out.println('['+plugin.pName+"] hooked into iConomy.");
+					plugin.log.info('['+plugin.pName+"] hooked into iConomy.");
 				}
 			}
 		}

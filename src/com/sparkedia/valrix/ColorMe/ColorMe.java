@@ -22,13 +22,18 @@ import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class ColorMe extends JavaPlugin {
-	protected Logger log;
+	public Logger log;
 	public Property colors;
 	public String pName;
-	public File df;
+	public String df;
+	public String uf;
 	private Property config; // need at least one config option for non-OP use
 	private PermissionHandler permission;
 	public iConomy iconomy = null;
+	
+	private void mkDirs(String...d) {
+		for (String f : d) new File(f).mkdir();
+	}
 	
 	@Override
 	public void onDisable() {
@@ -40,9 +45,10 @@ public class ColorMe extends JavaPlugin {
 		log = getServer().getLogger();
 		
 		pName = getDescription().getName();
-		df = getDataFolder();
+		df = getDataFolder().toString();
+		uf = getServer().getUpdateFolder();
 		
-		if (!df.isDirectory()) df.mkdir();
+		mkDirs(df, uf);
 
 		colors = new Property(df+"/players.color", "color", this);
 
