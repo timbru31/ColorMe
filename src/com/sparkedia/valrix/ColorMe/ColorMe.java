@@ -80,7 +80,7 @@ public class ColorMe extends JavaPlugin {
 		else
 			log.info('['+pName+"]: Permission system not detected. Defaulting to OP permissions.");
 		
-		pm.registerEvent(Type.PLAYER_CHAT, new ColorPlayerListener(this), Priority.Lowest, this);
+		pm.registerEvent(Type.PLAYER_JOIN, new ColorPlayerListener(this), Priority.Lowest, this);
 		
 		ColorServer cs = new ColorServer(this);
 		pm.registerEvent(Type.PLUGIN_ENABLE, cs, Priority.Monitor, this);
