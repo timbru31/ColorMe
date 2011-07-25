@@ -6,27 +6,23 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 
 public class ColorPlayerListener extends PlayerListener {
-	protected ColorMe plugin;
-	private Property colors;
-	
-	public ColorPlayerListener(ColorMe plugin) {
-		this.plugin = plugin;
-		this.colors = plugin.colors;
-	}
-
-        @Override
-        public void onPlayerJoin(PlayerJoinEvent event) {
-            Player player = event.getPlayer();
-            String name = player.getName().toLowerCase();
-            if (colors.keyExists(name) && plugin.hasColor(name)) {
-                    String color = colors.getString(name);
-                    for (int i = 0; i <= 15; i++) {
-                            String col = ChatColor.getByCode(i).name();
-                            if (color.equalsIgnoreCase(col.toLowerCase().replace("_", ""))) {
-                                    player.setDisplayName(ChatColor.valueOf(col)+ChatColor.stripColor(player.getName())+ChatColor.WHITE);
-                                    break;
-                            }
-                    }
-            }
+    protected ColorMe plugin;
+    
+    public ColorPlayerListener(ColorMe plugin) {
+        this.plugin = plugin;
+    }
+    
+    @Override
+    public void onPlayerJoin(PlayerJoinEvent e) {
+        Player player = e.getPlayer();
+        String name = player.getName().toLowerCase();
+        //Property cf = plugin.colors.get(player.getWorld());
+        
+        //if (!cf.keyExists(name)) cf.setString(name, "");
+        if (!plugin.colors.keyExists(name)) plugin.colors.setString(name, "");
+        
+        if (plugin.hasColor(name)) {
+            player.setDisplayName(ChatColor.valueOf(plugin.findColor(plugin.colors.getString(name)))+ChatColor.stripColor(player.getDisplayName())+ChatColor.WHITE);
         }
+    }
 }

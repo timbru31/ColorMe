@@ -1,14 +1,35 @@
 name: ColorMe
 main: com.sparkedia.valrix.ColorMe.ColorMe
-version: 2.2
+version: 2.3
 author: Valrix
 description: Sets custom color to player's name
+permissions:
+    colorme.list:
+        default: true
+        description: Allows player to see list of color codes
+    colorme.self:
+        default: true
+        description: Allows setting of own color
+    colorme.other:
+        default: op
+        description: Allows setting of other player's color
+    colorme.remove:
+        default: op
+        description: Allows removal of other player's color
+    colorme.*:
+        children:
+            colorme.list: true
+            colorme.self: true
+            colorme.other: true
+            colorme.remove: true
+        description: Allows all commands
 commands:
     colorme:
+        aliases: color
         description: Give player name a color
         usage: |
-               <> = Required [] = Optional
+               <> = Required
                /<command> list - Shows list of colors
                /<command> <name> - Remove color
-               /<command> <name> <color> - Set color
                /<command> <color> - Set your own color
+               /<command> <name> <color> - Set player's color
