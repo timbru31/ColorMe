@@ -23,18 +23,16 @@ public final class Property {
 	private String filename;
 	private String pName;
 	private String version;
-	private String type;
 
-	public Property(String filename, String type, ColorMe plugin) {
+	public Property(String filename, ColorMe plugin) {
 		this.plugin = plugin;
 		this.pName = plugin.pName;
 		this.version = plugin.getDescription().getVersion();
-		this.type = type.toLowerCase().replace(type.charAt(0), type.toUpperCase().charAt(0));
 		this.log = plugin.log;
 		this.filename = filename;
 		File file = new File(filename);
 
-		if (file.exists()) load(); else save();
+		if (file.exists()) load();
 	}
 	
 	// Load data from file into ordered HashMap
@@ -53,7 +51,6 @@ public final class Property {
 				if (lc == 0) {
 					String v = (line.indexOf('-') > 0) ? line.substring(line.indexOf('-')+1).trim() : "na";
 					properties.put(pName+"Version", v);
-					properties.put(pName+"Type", type);
 					lc++;
 					continue;
 				}
@@ -93,7 +90,7 @@ public final class Property {
 		try {
 			// Construct the BufferedWriter object
 			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename),"UTF-8"));
-			bw.write("# "+pName+" "+type+" File -"+version);
+			bw.write("# "+pName+" Color File -"+version);
 			bw.newLine();
 			
 			// Save all the properties one at a time, only if there's data to write
@@ -117,7 +114,7 @@ public final class Property {
 						continue;
 					}
 					// Otherwise write the key and value pair as key=value
-					if (!key.equalsIgnoreCase(pName+"Version") && !key.equalsIgnoreCase(pName+"Type")) {
+					if (!key.equalsIgnoreCase(pName+"Version")) {
 						bw.write(key+'='+val);
 						bw.newLine();
 						continue;
@@ -159,7 +156,7 @@ public final class Property {
 	
 	// Check if the key no value
 	public boolean isEmpty(String key) {
-		return (properties.get(key).toString().length() == 0) ? true : false;
+		return (properties.get(key).toString().length() < 1) ? true : false;
 	}
 	
 	// Remove key from map
@@ -167,41 +164,48 @@ public final class Property {
 		return (properties.remove(key) != null) ? true : false;
 	}
 	
+	// Extend ability to clear all mappings
+	public void clear() {
+	    properties.clear();
+	}
+	
 	// Return a set of all keys currently in the properties map
 	public Set<String> getKeys() {
 		return properties.keySet();
 	}
 	
-	// get and set property value as a string
-	public String getString(String key) {
-		return (properties.containsKey(key)) ? properties.get(key).toString() : "";
-	}
+	// Set property value as a string
 	public void setString(String key, String value) {
 		properties.put(key, value);
 	}
 	
-	// get and set property value as an int
+	// Set property value as a Number
+    public void setNumber(String key, Number value) {
+        properties.put(key, String.valueOf(value));
+    }
+	
+	// Set property value as a boolean
+	public void setBool(String key, boolean value) {
+        properties.put(key, String.valueOf(value));
+    }
+	
+	// Get property value as a string
+	public String getString(String key) {
+        return (properties.containsKey(key)) ? properties.get(key).toString() : "";
+    }
+	
+	// Get property value as an int
 	public int getInt(String key) {
 		return (properties.containsKey(key)) ? Integer.parseInt(properties.get(key).toString()) : 0;
 	}
-	public void setInt(String key, int value) {
-		properties.put(key, String.valueOf(value));
-		save();
-	}
 	
-	// get and set property value as a double
+	// Get property value as a double
 	public double getDouble(String key) {
 		return (properties.containsKey(key)) ? Double.parseDouble(properties.get(key).toString()) : 0.0D;
 	}
-	public void setDouble(String key, double value) {
-		properties.put(key, String.valueOf(value));
-	}
 	
-	// get and set property value as a boolean
+	// Get property value as a boolean
 	public boolean getBoolean(String key) {
 		return (properties.containsKey(key)) ? Boolean.parseBoolean(properties.get(key).toString()) : false;
-	}
-	public void setBoolean(String key, boolean value) {
-		properties.put(key, String.valueOf(value));
 	}
 }
