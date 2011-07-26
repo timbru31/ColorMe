@@ -1,6 +1,6 @@
 name: ColorMe
 main: com.sparkedia.valrix.ColorMe.ColorMe
-version: 2.3
+version: 2.4
 author: Valrix
 description: Sets custom color to player's name
 permissions:
@@ -8,7 +8,7 @@ permissions:
         default: true
         description: Allows player to see list of color codes
     colorme.self:
-        default: true
+        default: op
         description: Allows setting of own color
     colorme.other:
         default: op

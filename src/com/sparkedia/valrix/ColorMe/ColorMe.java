@@ -76,7 +76,7 @@ public class ColorMe extends JavaPlugin {
         uf = null;
         iconomy = null;
 
-        log.info('['+pName+"] has been disabled.");
+        getServer().getLogger().info("[ColorMe] has been disabled.");
     }
     
     @Override
@@ -330,13 +330,13 @@ public class ColorMe extends JavaPlugin {
     
     // Check if a player has a color or not
     public boolean hasColor(String name) {
-        return (colors.keyExists(name) && colors.getString(name.toLowerCase()).trim().length()>0) ? true : false;
+        return (colors.getString(name.toLowerCase()).trim().length()>1) ? true : false;
     }
     
     // Removes a color if exists, otherwise returns false
     public boolean removeColor(String name) {
         name = name.toLowerCase();
-        if (colors.keyExists(name)) {
+        if (hasColor(name)) {
             colors.setString(name, "");
             colors.save();
             return true;
