@@ -13,8 +13,8 @@ public class ColorPlayerListener extends PlayerListener {
     }
     
     @Override
-    public void onPlayerJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
         //Property cf = plugin.colors.get(player.getWorld());
         
