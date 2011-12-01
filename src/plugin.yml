@@ -33,3 +33,4 @@ commands:
                /<command> <name> - Remove color
                /<command> <color> - Set your own color
                /<command> <name> <color> - Set player's color
+softdepend: [Vault]
