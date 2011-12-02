@@ -1,7 +1,8 @@
 name: ColorMe
-main: com.sparkedia.valrix.ColorMe.ColorMe
-version: 2.4
-author: Valrix
+main: de.xghostkillerx.colorme.ColorMe
+version: 3.0
+author: xGhosTkiLLeRx
+authors: [Valrix]
 description: Sets custom color to player's name
 permissions:
     colorme.list:

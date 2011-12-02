@@ -1,4 +1,4 @@
-package com.sparkedia.valrix.ColorMe;
+package de.xghostkillerx.colorme;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -21,6 +21,20 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+/**
+ * ColorMe for CraftBukkit/Bukkit
+ * Handles some general stuff!
+ * 
+ * Refer to the forum thread:
+ * 
+ * Refer to the dev.bukkit.org page:
+ * 
+ *
+ * @author xGhOsTkiLLeRx
+ * @thanks to Valrix for the original ColorMe plugin!!
+ * 
+ */
 
 public class ColorMe extends JavaPlugin {
 	public Logger log;
