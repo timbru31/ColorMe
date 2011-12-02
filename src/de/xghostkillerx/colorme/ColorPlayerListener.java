@@ -1,4 +1,4 @@
-package com.sparkedia.valrix.ColorMe;
+package de.xghostkillerx.colorme;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

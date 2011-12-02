@@ -1,4 +1,4 @@
-package com.sparkedia.valrix.ColorMe;
+package de.xghostkillerx.colorme;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
