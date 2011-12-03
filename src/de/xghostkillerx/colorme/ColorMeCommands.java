@@ -15,6 +15,7 @@ public class ColorMeCommands {
 
 
 	// /color <color/name> [name] (name is optional since you can color your own name)
+	// TODO rewrite den ganze scheiß^^
 	public boolean ColorMeCommand (CommandSender sender, Command command, String commandLabel, String[] args) {
 		if (command.getName().equalsIgnoreCase("colorme")) {
 			if (sender instanceof Player && args.length>=1) {
@@ -45,7 +46,7 @@ public class ColorMeCommands {
 						sender.sendMessage((plugin.self(player, a0)) ? ChatColor.GREEN+"Removed your color." : ChatColor.GREEN+"Removed color from"+a0+'.');
 						return true;
 					}
-					if (!plugin.hasColor(a0) && plugin.colors.keyExists(a0)) return true; // Trying to remove a color from a color-less player
+					if (!plugin.hasColor(a0) && plugin.colors.contains(a0)) return true; // Trying to remove a color from a color-less player
 					if (player.hasPermission("colorme.self")) {
 						player.sendMessage("STAGE1");
 						String color = plugin.findColor(a0);
@@ -55,7 +56,7 @@ public class ColorMeCommands {
 						}
 						if (plugin.economy != null) {
 							player.sendMessage("STAGE2");
-							double cost = plugin.conf.getDouble("cost");
+							double cost = plugin.config.getDouble("cost");
 							if (cost>0 && plugin.economy.has(player.getName(), cost)) {
 								plugin.economy.withdrawPlayer(player.getName(), cost);
 								plugin.setColor(player.getName(), a0);
@@ -87,7 +88,7 @@ public class ColorMeCommands {
 						// Coloring self
 						if (plugin.economy != null) {
 							// iConomy enabled
-							double cost = plugin.conf.getDouble("cost");
+							double cost = plugin.config.getDouble("cost");
 							if (cost>0 && plugin.economy.getBalance(player.getName()) >= cost) {
 								// Player can afford to color their name
 								plugin.economy.withdrawPlayer(player.getName(), cost);

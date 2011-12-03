@@ -19,7 +19,7 @@ public class ColorPlayerListener extends PlayerListener {
         //Property cf = plugin.colors.get(player.getWorld());
         
         //if (!cf.keyExists(name)) cf.setString(name, "");
-        if (!plugin.colors.keyExists(name)) plugin.colors.setString(name, "");
+        if (!plugin.colors.contains(name)) plugin.colors.set(name, "");
         
         if (plugin.hasColor(name)) {
             player.setDisplayName(ChatColor.valueOf(plugin.findColor(plugin.colors.getString(name)))+ChatColor.stripColor(player.getDisplayName())+ChatColor.WHITE);
