@@ -6,7 +6,7 @@ authors: [Valrix]
 description: Sets custom color to player's name
 permissions:
     colorme.list:
-        default: true
+        default: op
         description: Allows player to see list of color codes
     colorme.self:
         default: op
