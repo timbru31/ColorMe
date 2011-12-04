@@ -4,7 +4,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.TextWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 
@@ -30,18 +29,19 @@ public class ColorMeCommands {
 					return true;
 				}
 			}
-			if (sender instanceof Player && args.length >=1) {
-				Player player = ((Player) sender);
-				if (args.length > 0 && args[0].equals("list")) {
-					if (sender.hasPermission("colorme.list")) {
-						ColorMeActions.list(player);
-						return true;
-					}
-					else {
-						sender.sendMessage(ChatColor.DARK_RED + "You don't have the permission to do this!");
-						return true;
-					}
+			if (args.length > 0 && args[0].equals("list")) {
+				if (sender.hasPermission("colorme.list")) {
+					plugin.list(sender);
+					return true;
 				}
+				else {
+					sender.sendMessage(ChatColor.DARK_RED + "You don't have the permission to do this!");
+					return true;
+				}
+			}
+			// Only if a player is the sender
+			if (sender instanceof Player && args.length >=1) {
+				//Player player = ((Player) sender);
 				//				switch(args.length) {
 				//				case 1:
 				//					if (plugin.hasColor(a0) && (player.hasPermission("colorme.remove") || plugin.self(player, a0))) {
@@ -139,50 +139,33 @@ public class ColorMeCommands {
 				//				}
 			}
 			else if (sender instanceof ConsoleCommandSender) {
-				if (args.length > 0 && args[0].equals("list")) {
-					// TODO REWRITE!?
-					sender.sendMessage("Color List:");
-					String color;
-					String msg = "";
-					for (int i = 0; i < ChatColor.values().length; i++) {
-						color = ChatColor.getByCode(i).name();
-						if (msg.length() == 0) {
-							msg = ChatColor.valueOf(color)+color.toLowerCase().replace("_", "")+' ';
-							continue;
-						}
-						msg += (i == ChatColor.values().length-1) ? ChatColor.valueOf(color)+color.toLowerCase().replace("_", "") : ChatColor.valueOf(color)+color.toLowerCase().replace("_", "")+' ';
-						TextWrapper.wrapText(msg);
-					}
-					sender.sendMessage(msg);
-					return true;
-				}
 				if (args.length == 1) {
-						String player = args[0];
-						if (ColorMeActions.hasColor(player)) {
-							// Player has color, remove it
-							ColorMeActions.removeColor(player);
-							if (plugin.getServer().getPlayer(player) != null) {
-								// Player is online, update displayname
-								Player other = plugin.getServer().getPlayer(player);
-								other.setDisplayName(ChatColor.stripColor(other.getDisplayName()));
-								other.sendMessage("Your name color has been removed.");
-								sender.sendMessage("Removed " + other.getName()+ "'s color.");
-								return true;
-							}
-							sender.sendMessage("Removed color from " +player);
+					String player = args[0];
+					if (plugin.hasColor(player)) {
+						// Player has color, remove it
+						plugin.removeColor(player);
+						if (plugin.getServer().getPlayerExact(player) != null) {
+							// Player is online, update displayname
+							Player other = plugin.getServer().getPlayerExact(player);
+							other.setDisplayName(ChatColor.stripColor(other.getDisplayName()));
+							other.sendMessage("Your name color has been removed.");
+							sender.sendMessage("Removed " + other.getName()+ "'s color.");
 							return true;
 						}
-						sender.sendMessage(player + " doesn't have a colored name.");
+						sender.sendMessage("Removed color from " + player);
 						return true;
+					}
+					sender.sendMessage(player + " doesn't have a colored name.");
+					return true;
 				}
 				if (args.length > 1) {
 					String player = args[0];
 					String newColor = args[1];
-					if (ColorMeActions.setColor(player, newColor)) {
-						String color = ColorMeActions.findColor(newColor);
-						if (plugin.getServer().getPlayer(player) != null) {
+					if (plugin.setColor(player, newColor)) {
+						String color = plugin.findColor(newColor);
+						if (plugin.getServer().getPlayerExact(player) != null) {
 							// Player is online, change their displayname immediately
-							Player other = plugin.getServer().getPlayer(player);
+							Player other = plugin.getServer().getPlayerExact(player);
 							other.setDisplayName(ChatColor.valueOf(color) + ChatColor.stripColor(other.getDisplayName()) + ChatColor.WHITE);
 							other.sendMessage("Your name color has been changed to " + newColor);
 							sender.sendMessage("Changed " + other.getName()+ "'s color to: " + newColor);
@@ -192,15 +175,22 @@ public class ColorMeCommands {
 						return true;
 					}
 					else {
-						sender.sendMessage("'" + newColor + "' is not a supported color.");
-						return true;
+						// If the colors are the same
+						if (newColor.equalsIgnoreCase(plugin.getColor(player))) {
+							sender.sendMessage(player + " already has got this color!");
+							return true;
+						}
+						// Othwise tell that the color isn't okay!
+						else {
+							sender.sendMessage("'" + newColor + "' is not a supported color.");
+							return true;
+						}
 					}
 				}
 			}
 		}
-	return false;
-}
-
+		return false;
+	}
 
 	//Reloads the config with /colorme reload
 	private boolean ColorMeReload(CommandSender sender, String[] args) {
@@ -209,5 +199,4 @@ public class ColorMeCommands {
 		sender.sendMessage(ChatColor.DARK_GREEN + "ColorMe version " + ChatColor.DARK_RED + pdfFile.getVersion() + ChatColor.DARK_GREEN + " reloaded!");
 		return true;
 	}
-
 }

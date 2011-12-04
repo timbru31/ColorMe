@@ -6,23 +6,24 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 
 public class ColorMePlayerListener extends PlayerListener {
-    ColorMe plugin;
-    public ColorMePlayerListener(ColorMe instance) {
-        instance = plugin;
-    }
-    
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-        //Property cf = plugin.colors.get(player.getWorld());
-        
-        //if (!cf.keyExists(name)) cf.setString(name, "");
-        if (!ColorMe.colors.contains(name)) ColorMe.colors.set(name, "");
-        
-        if (ColorMeActions.hasColor(name)) {
-            player.setDisplayName(ChatColor.valueOf(ColorMeActions.findColor(ColorMe.colors.getString(name))) 
-            + ChatColor.stripColor(player.getDisplayName())
-            + ChatColor.WHITE);
-        }
-    }
+	protected ColorMe plugin;
+	public ColorMePlayerListener(ColorMe plugin) {
+		this.plugin = plugin;
+	}
+
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+		String name = player.getName().toLowerCase();
+		// If the player isn't in the players_color.yml add him
+		if (!this.plugin.colors.contains(name)) {
+			plugin.colors.set(name, "");
+			plugin.saveColors();
+		}
+		// If he as a color change the displayname
+		if (this.plugin.hasColor(name)) {
+			player.setDisplayName(ChatColor.valueOf(this.plugin.findColor(this.plugin.colors.getString(name)))
+					+ ChatColor.stripColor(player.getDisplayName())
+					+ ChatColor.WHITE);
+		}
+	}
 }
