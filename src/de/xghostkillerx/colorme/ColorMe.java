@@ -25,7 +25,7 @@ import net.milkbowl.vault.economy.Economy;
 
 /**
  * ColorMe for CraftBukkit/Bukkit
- * Handles some general stuff!
+ * Handles some general stuff.
  * 
  * Refer to the forum thread:
  * 
