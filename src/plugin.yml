@@ -26,12 +26,7 @@ permissions:
         description: Allows all commands
 commands:
     colorme:
-        aliases: color
+        usage: /colorme help - to see the help
+        aliases: [color]
         description: Give player name a color
-        usage: |
-               <> = Required
-               /<command> list - Shows list of colors
-               /<command> <name> - Remove color
-               /<command> <color> - Set your own color
-               /<command> <name> <color> - Set player's color
 softdepend: [Vault]

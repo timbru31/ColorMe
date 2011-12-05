@@ -15,169 +15,287 @@ public class ColorMeCommands {
 
 
 	// /color <color/name> [name] (name is optional since you can color your own name)
-	// TODO rewrite den ganze scheiß^^
 	public boolean ColorMeCommand (CommandSender sender, Command command, String commandLabel, String[] args) {
 		if ((command.getName().equalsIgnoreCase("colorme")) || (command.getName().equalsIgnoreCase("color"))) {
 			// reload
-			if (args.length > 0 && args[0].equals("reload")) {
+			if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
 				if (sender.hasPermission("colorme.reload")) {
 					ColorMeReload(sender, args);
 					return true;
 				}
 				else {
-					sender.sendMessage(ChatColor.DARK_RED + "You don't have the permission to do this!");
+					sender.sendMessage(ChatColor.RED + "You don't have the permission to do this!");
 					return true;
 				}
 			}
+			// Returns the color list
 			if (args.length > 0 && args[0].equals("list")) {
 				if (sender.hasPermission("colorme.list")) {
 					plugin.list(sender);
 					return true;
 				}
 				else {
-					sender.sendMessage(ChatColor.DARK_RED + "You don't have the permission to do this!");
+					sender.sendMessage(ChatColor.RED + "You don't have the permission to view the list!");
 					return true;
 				}
+			}
+			// Displays the help
+			if (args.length > 0 && args[0].equals("help")) {
+					ColorMeHelp(sender, args);
+					return true;
 			}
 			// Only if a player is the sender
-			if (sender instanceof Player && args.length >=1) {
-				//Player player = ((Player) sender);
-				//				switch(args.length) {
-				//				case 1:
-				//					if (plugin.hasColor(a0) && (player.hasPermission("colorme.remove") || plugin.self(player, a0))) {
-				//						plugin.removeColor(a0);
-				//						if (plugin.getServer().getPlayer(a0) != null) {
-				//							// Update displayname
-				//							Player other = plugin.getServer().getPlayer(a0);
-				//							other.setDisplayName(ChatColor.stripColor(other.getDisplayName()));
-				//							other.sendMessage(ChatColor.GREEN+"Your name color has been removed.");
-				//							if (other != sender) sender.sendMessage(ChatColor.GREEN+"Removed "+other.getName()+"'s color.");
-				//							return true;
-				//						}
-				//						sender.sendMessage((plugin.self(player, a0)) ? ChatColor.GREEN+"Removed your color." : ChatColor.GREEN+"Removed color from"+a0+'.');
-				//						return true;
-				//					}
-				//					if (!plugin.hasColor(a0) && plugin.colors.contains(a0)) return true; // Trying to remove a color from a color-less player
-				//					if (player.hasPermission("colorme.self")) {
-				//						String color = plugin.findColor(a0);
-				//						if (color.equals(a0)) {
-				//							player.sendMessage(ChatColor.GREEN+"'"+a0+"' is not a supported color.");
-				//							return true;
-				//						}
-				//						if (plugin.economy != null) {
-				//							double cost = plugin.config.getDouble("cost");
-				//							if (cost>0 && plugin.economy.has(player.getName(), cost)) {
-				//								plugin.economy.withdrawPlayer(player.getName(), cost);
-				//								plugin.setColor(player.getName(), a0);
-				//								player.sendMessage(ChatColor.GREEN+"You have been charged "+ChatColor.RED+plugin.economy.format(cost)+ChatColor.GREEN+'.');
-				//								player.setDisplayName(ChatColor.valueOf(color)+ChatColor.stripColor(player.getDisplayName())+ChatColor.WHITE);
-				//							} else if (cost>0 && plugin.economy.getBalance(player.getName()) < cost) {
-				//								player.sendMessage(ChatColor.GREEN+"It costs "+ChatColor.GREEN+plugin.economy.format(cost)+ChatColor.GREEN+" to color your name.");
-				//							}
-				//						} else {
-				//							plugin.setColor(player.getName(), a0);
-				//							player.setDisplayName(ChatColor.valueOf(color)+ChatColor.stripColor(player.getDisplayName())+ChatColor.WHITE);
-				//							player.sendMessage(ChatColor.GREEN+"Your name color is now: "+ChatColor.valueOf(color)+a0);
-				//						}
-				//						return true;
-				//					} else if (!player.hasPermission("colorme.self")) {
-				//						player.sendMessage(ChatColor.GREEN+"You don't have permission to color your own name.");
-				//						return true;
-				//					}
-				//					break;
-				//				case 2:
-				//					String a1 = args[1];
-				//					String color = plugin.findColor(a1);
-				//					if (color.equals(a1)) {
-				//						player.sendMessage(ChatColor.GREEN+"'"+a1+"' is not a supported color.");
-				//						return true;
-				//					}
-				//					if (plugin.self(player, a0) && player.hasPermission("colorme.self")) {
-				//						// Coloring self
-				//						if (plugin.economy != null) {
-				//							// iConomy enabled
-				//							double cost = plugin.config.getDouble("cost");
-				//							if (cost>0 && plugin.economy.getBalance(player.getName()) >= cost) {
-				//								// Player can afford to color their name
-				//								plugin.economy.withdrawPlayer(player.getName(), cost);
-				//								plugin.setColor(player.getName(), a1);
-				//								player.sendMessage(ChatColor.GREEN+"You have been charged "+ChatColor.RED+plugin.economy.format(cost)+ChatColor.GREEN+'.');
-				//								player.setDisplayName(ChatColor.valueOf(color)+ChatColor.stripColor(player.getDisplayName())+ChatColor.WHITE);
-				//							} else if (cost>0 && plugin.economy.getBalance(player.getName()) < cost) {
-				//								// Player can't afford to color their name
-				//								player.sendMessage(ChatColor.GREEN+"It costs "+ChatColor.RED+plugin.economy.format(cost)+ChatColor.GREEN+" to color your name.");
-				//							} else if (0 == cost) {
-				//								// No cost, color own name
-				//								plugin.setColor(player.getName(), a1);
-				//								player.setDisplayName(ChatColor.valueOf(color)+ChatColor.stripColor(player.getDisplayName())+ChatColor.WHITE);
-				//								player.sendMessage(ChatColor.GREEN+"Changed your name's color to: "+ChatColor.valueOf(color)+a1);
-				//							}
-				//							return true;
-				//						} else {
-				//							// iConomy NOT enabled
-				//							plugin.setColor(player.getName(), a1);
-				//							player.setDisplayName(ChatColor.valueOf(color)+ChatColor.stripColor(player.getDisplayName())+ChatColor.WHITE);
-				//							player.sendMessage(ChatColor.GREEN+"Changed your name's color to: "+ChatColor.valueOf(color)+a1);
-				//							return true;
-				//						}
-				//					} else if (!plugin.self(player, a0) && player.hasPermission("colorme.other")) {
-				//						// Coloring someone else
-				//						plugin.setColor(a0, a1);
-				//						if (plugin.getServer().getPlayer(a0) != null) {
-				//							Player other = plugin.getServer().getPlayer(a0);
-				//							other.setDisplayName(ChatColor.valueOf(color)+ChatColor.stripColor(player.getDisplayName())+ChatColor.WHITE);
-				//							player.sendMessage(ChatColor.GREEN+"Changed "+other.getName()+"'s color to: "+ChatColor.valueOf(color)+a1);
-				//							return true;
-				//						}
-				//						player.sendMessage(ChatColor.GREEN+"Changed "+a0+"'s color to: "+ChatColor.valueOf(color)+a1);
-				//						return true;
-				//					} else {
-				//						player.sendMessage(ChatColor.GREEN+"You don't have permission to color "+(plugin.self(player, a0) ? "your own" : "another player's")+" name.");
-				//						return true;
-				//					}
-				//				default: return false;
-				//				}
-			}
-			else if (sender instanceof ConsoleCommandSender) {
+			if (sender instanceof Player) {
+				// The sender (in this case the player)
+				Player player = (Player) sender;
+				// Only one argument (color or name)
 				if (args.length == 1) {
-					String player = args[0];
-					if (plugin.hasColor(player)) {
-						// Player has color, remove it
-						plugin.removeColor(player);
-						if (plugin.getServer().getPlayerExact(player) != null) {
-							// Player is online, update displayname
-							Player other = plugin.getServer().getPlayerExact(player);
-							other.setDisplayName(ChatColor.stripColor(other.getDisplayName()));
-							other.sendMessage("Your name color has been removed.");
-							sender.sendMessage("Removed " + other.getName()+ "'s color.");
+					String target = args[0];
+					String newColor = target;
+					// Remove own color or from another player with a permission
+					if (plugin.hasColor(target) && (player.hasPermission("colorme.remove") || plugin.self(player, target))) {
+						plugin.removeColor(target);
+						if (plugin.getServer().getPlayerExact(target) != null) {
+							// Update displayname if online
+							Player affected = plugin.getServer().getPlayerExact(target);
+							affected.setDisplayName(ChatColor.stripColor(affected.getDisplayName()));
+							affected.sendMessage(ChatColor.GREEN + "Your name color has been removed.");
+							if (affected != sender) {
+								player.sendMessage(ChatColor.GREEN + "Removed "+ affected.getName() + "'s color.");
+								return true;
+							}
 							return true;
 						}
-						sender.sendMessage("Removed color from " + player);
+						// If player is offline remove it from the config.
+						player.sendMessage(ChatColor.GREEN + "Removed "+ target + "'s color.");
 						return true;
 					}
-					sender.sendMessage(player + " doesn't have a colored name.");
-					return true;
-				}
-				if (args.length > 1) {
-					String player = args[0];
-					String newColor = args[1];
-					if (plugin.setColor(player, newColor)) {
+					// Trying to remove a color from a color-less player
+					if (!plugin.hasColor(target) && plugin.colors.contains(target)) {
+						player.sendMessage(ChatColor.GREEN + target + " doesn't have a colored name.");
+						return true;
+					}
+					// Return if player hasn't got the permission
+					else if (!player.hasPermission("colorme.remove")) {
+						player.sendMessage(ChatColor.RED + "You don't have permission to remove colors from others!");
+						return true;
+					}
+					// Coloring self
+					if (player.hasPermission("colorme.self")) {
 						String color = plugin.findColor(newColor);
-						if (plugin.getServer().getPlayerExact(player) != null) {
-							// Player is online, change their displayname immediately
-							Player other = plugin.getServer().getPlayerExact(player);
-							other.setDisplayName(ChatColor.valueOf(color) + ChatColor.stripColor(other.getDisplayName()) + ChatColor.WHITE);
-							other.sendMessage("Your name color has been changed to " + newColor);
-							sender.sendMessage("Changed " + other.getName()+ "'s color to: " + newColor);
+						if (color.equals(newColor)) {
+							player.sendMessage(ChatColor.GREEN + "'" + newColor + "' is not a supported color.");
 							return true;
 						}
-						sender.sendMessage("Changed " + player + "'s color to: " + newColor);
+						// If the colors are the same
+						if (newColor.equalsIgnoreCase(plugin.getColor(player.getName().toString()))) {
+							player.sendMessage(ChatColor.GREEN + "You already have got this color!");
+							return true;
+						}
+						// If Vault (economy) is enabled
+						if (plugin.economy != null) {
+							double cost = plugin.config.getDouble("cost");
+							// Charge costs :)
+							if (cost >0 && plugin.economy.has(player.getName(), cost)) {
+								plugin.economy.withdrawPlayer(player.getName(), cost);
+								plugin.setColor(player.getName(), newColor);
+								player.sendMessage(ChatColor.GREEN + "You have been charged " + ChatColor.RED + plugin.economy.format(cost) + ChatColor.GREEN + '.');
+								player.sendMessage(ChatColor.GREEN + "Changed your name's color to: " + ChatColor.valueOf(color) + newColor);
+								player.setDisplayName(ChatColor.valueOf(color) + ChatColor.stripColor(player.getDisplayName()) + ChatColor.WHITE);
+								return true;
+							}
+							// If player hasn't got enough money
+							else if (cost >0 && plugin.economy.getBalance(player.getName()) < cost) {
+								player.sendMessage(ChatColor.GREEN + "It costs " + ChatColor.GREEN + plugin.economy.format(cost) + ChatColor.GREEN + " to color your name.");
+								return true;
+							}
+							// If it's for free
+							else if (cost == 0) {
+								plugin.setColor(player.getName(), newColor);
+								player.setDisplayName(ChatColor.valueOf(color) + ChatColor.stripColor(player.getDisplayName()) + ChatColor.WHITE);
+								player.sendMessage(ChatColor.GREEN + "Changed your name's color to: " + ChatColor.valueOf(color) + newColor);
+								return true;
+							}
+						}
+						// Wihtout economy
+						else {
+							plugin.setColor(player.getName(), newColor);
+							player.setDisplayName(ChatColor.valueOf(color) + ChatColor.stripColor(player.getDisplayName()) + ChatColor.WHITE);
+							player.sendMessage(ChatColor.GREEN + "Changed your name's color to: " + ChatColor.valueOf(color) + newColor);
+							return true;
+						}
+					}
+					// Deny access without permisison
+					else if (!player.hasPermission("colorme.self")) {
+						player.sendMessage(ChatColor.RED + "You don't have permission to color your own name.");
+						return true;
+					}
+				}
+				// If a player name and color are sent
+				if (args.length > 1) {
+					// If it equals remove
+					if (args[0].equalsIgnoreCase("remove")) {
+						String target = args[1];
+						// If the player got the permission or is self
+						if (plugin.hasColor(target) && (player.hasPermission("colorme.remove") || plugin.self(player, target))) {
+							// Trying to remove a color from a color-less player
+							if (!plugin.hasColor(target) && plugin.colors.contains(target)) {
+								player.sendMessage(ChatColor.GREEN + target + " doesn't have a colored name.");
+								return true;
+							}
+							plugin.removeColor(target);
+							if (plugin.getServer().getPlayerExact(target) != null) {
+								// Update displayname if online
+								Player affected = plugin.getServer().getPlayerExact(target);
+								affected.setDisplayName(ChatColor.stripColor(affected.getDisplayName()));
+								affected.sendMessage(ChatColor.GREEN + "Your name color has been removed.");
+								if (affected != sender) {
+									player.sendMessage(ChatColor.GREEN + "Removed "+ affected.getName() + "'s color.");
+									return true;
+								}
+								return true;
+							}
+							// If player is offline remove it from the config.
+							player.sendMessage(ChatColor.GREEN + "Removed "+ target + "'s color.");
+							return true;
+						}
+					}
+					String target = args[0];
+					String newColor = args[1];
+					String color = plugin.findColor(newColor);
+					// Return if color is not suitable
+					if (color.equals(newColor)) {
+						player.sendMessage(ChatColor.GREEN + "'" + newColor + "' is not a supported color.");
+						return true;
+					}
+					// If the colors are the same
+					if (newColor.equalsIgnoreCase(plugin.getColor(target))) {
+						player.sendMessage(ChatColor.GREEN + target + " already has got this color!");
+						return true;
+					}
+					// Coloring self with own name as argument
+					if (plugin.self(player, target) && player.hasPermission("colorme.self")) {
+						// Vault (economy) enabled
+						if (plugin.economy != null) {
+							double cost = plugin.config.getDouble("cost");
+							// Player can afford to color their name
+							if (cost > 0 && plugin.economy.getBalance(player.getName()) >= cost) {
+								plugin.economy.withdrawPlayer(player.getName(), cost);
+								plugin.setColor(player.getName(), newColor);
+								player.sendMessage(ChatColor.GREEN + "You have been charged " + ChatColor.RED + plugin.economy.format(cost) + ChatColor.GREEN + '.');
+								player.sendMessage(ChatColor.GREEN + "Changed your name's color to: " + ChatColor.valueOf(color) + newColor);
+								player.setDisplayName(ChatColor.valueOf(color) + ChatColor.stripColor(player.getDisplayName()) + ChatColor.WHITE);
+								return true;
+							}
+							// Player can't afford to color their name
+							else if (cost >0 && plugin.economy.getBalance(player.getName()) < cost) {
+								player.sendMessage(ChatColor.GREEN + "It costs " + ChatColor.RED  +plugin.economy.format(cost) + ChatColor.GREEN + " to color your name.");
+								return true;
+							}
+							// No costs, color own name
+							else if (cost == 0) {
+								plugin.setColor(player.getName(), newColor);
+								player.setDisplayName(ChatColor.valueOf(color) + ChatColor.stripColor(player.getDisplayName()) + ChatColor.WHITE);
+								player.sendMessage(ChatColor.GREEN + "Changed your name's color to: " + ChatColor.valueOf(color) + newColor);
+								return true;
+							}
+						}
+						// Without economy
+						else {
+							plugin.setColor(player.getName(), newColor);
+							player.setDisplayName(ChatColor.valueOf(color) + ChatColor.stripColor(player.getDisplayName()) + ChatColor.WHITE);
+							player.sendMessage(ChatColor.GREEN + "Changed your name's color to: " + ChatColor.valueOf(color) + newColor);
+							return true;
+						}
+					}
+					// Coloring someone else
+					if (!plugin.self(player, target) && player.hasPermission("colorme.other")) {
+						plugin.setColor(target, newColor);
+						// Sets the display name if online
+						if (plugin.getServer().getPlayerExact(target) != null) {
+							Player affected = plugin.getServer().getPlayerExact(target);
+							affected.setDisplayName(ChatColor.valueOf(color) + ChatColor.stripColor(player.getDisplayName()) + ChatColor.WHITE);
+							player.sendMessage(ChatColor.GREEN + "Changed " + affected.getName() + "'s color to: "+ ChatColor.valueOf(color) + newColor);
+							return true;
+						}
+						// Else changes the config value only
+						player.sendMessage(ChatColor.GREEN  + "Changed " + target + "'s color to: " + ChatColor.valueOf(color) + newColor);
+						return true;
+					}
+					// Return not enough permission, based on self or other
+					else {
+						player.sendMessage(ChatColor.RED + "You don't have permission to color " + (plugin.self(player, target) ? "your own" : "another player's") + " name.");
+						return true;
+					}
+				}
+			}
+			// Console is a bit different
+			else if (sender instanceof ConsoleCommandSender) {
+				// Only removing
+				if (args.length == 1) {
+					String target = args[0];
+					// Player has color, remove it
+					if (plugin.hasColor(target)) {
+						plugin.removeColor(target);
+						// Player is online, update displayname
+						if (plugin.getServer().getPlayerExact(target) != null) {
+							Player affected = plugin.getServer().getPlayerExact(target);
+							affected.setDisplayName(ChatColor.stripColor(affected.getDisplayName()));
+							affected.sendMessage(ChatColor.GREEN + "Your name color has been removed.");
+							sender.sendMessage("Removed " + affected.getName()+ "'s color.");
+							return true;
+						}
+						// Else change only the config
+						sender.sendMessage("Removed color from " + target);
+						return true;
+					}
+					// Colorless
+					sender.sendMessage(target + " doesn't have a colored name.");
+					return true;
+				}
+				// Color a player
+				if (args.length > 1) {
+					// If it equals remove
+					if (args[0].equalsIgnoreCase("remove")) {
+						String target = args[1];
+						// Trying to remove a color from a color-less player
+						if (!plugin.hasColor(target) && plugin.colors.contains(target)) {
+							sender.sendMessage(target + " doesn't have a colored name.");
+							return true;
+						}
+						plugin.removeColor(target);
+						if (plugin.getServer().getPlayerExact(target) != null) {
+							// Update displayname if online
+							Player affected = plugin.getServer().getPlayerExact(target);
+							affected.setDisplayName(ChatColor.stripColor(affected.getDisplayName()));
+							affected.sendMessage(ChatColor.GREEN + "Your name color has been removed.");
+							sender.sendMessage("Removed "+ affected.getName() + "'s color.");
+							return true;
+						}
+						// If player is offline remove it from the config.
+						sender.sendMessage(ChatColor.GREEN + "Removed "+ target + "'s color.");
+						return true;
+					}
+					String target = args[0];
+					String newColor = args[1];
+					if (plugin.setColor(target, newColor)) {
+						String color = plugin.findColor(newColor);
+						if (plugin.getServer().getPlayerExact(target) != null) {
+							// Player is online, change their displayname immediately
+							Player affected = plugin.getServer().getPlayerExact(target);
+							affected.setDisplayName(ChatColor.valueOf(color) + ChatColor.stripColor(affected.getDisplayName()) + ChatColor.WHITE);
+							affected.sendMessage(ChatColor.GREEN + "Your name color has been changed to " + newColor);
+							sender.sendMessage("Changed " + affected.getName()+ "'s color to: " + newColor);
+							return true;
+						}
+						// Else only config
+						sender.sendMessage("Changed " + target + "'s color to: " + newColor);
 						return true;
 					}
 					else {
 						// If the colors are the same
-						if (newColor.equalsIgnoreCase(plugin.getColor(player))) {
-							sender.sendMessage(player + " already has got this color!");
+						if (newColor.equalsIgnoreCase(plugin.getColor(target))) {
+							sender.sendMessage(target + " already has got this color!");
 							return true;
 						}
 						// Othwise tell that the color isn't okay!
@@ -198,5 +316,20 @@ public class ColorMeCommands {
 		plugin.loadConfigAgain();		
 		sender.sendMessage(ChatColor.DARK_GREEN + "ColorMe version " + ChatColor.DARK_RED + pdfFile.getVersion() + ChatColor.DARK_GREEN + " reloaded!");
 		return true;
+	}
+	
+	// Displays the help with /colorme help
+	private boolean ColorMeHelp(CommandSender sender, String[] args) {
+		PluginDescriptionFile pdfFile = plugin.getDescription();
+		sender.sendMessage(ChatColor.DARK_GREEN	+ "Welcome to the ColorMe version " + ChatColor.DARK_RED + pdfFile.getVersion() + ChatColor.DARK_GREEN + " help!");
+		sender.sendMessage(ChatColor.RED + "<> = Required");
+		sender.sendMessage("/<command> list - Shows list of colors");
+		sender.sendMessage("/<command> <name> - Removes color");
+		sender.sendMessage("/<command> remove <name> - Removes color");
+		sender.sendMessage("/<command> list - Shows list of colors");
+		sender.sendMessage("/<command> <color> - Sets your own color");
+		sender.sendMessage("/<command> <name> <color> - Sets player's color");
+		return true;
+		
 	}
 }
