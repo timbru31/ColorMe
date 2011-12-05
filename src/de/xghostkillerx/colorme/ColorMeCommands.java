@@ -29,7 +29,7 @@ public class ColorMeCommands {
 				}
 			}
 			// Returns the color list
-			if (args.length > 0 && args[0].equals("list")) {
+			if (args.length > 0 && args[0].equalsIgnoreCase("list")) {
 				if (sender.hasPermission("colorme.list")) {
 					plugin.list(sender);
 					return true;
@@ -40,7 +40,7 @@ public class ColorMeCommands {
 				}
 			}
 			// Displays the help
-			if (args.length > 0 && args[0].equals("help")) {
+			if (args.length > 0 && args[0].equalsIgnoreCase("help")) {
 					ColorMeHelp(sender, args);
 					return true;
 			}
