@@ -13,8 +13,7 @@ public class ColorMeCommands {
 		plugin = instance;
 	}
 
-
-	// /color <color/name> [name] (name is optional since you can color your own name)
+	// Commands
 	public boolean ColorMeCommand (CommandSender sender, Command command, String commandLabel, String[] args) {
 		if ((command.getName().equalsIgnoreCase("colorme")) || (command.getName().equalsIgnoreCase("color"))) {
 			// reload

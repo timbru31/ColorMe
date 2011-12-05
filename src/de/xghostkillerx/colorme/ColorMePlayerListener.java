@@ -19,7 +19,7 @@ public class ColorMePlayerListener extends PlayerListener {
 			plugin.colors.set(name, "");
 			plugin.saveColors();
 		}
-		// If he as a color change the displayname
+		// If the player has a color change the displayname
 		if (this.plugin.hasColor(name)) {
 			player.setDisplayName(ChatColor.valueOf(this.plugin.findColor(this.plugin.colors.getString(name)))
 					+ ChatColor.stripColor(player.getDisplayName())
