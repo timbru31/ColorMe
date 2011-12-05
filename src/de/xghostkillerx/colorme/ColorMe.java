@@ -219,8 +219,8 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	//
-	public boolean self(Player player, String n) {
-		return (player.equals(getServer().getPlayerExact(n))) ? true : false;
+	public boolean self(Player player, String name) {
+		return (player.equals(getServer().getPlayerExact(name))) ? true : false;
 	}
 
 	// The list of colors
