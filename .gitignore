@@ -11,3 +11,6 @@
 /Update.jardesc
 
 .gitignore
+.classpath
+.project
+.settings
