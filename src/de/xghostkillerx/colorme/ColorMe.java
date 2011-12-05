@@ -18,7 +18,6 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
 //Economy (Vault)
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
