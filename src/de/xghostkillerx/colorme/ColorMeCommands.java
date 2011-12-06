@@ -7,6 +7,20 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 
+/**
+ * ColorMe for CraftBukkit/Bukkit
+ * Handles the commands. Heart of the plugin!
+ * 
+ * Refer to the forum thread:
+ * http://bit.ly/colormebukkit
+ * Refer to the dev.bukkit.org page:
+ * http://bit.ly/colormebukkitdev 
+ *
+ * @author xGhOsTkiLLeRx
+ * @thanks to Valrix for the original ColorMe plugin!!
+ * 
+ */
+
 public class ColorMeCommands {
 	ColorMe plugin;
 	public ColorMeCommands(ColorMe instance) {
@@ -250,6 +264,5 @@ public class ColorMeCommands {
 		sender.sendMessage("/<command> me <color> - Sets your own color");
 		sender.sendMessage("/<command> <name> <color> - Sets player's color");
 		return true;
-
 	}
 }

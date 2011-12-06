@@ -18,19 +18,21 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-//Economy (Vault)
+// Stats
+import com.randomappdev.pluginstats.Ping;
+// Economy (Vault)
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
-
 
 /**
  * ColorMe for CraftBukkit/Bukkit
  * Handles some general stuff.
+ * And the checks for color etc.
  * 
  * Refer to the forum thread:
- * 
+ * http://bit.ly/colormebukkit
  * Refer to the dev.bukkit.org page:
- * 
+ * http://bit.ly/colormebukkitdev 
  *
  * @author xGhOsTkiLLeRx
  * @thanks to Valrix for the original ColorMe plugin!!
@@ -76,11 +78,6 @@ public class ColorMe extends JavaPlugin {
 		config = this.getConfig();
 		loadConfig();
 		
-        // Push color list into memory for easy access
-        for (ChatColor color : ChatColor.values()) {
-            colors.addDefault(color.toString(), color);
-        }
-
 		// Message
 		PluginDescriptionFile pdfFile = this.getDescription();
 		log.info(pdfFile.getName() + " " + pdfFile.getVersion() + " is enabled!");
@@ -95,11 +92,14 @@ public class ColorMe extends JavaPlugin {
 			// Else tell the admin about the missing of Vault
 			log.warning(String.format("Vault was NOT found! Running without economy!"));
 		}
+		
+		// Stats
+		Ping.init(this);
 	}
 
 	// Loads the config at the start
 	public void loadConfig() {
-		config.options().header("For help please refer to  or ");
+		config.options().header("For help please refer to http://bit.ly/colormebukkit or http://bit.ly/colormebukkitdev ");
 		config.addDefault("costs", 0);
 		config.options().copyDefaults(true);
 		saveConfig();
