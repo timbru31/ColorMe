@@ -1,7 +1,7 @@
 name: ColorMe
 main: de.xghostkillerx.colorme.ColorMe
 version: 3.0
-author: xGhosTkiLLeRx
+author: xGhOsTkiLLeRx
 authors: [Valrix]
 description: Sets custom color to player's name
 commands:

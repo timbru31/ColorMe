@@ -45,7 +45,7 @@ Description: Removes color (no name -> yourself)
 Node: colorme.get
 Description: Gets actual color (no name -> yourself)
 
-/color me
+/color me <color>
 Node: colorme.self
 Description: Sets your own color
 
