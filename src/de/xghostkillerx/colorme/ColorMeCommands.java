@@ -175,6 +175,7 @@ public class ColorMeCommands {
 						return true;
 					}
 					sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.GREEN + " have got the color " + ChatColor.YELLOW + actualColor);
+					return true;
 				}
 			}
 			// Self coloring
