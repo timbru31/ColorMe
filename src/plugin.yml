@@ -4,9 +4,14 @@ version: 3.0
 author: xGhosTkiLLeRx
 authors: [Valrix]
 description: Sets custom color to player's name
+commands:
+    color:
+        usage: /color help - to see the help
+        aliases: [colorme]
+        description: Gives the player name a color
 permissions:
     colorme.list:
-        default: op
+        default: true
         description: Allows player to see list of color codes
     colorme.self:
         default: op
@@ -24,9 +29,4 @@ permissions:
             colorme.other: true
             colorme.remove: true
         description: Allows all commands
-commands:
-    colorme:
-        usage: /colorme help - to see the help
-        aliases: [color]
-        description: Give player name a color
 softdepend: [Vault]

@@ -54,10 +54,10 @@ public class ColorMe extends JavaPlugin {
 
 	// Start
 	public void onEnable() {
-
 		// Events
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Event.Priority.Normal, this);
+		pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Event.Priority.Normal, this);
 
 		// Player colors config
 		colorsFile = new File(getDataFolder(), "players.color");
@@ -75,6 +75,11 @@ public class ColorMe extends JavaPlugin {
 		}
 		config = this.getConfig();
 		loadConfig();
+		
+        // Push color list into memory for easy access
+        for (ChatColor color : ChatColor.values()) {
+            colors.addDefault(color.toString(), color);
+        }
 
 		// Message
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -162,11 +167,11 @@ public class ColorMe extends JavaPlugin {
 	public String getColor(String name) {
 		return (colors.contains(name.toLowerCase())) ? colors.getString(name.toLowerCase()) : "";
 	}
-
-	// Set player's color and update displayname if online
-	public boolean setColor(String name, String color) {
-		String oldColor = getColor(name);
-		String newColor = findColor(color);
+	
+    // Set player's color and update displayname if online
+    public boolean setColor(String name, String color) {
+    	String oldColor = getColor(name);
+        String newColor = findColor(color); 
 		// If the colors are the same return false
 		if (oldColor.equalsIgnoreCase(newColor)) {
 			return false;
@@ -175,27 +180,26 @@ public class ColorMe extends JavaPlugin {
 		if (newColor.equals(color)) {
 			return false;
 		}
-		// Update the displayname to the new color
-		else {
-			colors.set(name.toLowerCase(), newColor);
-			saveColors();
-			if (getServer().getPlayerExact(name) != null) {
-				Player player = getServer().getPlayerExact(name);
-				player.setDisplayName(ChatColor.valueOf(newColor) + ChatColor.stripColor(player.getDisplayName()) + ChatColor.WHITE);
-			}
-			return true;
-		}
-	}
+        colors.set(name, newColor);
+        saveColors();
+        if (getServer().getPlayerExact(name) != null) {
+            Player player =getServer().getPlayerExact(name);
+            player.setDisplayName(ChatColor.valueOf(newColor) + ChatColor.stripColor(player.getDisplayName()) + ChatColor.WHITE);
+        }
+        return true;
+    }
 
 	// Iterate through colors to try and find a match (resource expensive)
-	public String findColor(String color) {
-		String col;
-		for (int i = 0; i <= 15; i++) {
-			col = ChatColor.getByCode(i).name();
-			if (color.equalsIgnoreCase(col.toLowerCase().replace("_", ""))) return col;
-		}
-		return color;
-	}
+    public String findColor(String color) {
+        byte i = 0;
+        while (i < 16) {
+            if (color.equalsIgnoreCase(ChatColor.getByCode(i).name().toLowerCase().replace("_", ""))) {
+                return ChatColor.getByCode(i).name();
+            }
+            i++;
+        }
+        return color;
+    }
 
 	// Check if a player has a color or not
 	public boolean hasColor(String name) {
@@ -216,25 +220,30 @@ public class ColorMe extends JavaPlugin {
 		return false;
 	}
 
-	//
-	public boolean self(Player player, String name) {
-		return (player.equals(getServer().getPlayerExact(name))) ? true : false;
+	// Checks if the player is itself
+	public boolean self(CommandSender sender, String name) {
+		return (sender.equals(getServer().getPlayerExact(name))) ? true : false;
 	}
 
 	// The list of colors
-	public void list(CommandSender sender) {
-		sender.sendMessage("Color List:");
-		String color;
-		String msg = "";
-		for (int i = 0; i < ChatColor.values().length; i++) {
-			color = ChatColor.getByCode(i).name();
-			if (msg.length() == 0) {
-				msg = ChatColor.valueOf(color) + color.toLowerCase().replace("_", "")+' ';
-				continue;
-			}
-			msg += (i == ChatColor.values().length-1) ? ChatColor.valueOf(color)+color.toLowerCase().replace("_", "") : ChatColor.valueOf(color)+color.toLowerCase().replace("_", "")+' ';
-			TextWrapper.wrapText(msg);
-		}
-		sender.sendMessage(msg);
-	}
+    public void list (CommandSender sender) {
+        sender.sendMessage("Color List:");     
+        String color;
+        String clc;
+        String msg = "";
+        byte i = 0;
+        while (i < 16) {
+            color = ChatColor.getByCode(i).name();
+            clc = color.toLowerCase();
+            if (msg.length() < 1) {
+                msg = ChatColor.valueOf(color) + clc.replace("_", "") + ' ';
+                i++;
+                continue;
+            }
+            msg += (i < 10) ? ChatColor.valueOf(color) + clc.replace("_", "") : ChatColor.valueOf(color) + clc.replace("_", "") + ' ';
+            TextWrapper.wrapText(msg);
+            i++;
+        }
+       sender.sendMessage(msg);
+    }
 }
