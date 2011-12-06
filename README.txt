@@ -14,7 +14,7 @@ Thanks for using!
 This plugin sends usage statistics! If you wish to disable the usage stats, look at plugins/PluginStats/config.yml!
 This plugin is released under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)
 
-This plugin supports economy! Requiered is Vault, if you want to use economy!
+This plugin supports economy! Required is Vault, if you want to use economy!
 
 Standard config:
 
@@ -24,7 +24,7 @@ costs: 5.00
 Commands & Permissions (if no permissions system is detected, only OPs are able to use the commands!)
 Only bukkit's permissions system is supported!
 
-<> = Requiered, [] = Optional
+<> = Required, [] = Optional
 
 /color reload
 Node: colorme.reload

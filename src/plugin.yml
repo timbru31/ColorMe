@@ -21,7 +21,7 @@ permissions:
         description: Allows setting of other player's color
     colorme.remove:
         default: op
-        description: Allows removal of other player's color
+        description: Removes color
     colorme.*:
         children:
             colorme.list: true

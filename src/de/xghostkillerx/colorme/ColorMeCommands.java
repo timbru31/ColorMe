@@ -27,10 +27,10 @@ public class ColorMeCommands {
 		plugin = instance;
 	}
 
-	// Commands
+	// Commands (primary use /color <args>
 	public boolean ColorMeCommand (CommandSender sender, Command command, String commandLabel, String[] args) {
 		if ((command.getName().equalsIgnoreCase("colorme")) || (command.getName().equalsIgnoreCase("color"))) {
-			// reload
+			// Reloads the configs
 			if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
 				if (sender.hasPermission("colorme.reload")) {
 					ColorMeReload(sender, args);
@@ -136,6 +136,7 @@ public class ColorMeCommands {
 						sender.sendMessage(ChatColor.RED + "Sorry, this command can only be run from ingame!");
 						return true;
 					}
+					// Color is invalid
 					if (color.equals(newColor)) {
 						sender.sendMessage(ChatColor.RED + "'" + ChatColor.YELLOW +newColor + ChatColor.RED +"' is not a supported color.");
 						return true;
@@ -145,6 +146,7 @@ public class ColorMeCommands {
 						sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.RED + " already have got this color");
 						return true;
 					}
+					// With economy
 					if (plugin.economy != null) {
 						double cost = plugin.config.getDouble("costs");
 						// Charge costs :)
@@ -174,6 +176,7 @@ public class ColorMeCommands {
 							return true;
 						}
 					}
+					// No economy
 					else {
 						if (plugin.setColor(senderName, newColor)) {
 							if (plugin.getServer().getPlayerExact(senderName) != null) {
@@ -245,7 +248,7 @@ public class ColorMeCommands {
 		return false;
 	}
 
-	//Reloads the config with /colorme reload
+	// Reloads the config with /colorme reload
 	private boolean ColorMeReload(CommandSender sender, String[] args) {
 		PluginDescriptionFile pdfFile = plugin.getDescription();
 		plugin.loadConfigAgain();		
