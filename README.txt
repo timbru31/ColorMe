@@ -35,15 +35,18 @@ Node: colorme.list
 Description: Displays the color list
 
 /color help
-Node: colorme.help
 Description: Displays the help
 
 /color remove [name]
-Node: cookme.remove
+Node: colorme.remove
 Description: Removes color (no name -> yourself)
 
+/color get [name]
+Node: colorme.get
+Description: Gets actual color (no name -> yourself)
+
 /color me
-Node: cookme.self
+Node: colorme.self
 Description: Sets your own color
 
 /color <name> <color>

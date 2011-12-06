@@ -125,6 +125,58 @@ public class ColorMeCommands {
 					}
 				}
 			}
+			// Gets a color
+			if (args.length > 1 && args[0].equalsIgnoreCase("get")) {
+				// If a player name is there, too
+				String target = args[1].toLowerCase();
+				String senderName = sender.getName().toLowerCase();
+				String actualColor = plugin.getColor(target).toLowerCase();
+				// Check for permission or self
+				if (sender.hasPermission("colorme.get") || plugin.self(sender, target)) {
+					// Trying to get a color from a color-less player
+					if (((!plugin.hasColor(target) && plugin.colors.contains(target))) || !plugin.colors.contains(target)) {
+						// Self
+						if (target.equalsIgnoreCase(senderName)) {
+							sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.RED + " don't have a colored name.");
+							return true;
+						}
+						// Other
+						sender.sendMessage(ChatColor.YELLOW + target + ChatColor.RED + " doesn't have a colored name.");
+						return true;
+					}
+					// Gets color
+					if (target.equalsIgnoreCase(senderName)) {
+						sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.GREEN + " have got the color " + ChatColor.YELLOW + actualColor);
+						return true;
+					}
+					sender.sendMessage(ChatColor.YELLOW + target + ChatColor.GREEN + " has got the color " + ChatColor.YELLOW + actualColor);
+					return true;
+				}
+				// Deny access
+				else {
+					sender.sendMessage(ChatColor.RED + "You don't have the permission to get colors!");
+					return true;
+				}
+			}
+			// If it's only the player itself
+			if (args.length == 1 && args[0].equalsIgnoreCase("get")) {
+				String senderName = sender.getName().toLowerCase();
+				String actualColor = plugin.getColor(senderName).toLowerCase();
+				// Tell console to include a name
+				if (sender instanceof ConsoleCommandSender) {
+					sender.sendMessage(ChatColor.RED + "You don't have a colored name!");
+					return true;
+				}
+				// Self removal is okay that way
+				else if (plugin.self(sender, senderName)) {
+					// Check for no color
+					if (((!plugin.hasColor(senderName) && plugin.colors.contains(senderName))) || !plugin.colors.contains(senderName)) {
+						sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.RED + " don't have a colored name.");
+						return true;
+					}
+					sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.GREEN + " have got the color " + ChatColor.YELLOW + actualColor);
+				}
+			}
 			// Self coloring
 			if (args.length > 1 && args[0].equalsIgnoreCase("me")) {		
 				if (sender.hasPermission("colorme.self")) {
@@ -263,6 +315,7 @@ public class ColorMeCommands {
 		sender.sendMessage(ChatColor.RED + "<> = Required, [] = Optional");
 		sender.sendMessage("</command> help - Shows the help");
 		sender.sendMessage("/<command> list - Shows list of colors");
+		sender.sendMessage("/<command> get [name] - Gets the actual color");
 		sender.sendMessage("/<command> remove [name] - Removes color");
 		sender.sendMessage("/<command> me <color> - Sets your own color");
 		sender.sendMessage("/<command> <name> <color> - Sets player's color");

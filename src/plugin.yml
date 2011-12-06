@@ -22,11 +22,15 @@ permissions:
     colorme.remove:
         default: op
         description: Removes color
+    colorme.get:
+        default: op
+        description: Gets actual color
     colorme.*:
         children:
             colorme.list: true
             colorme.self: true
             colorme.other: true
             colorme.remove: true
+            colorme.get: true
         description: Allows all commands
 softdepend: [Vault]
