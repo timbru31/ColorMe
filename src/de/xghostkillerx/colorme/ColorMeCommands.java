@@ -164,7 +164,7 @@ public class ColorMeCommands {
 				String actualColor = plugin.getColor(senderName).toLowerCase();
 				// Tell console to include a name
 				if (sender instanceof ConsoleCommandSender) {
-					sender.sendMessage(ChatColor.RED + "You don't have a colored name!");
+					sender.sendMessage(ChatColor.RED + "The conole can't have a color!");
 					return true;
 				}
 				// Self removal is okay that way

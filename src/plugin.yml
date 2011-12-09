@@ -3,6 +3,8 @@ main: de.xghostkillerx.colorme.ColorMe
 version: 3.0
 author: xGhOsTkiLLeRx
 authors: [Valrix]
+website: http://bit.ly/colormebukkitdev
+website: http://bit.ly/colormebukkit
 description: Sets custom color to player's name
 commands:
     color:

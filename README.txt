@@ -18,7 +18,7 @@ This plugin supports economy! Required is Vault, if you want to use economy!
 
 Standard config:
 
-# For help please refer to http://bit.ly/colormebukkitd or http://bit.ly/colormebukkitdev
+# For help please refer to http://bit.ly/colormebukkit or http://bit.ly/colormebukkitdev
 costs: 5.00
 
 Commands & Permissions (if no permissions system is detected, only OPs are able to use the commands!)
