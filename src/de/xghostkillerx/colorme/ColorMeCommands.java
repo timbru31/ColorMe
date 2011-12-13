@@ -14,7 +14,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
  * Refer to the forum thread:
  * http://bit.ly/colormebukkit
  * Refer to the dev.bukkit.org page:
- * http://bit.ly/colormebukkitdev 
+ * http://bit.ly/bukkitdevcolorme
  *
  * @author xGhOsTkiLLeRx
  * @thanks to Valrix for the original ColorMe plugin!!

@@ -7,7 +7,7 @@ name in the chat window.
 
 This is the README of ColorMe!
 For support visit the old forum thread: http://bit.ly/colormebukkit
-or the new dev.bukkit.org page: http://bit.ly/colormebukkitdev
+or the new dev.bukkit.org page: http://bit.ly/bukkitdevcolorme
 Thanks to Valrix for the original plugin!
 Thanks for using!
 
