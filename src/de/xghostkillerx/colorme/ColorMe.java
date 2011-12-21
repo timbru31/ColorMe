@@ -117,11 +117,11 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Updated the config to the new system
-	public void updateConfig(File fileName) throws Exception {
-		BufferedReader reader = new BufferedReader(new FileReader(fileName));
+	public void updateConfig(File config) throws Exception {
+		BufferedReader reader = new BufferedReader(new FileReader(config));
 		// Create a file called temp.txt
 		File tempFile = new File(getDataFolder(), "temp.txt");
-		BufferedWriter out = new BufferedWriter(new FileWriter(tempFile));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
 		String line;
 		try {
 			while ((line = reader.readLine()) != null) {
@@ -129,24 +129,27 @@ public class ColorMe extends JavaPlugin {
 				if (line.contains("=")) {
 					String newLine = line.replace("=", ": ");
 					// store in temp file
-					out.write(newLine);
-					out.newLine();
+					writer.write(newLine);
+					writer.newLine();
 				}
 				else {
 					// line is okay, store in temp file
-					out.write(line);
-					out.newLine();
+					writer.write(line);
+					writer.newLine();
 				}
 			}
+		}
+		catch (Exception e) {
+			log.warning("ColorMe failed to update the colors! Report this please!");
+		}
+		finally {
 			// Close all
 			reader.close();
-			out.flush();
-			out.close();
+			writer.flush();
+			writer.close();
 			// Delete old players.color and rename temp file
-			fileName.delete();
+			config.delete();
 			tempFile.renameTo(colorsFile);
-		} catch (Exception e) {
-			log.warning("ColorMe failed to update the colors! Report this please!");
 		}
 	}
 
