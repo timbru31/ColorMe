@@ -61,7 +61,6 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Start
-
 	public void onEnable() {
 		// Events
 		PluginManager pm = getServer().getPluginManager();
