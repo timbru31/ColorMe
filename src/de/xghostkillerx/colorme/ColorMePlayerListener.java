@@ -23,8 +23,8 @@ import org.getspout.spoutapi.SpoutManager;
  */
 
 public class ColorMePlayerListener extends PlayerListener {
-	protected ColorMe<?> plugin;
-	public ColorMePlayerListener(ColorMe<?> plugin) {
+	protected ColorMe plugin;
+	public ColorMePlayerListener(ColorMe plugin) {
 		this.plugin = plugin;
 	}
 

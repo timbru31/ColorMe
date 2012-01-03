@@ -22,8 +22,8 @@ import org.bukkit.plugin.PluginDescriptionFile;
  */
 
 public class ColorMeCommands {
-	ColorMe<?> plugin;
-	public ColorMeCommands(ColorMe<?> instance) {
+	ColorMe plugin;
+	public ColorMeCommands(ColorMe instance) {
 		plugin = instance;
 	}
 

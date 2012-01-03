@@ -41,12 +41,11 @@ import org.getspout.spoutapi.SpoutManager;
  * http://bit.ly/bukkitdevcolorme
  *
  * @author xGhOsTkiLLeRx
- * @param <SimpleClans>
  * @thanks to Valrix for the original ColorMe plugin!!
  * 
  */
 
-public class ColorMe<SimpleClans> extends JavaPlugin {
+public class ColorMe extends JavaPlugin {
 	public static final Logger log = Logger.getLogger("Minecraft");
 	private final ColorMePlayerListener playerListener = new ColorMePlayerListener(this);
 	public Economy economy = null;
