@@ -27,6 +27,8 @@ import com.randomappdev.pluginstats.Ping;
 // Economy (Vault)
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
+// Spout
+import org.getspout.spoutapi.SpoutManager;
 
 /**
  * ColorMe for CraftBukkit/Bukkit
@@ -39,11 +41,12 @@ import net.milkbowl.vault.economy.Economy;
  * http://bit.ly/bukkitdevcolorme
  *
  * @author xGhOsTkiLLeRx
+ * @param <SimpleClans>
  * @thanks to Valrix for the original ColorMe plugin!!
  * 
  */
 
-public class ColorMe extends JavaPlugin {
+public class ColorMe<SimpleClans> extends JavaPlugin {
 	public static final Logger log = Logger.getLogger("Minecraft");
 	private final ColorMePlayerListener playerListener = new ColorMePlayerListener(this);
 	public Economy economy = null;
@@ -59,6 +62,7 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Start
+
 	public void onEnable() {
 		// Events
 		PluginManager pm = getServer().getPluginManager();
@@ -67,22 +71,23 @@ public class ColorMe extends JavaPlugin {
 
 		// Player colors config		
 		colorsFile = new File(getDataFolder(), "players.color");
-			// Copy if the config doesn't exist
+		// Copy if the config doesn't exist
 		if (!colorsFile.exists()) {
 			colorsFile.getParentFile().mkdirs();
 			copy(getResource("players.color"), colorsFile);
 		}
-			// Try to load
+		// Try to load
 		try {
 			colors = YamlConfiguration.loadConfiguration(colorsFile);
 		}
-			// if it failed, tell about the update progress
+		// if it failed, tell about the update progress
 		catch (Exception e) {
 			log.warning("ColorMe failed to load the players.color! Trying to update...");
 			try {
 				// Update colors
 				updateConfig(colorsFile);
-			} catch (Exception exp) {
+			}
+			catch (Exception exp) {
 				// if update fails, tell the admin
 				log.warning("ColorMe failed to update the players.color. Please report this!");
 			}
@@ -102,14 +107,23 @@ public class ColorMe extends JavaPlugin {
 		log.info(pdfFile.getName() + " " + pdfFile.getVersion() + " is enabled!");
 
 		// Check for Vault
-		Plugin x = this.getServer().getPluginManager().getPlugin("Vault");
-		if (x != null & x instanceof Vault) {
+		Plugin vault = this.getServer().getPluginManager().getPlugin("Vault");
+		if (vault != null & vault instanceof Vault) {
 			// If Vault is enabled, load the economy
-			log.info(String.format(pdfFile.getName() + " loaded Vault successfully"));
+			log.info(pdfFile.getName() + " loaded Vault successfully");
 			setupEconomy();
 		} else {
 			// Else tell the admin about the missing of Vault
-			log.warning(String.format("Vault was NOT found! Running without economy!"));
+			log.warning("Vault was NOT found! Running without economy!");
+		}
+		
+		//Check for Spout
+		Plugin spout = this.getServer().getPluginManager().getPlugin("Spout");
+		if (spout != null) {
+			log.info(String.format(pdfFile.getName() + " loaded Spout successfully"));
+		}
+		else {
+			log.warning("Running without Spout!");
 		}
 
 		// Stats
@@ -125,18 +139,8 @@ public class ColorMe extends JavaPlugin {
 		String line;
 		try {
 			while ((line = reader.readLine()) != null) {
-				// if the old system is found update 
-				if (line.contains("=")) {
-					String newLine = line.replace("=", ": ");
-					// store in temp file
-					writer.write(newLine);
-					writer.newLine();
-				}
-				else {
-					// line is okay, store in temp file
-					writer.write(line);
-					writer.newLine();
-				}
+				writer.write(line.replace("\t", "    ").replace("=", ": "));
+				writer.newLine(); 
 			}
 		}
 		catch (Exception e) {
@@ -168,9 +172,15 @@ public class ColorMe extends JavaPlugin {
 			saveConfig();
 			colors.load(colorsFile);
 			saveColors();
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.warning("ColorMe failed to load the configs! Please report this!");
+		}
+		catch (Exception e) {
+			log.warning("ColorMe failed to load the configs! Trying to update...");
+			try {
+				updateConfig(colorsFile);
+			}
+			catch (Exception exp) {
+				log.warning("ColorMe failed to update the players.color. Please report this!");
+			}
 		}
 	}
 
@@ -226,9 +236,10 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Set player's color and update displayname if online
+	@SuppressWarnings("deprecation")
 	public boolean setColor(String name, String color) {
 		String oldColor = getColor(name);
-		String newColor = findColor(color); 
+		String newColor = findColor(color);
 		// If the colors are the same return false
 		if (oldColor.equalsIgnoreCase(newColor)) {
 			return false;
@@ -242,9 +253,14 @@ public class ColorMe extends JavaPlugin {
 		if (getServer().getPlayerExact(name) != null) {
 			Player player =getServer().getPlayerExact(name);
 			player.setDisplayName(ChatColor.valueOf(newColor) + ChatColor.stripColor(player.getDisplayName()) + ChatColor.WHITE);
+			Plugin spout = getServer().getPluginManager().getPlugin("Spout");
+			if (spout != null) {
+				SpoutManager.getAppearanceManager().setGlobalTitle(player, ChatColor.valueOf(newColor) + ChatColor.stripColor(player.getDisplayName()));
+			}
 		}
 		return true;
 	}
+
 
 	// Iterate through colors to try and find a match (resource expensive)
 	public String findColor(String color) {

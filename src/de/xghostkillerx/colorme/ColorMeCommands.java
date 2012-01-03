@@ -22,14 +22,14 @@ import org.bukkit.plugin.PluginDescriptionFile;
  */
 
 public class ColorMeCommands {
-	ColorMe plugin;
-	public ColorMeCommands(ColorMe instance) {
+	ColorMe<?> plugin;
+	public ColorMeCommands(ColorMe<?> instance) {
 		plugin = instance;
 	}
 
 	// Commands (primary use /color <args>
 	public boolean ColorMeCommand (CommandSender sender, Command command, String commandLabel, String[] args) {
-		if ((command.getName().equalsIgnoreCase("colorme")) || (command.getName().equalsIgnoreCase("color"))) {
+		if (command.getName().equalsIgnoreCase("colorme") || command.getName().equalsIgnoreCase("color") || command.getName().equalsIgnoreCase("colour")) {
 			// Reloads the configs
 			if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
 				if (sender.hasPermission("colorme.reload")) {

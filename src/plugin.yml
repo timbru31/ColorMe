@@ -1,15 +1,15 @@
 name: ColorMe
 main: de.xghostkillerx.colorme.ColorMe
-version: 3.1
+version: 3.2
 author: xGhOsTkiLLeRx
 authors: [Valrix]
-website: http://bit.ly/colormebukkitdev
+website: http://bit.ly/bukkitdevcolorme
 website: http://bit.ly/colormebukkit
 description: Sets custom color to player's name
 commands:
     color:
         usage: /color help - to see the help
-        aliases: [colorme]
+        aliases: [colorme, colour]
         description: Gives the player name a color
 permissions:
     colorme.list:
@@ -35,4 +35,4 @@ permissions:
             colorme.remove: true
             colorme.get: true
         description: Allows all commands
-softdepend: [Vault]
+softdepend: [Vault, Spout]
