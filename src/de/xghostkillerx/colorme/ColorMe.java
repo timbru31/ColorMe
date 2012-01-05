@@ -14,7 +14,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.TextWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
@@ -22,13 +21,12 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.getspout.spoutapi.SpoutManager;
 // Stats
 import com.randomappdev.pluginstats.Ping;
 // Economy (Vault)
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
-// Spout
-import org.getspout.spoutapi.SpoutManager;
 
 /**
  * ColorMe for CraftBukkit/Bukkit
@@ -53,6 +51,7 @@ public class ColorMe extends JavaPlugin {
 	public FileConfiguration colors;
 	public File configFile;
 	public File colorsFile;
+	public boolean spoutEnabled;
 
 	// Shutdown
 	public void onDisable() {
@@ -87,7 +86,7 @@ public class ColorMe extends JavaPlugin {
 			}
 			catch (Exception exp) {
 				// if update fails, tell the admin
-				log.warning("ColorMe failed to update the players.color. Please report this!");
+				log.warning("ColorMe failed to update the players.color. Please report this! (Phase 1)");
 			}
 		}
 
@@ -114,18 +113,38 @@ public class ColorMe extends JavaPlugin {
 			// Else tell the admin about the missing of Vault
 			log.warning("Vault was NOT found! Running without economy!");
 		}
-		
+
 		//Check for Spout
 		Plugin spout = this.getServer().getPluginManager().getPlugin("Spout");
 		if (spout != null) {
 			log.info(String.format(pdfFile.getName() + " loaded Spout successfully"));
+			// Spout is enabled
+			spoutEnabled = true;
 		}
 		else {
 			log.warning("Running without Spout!");
+			// Spout is disabled
+			spoutEnabled = false;
 		}
 
 		// Stats
 		Ping.init(this);
+
+		if (config.getBoolean("forceUpdate") == true) {
+			try {
+				// Update colors
+				updateConfig(colorsFile);
+			}
+			catch (Exception exp) {
+				// if update fails, tell the admin
+				log.warning("ColorMe failed to update the players.color. Please report this! (Phase 2)");
+			}
+			finally {
+				// Sets the forceUpdate value false again
+				config.set("forceUpdate", false);
+				saveConfig();
+			}
+		}
 	}
 
 	// Updated the config to the new system
@@ -137,7 +156,27 @@ public class ColorMe extends JavaPlugin {
 		String line;
 		try {
 			while ((line = reader.readLine()) != null) {
-				writer.write(line.replace("\t", "    ").replace("=", ": "));
+				// Replaces all wrong colors, wrong cases, TABs and the old format (=)
+				writer.write(line
+						.replace("\t", "    ")
+						.replace("=", ": ")
+						.replaceAll("(?i)darkred", "dark_red")
+						.replaceAll("(?i)darkblue", "dark_blue")
+						.replaceAll("(?i)darkgreen", "dark_green")
+						.replaceAll("(?i)darkaqua", "dark_aqua")
+						.replaceAll("(?i)darkpurple", "dark_purple")
+						.replaceAll("(?i)darkgray", "dark_gray")
+						.replaceAll("(?i)red", "red")
+						.replaceAll("(?i)green", "green")
+						.replaceAll("(?i)aqua", "aqua")
+						.replaceAll("(?i)gold", "gold")
+						.replaceAll("(?i)yellow", "yellow")
+						.replaceAll("(?i)blue", "blue")
+						.replaceAll("(?i)black", "black")
+						.replaceAll("(?i)gray", "gray")
+						.replaceAll("(?i)white", "white")
+						.replaceAll("(?i)rainbow", "rainbow")
+						.replaceAll("(?i)lightpurple", "light_purple"));
 				writer.newLine(); 
 			}
 		}
@@ -159,6 +198,7 @@ public class ColorMe extends JavaPlugin {
 	public void loadConfig() {
 		config.options().header("For help please refer to http://bit.ly/colormebukkit or http://bit.ly/colormebukkitdev ");
 		config.addDefault("costs", 0);
+		config.addDefault("forceUpdate", false);
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
@@ -209,8 +249,7 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Initialized to work with Vault
-	private Boolean setupEconomy()
-	{
+	private Boolean setupEconomy() {
 		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
 		if (economyProvider != null) {
 			economy = economyProvider.getProvider();
@@ -230,62 +269,66 @@ public class ColorMe extends JavaPlugin {
 
 	// Return the player's name color
 	public String getColor(String name) {
+		// Player in the config? Yes -> get the config, no -> nothing
 		return (colors.contains(name.toLowerCase())) ? colors.getString(name.toLowerCase()) : "";
 	}
 
-	// Set player's color and update displayname if online
+	// Set player's color
 	@SuppressWarnings("deprecation")
 	public boolean setColor(String name, String color) {
-		String oldColor = getColor(name);
-		String newColor = findColor(color);
+		String actualColor = getColor(name);
 		// If the colors are the same return false
-		if (oldColor.equalsIgnoreCase(newColor)) {
+		if (actualColor.equalsIgnoreCase(color)) {
 			return false;
 		}
-		// If the color is not suitable return false
-		if (newColor.equals(color)) {
-			return false;
-		}
-		colors.set(name, newColor);
+		// Write to the config and save
+		colors.set(name, color.toLowerCase());
 		saveColors();
-		if (getServer().getPlayerExact(name) != null) {
-			Player player =getServer().getPlayerExact(name);
-			player.setDisplayName(ChatColor.valueOf(newColor) + ChatColor.stripColor(player.getDisplayName()) + ChatColor.WHITE);
-			Plugin spout = getServer().getPluginManager().getPlugin("Spout");
-			if (spout != null) {
-				SpoutManager.getAppearanceManager().setGlobalTitle(player, ChatColor.valueOf(newColor) + ChatColor.stripColor(player.getDisplayName()));
+		// Check for Spout (because no chat event is fired we want to fire the change)
+		if (spoutEnabled == true) {
+			Player player = getServer().getPlayerExact(name);
+			String exactName = player.getName();
+			// Random color
+			if (getColor(name).equalsIgnoreCase("random")) {
+				SpoutManager.getAppearanceManager().setGlobalTitle(player, randomColor(exactName));
 			}
-		}
-		return true;
-	}
-
-
-	// Iterate through colors to try and find a match (resource expensive)
-	public String findColor(String color) {
-		byte i = 0;
-		while (i < 16) {
-			if (color.equalsIgnoreCase(ChatColor.getByCode(i).name().toLowerCase().replace("_", ""))) {
-				return ChatColor.getByCode(i).name();
+			// Rainbow
+			if (getColor(name).equalsIgnoreCase("rainbow")) {
+				SpoutManager.getAppearanceManager().setGlobalTitle(player, rainbowColor(exactName));
 			}
-			i++;
+			// Normal color
+			else if (!getColor(name).equalsIgnoreCase("random") && !getColor(name).equalsIgnoreCase("rainbow")) {
+				SpoutManager.getAppearanceManager().setGlobalTitle(player, ChatColor.valueOf(color.toUpperCase()) + ChatColor.stripColor(exactName));
+			}
+			return true;
 		}
-		return color;
+		return false;
 	}
 
 	// Check if a player has a color or not
 	public boolean hasColor(String name) {
 		if (colors.contains(name.toLowerCase())) {
-			return (colors.getString(name.toLowerCase()).trim().length()>1) ? true : false;
+			// if longer than 1 it's a color, return true - otherwise (means '') return false
+			return (colors.getString(name.toLowerCase())).trim().length() >1 ? true : false;
 		}
 		return false;
 	}
 
 	// Removes a color if exists, otherwise returns false
+	@SuppressWarnings("deprecation")
 	public boolean removeColor(String name) {
 		name = name.toLowerCase();
+		// If the player has got a color
 		if (hasColor(name)) {
 			colors.set(name, "");
 			saveColors();
+			// Check for Spout (because no chat event is fired we want to fire the change)
+			if (spoutEnabled == true) {
+				Player player = getServer().getPlayerExact(name);
+				String exactName = player.getName();
+				// Yep, change the color to white back
+				SpoutManager.getAppearanceManager().setGlobalTitle(player, ChatColor.WHITE + ChatColor.stripColor(exactName));
+			}
 			return true;
 		}
 		return false;
@@ -299,22 +342,67 @@ public class ColorMe extends JavaPlugin {
 	// The list of colors
 	public void list (CommandSender sender) {
 		sender.sendMessage("Color List:");     
-		String color;
-		String clc;
 		String msg = "";
-		byte i = 0;
-		while (i < 16) {
-			color = ChatColor.getByCode(i).name();
-			clc = color.toLowerCase();
-			if (msg.length() < 1) {
-				msg = ChatColor.valueOf(color) + clc.replace("_", "") + ' ';
-				i++;
-				continue;
-			}
-			msg += (i < 10) ? ChatColor.valueOf(color) + clc.replace("_", "") : ChatColor.valueOf(color) + clc.replace("_", "") + ' ';
-			TextWrapper.wrapText(msg);
-			i++;
+		// As long as all colors aren't reached
+		for (int i = 0; i < ChatColor.values().length; i++) {
+			// get the name from the byte
+			String color = ChatColor.getByCode(i).name();
+			// color the name of the color
+			msg += ChatColor.valueOf(color) + color.toLowerCase() + " ";
 		}
-		sender.sendMessage(msg);
+		// Include custom colors
+		sender.sendMessage(msg + randomColor("random") + " " + rainbowColor("rainbow"));
+	}
+
+	// Used to create a random effect
+	public String randomColor(String name) {
+		String newName = "";
+		char ch;
+		// As long as the length of the name isn't reached
+		for (int i = 0; i < name.length(); i++) {
+			// Roll the dice between 0 and 15 ;)
+			int x = (int)(Math.random()*16);
+			ch = name.charAt(i);
+			// Color the character
+			newName += ChatColor.getByCode(x) + Character.toString(ch);
+		}
+		return newName;
+	}
+
+	// Used to create a rainbow effect
+	public String rainbowColor(String name) {
+		String newName = "";
+		char ch;
+		int z = 0;
+		// Had to store the rainbow manually. Why did Mojang store it so..., forget it
+		String rainbow[] = {"DARK_RED", "RED", "GOLD", "YELLOW", "GREEN", "DARK_GREEN", "AQUA", "DARK_AQUA", "BLUE", "DARK_BLUE", "LIGHT_PURPLE", "DARK_PURPLE"};
+		// As long as the length of the name isn't reached
+		for (int i = 0; i < name.length(); i++) {
+			// Reset if z reaches 12
+			if (z == 12) z = 0;
+			ch = name.charAt(i);
+			// Add to the new name the colored character
+			newName += ChatColor.valueOf(rainbow[z]) + Character.toString(ch);
+			z++;
+		}
+		return newName;
+	}
+
+	// Check if the color is possible
+	public boolean validColor(String color) {
+		// if it's random or rainbow -> possible
+		if (color.equalsIgnoreCase("rainbow") || color.equalsIgnoreCase("random")) {
+			return true;
+		}
+		// Second place, cause random and rainbow aren't possible normally ;)
+		else {
+			for (int i=0; i < 16; i++) {
+				// Check if the color is one of the 16
+				if (color.equalsIgnoreCase(ChatColor.getByCode(i).name())) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 }
