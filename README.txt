@@ -1,5 +1,4 @@
 ORIGINAL README
-
 ------------------------------------------------------------------------------
 My fifth plugin which is the sister to Prefixer. It adds color to a player's
 name in the chat window.
@@ -15,12 +14,14 @@ This plugin sends usage statistics! If you wish to disable the usage stats, look
 This plugin is released under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0) license.
 
 This plugin supports economy! Required is Vault, if you want to use economy!
+Additionally support for Spout to change the color of the player title.
 
 Standard config:
 
-# For help please refer to http://bit.ly/colormebukkit or http://bit.ly/colormebukkitdev
+# For help please refer to http://bit.ly/colormebukkit or http://bit.ly/bukkitdevcolorme
 costs: 5.00
 forceUpdate: false
+tabList: true
 
 Commands & Permissions (if no permissions system is detected, only OPs are able to use the commands!)
 Only bukkit's permissions system is supported!
