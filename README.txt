@@ -20,6 +20,7 @@ Standard config:
 
 # For help please refer to http://bit.ly/colormebukkit or http://bit.ly/colormebukkitdev
 costs: 5.00
+forceUpdate: false
 
 Commands & Permissions (if no permissions system is detected, only OPs are able to use the commands!)
 Only bukkit's permissions system is supported!

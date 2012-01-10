@@ -86,7 +86,7 @@ public class ColorMe extends JavaPlugin {
 			}
 			catch (Exception exp) {
 				// if update fails, tell the admin
-				log.warning("ColorMe failed to update the players.color. Please report this! (Phase 1)");
+				log.warning("ColorMe failed to update the players.color. Please report this! (Stage 1)");
 			}
 		}
 
@@ -127,9 +127,7 @@ public class ColorMe extends JavaPlugin {
 			spoutEnabled = false;
 		}
 
-		// Stats
-		Ping.init(this);
-
+		// Update if forced
 		if (config.getBoolean("forceUpdate") == true) {
 			try {
 				// Update colors
@@ -137,7 +135,7 @@ public class ColorMe extends JavaPlugin {
 			}
 			catch (Exception exp) {
 				// if update fails, tell the admin
-				log.warning("ColorMe failed to update the players.color. Please report this! (Phase 2)");
+				log.warning("ColorMe failed to update the players.color. Please report this! (Stage 2)");
 			}
 			finally {
 				// Sets the forceUpdate value false again
@@ -145,6 +143,10 @@ public class ColorMe extends JavaPlugin {
 				saveConfig();
 			}
 		}
+
+		// Stats
+		Ping png = new Ping();
+		png.init(this);
 	}
 
 	// Updated the config to the new system
@@ -176,6 +178,7 @@ public class ColorMe extends JavaPlugin {
 						.replaceAll("(?i)gray", "gray")
 						.replaceAll("(?i)white", "white")
 						.replaceAll("(?i)rainbow", "rainbow")
+						.replaceAll("(?i)random", "random")
 						.replaceAll("(?i)lightpurple", "light_purple"));
 				writer.newLine(); 
 			}
@@ -197,8 +200,9 @@ public class ColorMe extends JavaPlugin {
 	// Loads the config at the start
 	public void loadConfig() {
 		config.options().header("For help please refer to http://bit.ly/colormebukkit or http://bit.ly/colormebukkitdev ");
-		config.addDefault("costs", 0);
+		config.addDefault("costs", 5.00);
 		config.addDefault("forceUpdate", false);
+		config.addDefault("tabList", true);
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
@@ -274,35 +278,106 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Set player's color
-	@SuppressWarnings("deprecation")
 	public boolean setColor(String name, String color) {
 		String actualColor = getColor(name);
 		// If the colors are the same return false
 		if (actualColor.equalsIgnoreCase(color)) {
 			return false;
 		}
-		// Write to the config and save
+		// Write to the config and save and update the names
 		colors.set(name, color.toLowerCase());
 		saveColors();
-		// Check for Spout (because no chat event is fired we want to fire the change)
-		if (spoutEnabled == true) {
-			Player player = getServer().getPlayerExact(name);
-			String exactName = player.getName();
-			// Random color
-			if (getColor(name).equalsIgnoreCase("random")) {
-				SpoutManager.getAppearanceManager().setGlobalTitle(player, randomColor(exactName));
+		updateName(name);
+		return true;
+	}
+
+	// Update the displayName, tabName & title (after setting, removing, onJoin and onChat)
+	@SuppressWarnings("deprecation")
+	public void updateName(String name) {
+		Player player = getServer().getPlayerExact(name);
+		if (player != null) {
+			String color = getColor(name);
+			String displayName = player.getDisplayName();
+			String cleanDisplayName = ChatColor.stripColor(displayName);
+			String newName = "";
+			boolean tabList = config.getBoolean("tabList");
+			// If the player has a color change the displayname
+			if (hasColor(name)) {
+				if (validColor(colors.getString(name)) == true) {
+					// Random
+					if (color.equalsIgnoreCase("random")) {
+						player.setDisplayName(randomColor(cleanDisplayName) + ChatColor.WHITE);
+						if (tabList == true) {
+							// If the TAB name is longer than 16 shorten it!
+							newName = randomColor(cleanDisplayName);
+							if (newName.length() > 16) {
+								newName = newName.substring(0, 12) + ChatColor.WHITE + "..";
+							}
+							player.setPlayerListName(newName);
+						}
+					}
+					// Rainbow
+					if (color.equalsIgnoreCase("rainbow")) {
+						player.setDisplayName(rainbowColor(cleanDisplayName) + ChatColor.WHITE);
+						if (tabList == true) {
+							// If the TAB name is longer than 16 shorten it!
+							newName = rainbowColor(cleanDisplayName);
+							if (newName.length() > 16) {
+								newName = newName.substring(0, 12) + ChatColor.WHITE + "..";
+							}
+							player.setPlayerListName(newName);
+						}
+					}
+					// Normal
+					else if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
+						player.setDisplayName(ChatColor.valueOf(color.toUpperCase()) + ChatColor.stripColor(displayName) + ChatColor.WHITE);
+						if (tabList == true) {
+							// If the TAB name is longer than 16 shorten it!
+							newName = ChatColor.valueOf(color.toUpperCase()) + ChatColor.stripColor(displayName);
+							if (newName.length() > 16) {
+								newName = newName.substring(0, 12) + ChatColor.WHITE + "..";
+							}
+							player.setPlayerListName(newName);
+						}
+					}
+					// Check for Spout
+					if (spoutEnabled == true) {
+						// Random color
+						if (getColor(name).equalsIgnoreCase("random")) {
+							SpoutManager.getAppearanceManager().setGlobalTitle(player, randomColor(displayName));
+						}
+						// Rainbow
+						if (getColor(name).equalsIgnoreCase("rainbow")) {
+							SpoutManager.getAppearanceManager().setGlobalTitle(player, rainbowColor(displayName));
+						}
+						// Normal color
+						else if (!getColor(name).equalsIgnoreCase("random") && !getColor(name).equalsIgnoreCase("rainbow")) {
+							SpoutManager.getAppearanceManager().setGlobalTitle(player, ChatColor.valueOf(color.toUpperCase()) + ChatColor.stripColor(displayName));
+						}
+					}
+				}
+				else {
+					// Tell player to report it, but suppress the error -> uses color before.
+					player.sendMessage("Your name colors seems to be invalid. Ask your admin to check it,");
+					player.sendMessage("or try re-coloring!");
+				}
 			}
-			// Rainbow
-			if (getColor(name).equalsIgnoreCase("rainbow")) {
-				SpoutManager.getAppearanceManager().setGlobalTitle(player, rainbowColor(exactName));
+			if (!hasColor(name)) {
+				// No name -> back to white
+				player.setDisplayName(ChatColor.WHITE + ChatColor.stripColor(displayName));
+				if (tabList == true) {
+					// If the TAB name is longer than 16 shorten it!
+					newName = cleanDisplayName;
+					if (newName.length() > 16) {
+						newName = cleanDisplayName.substring(0, 12) + ChatColor.WHITE + "..";
+					}
+					player.setPlayerListName(newName);
+				}
+				if (spoutEnabled == true) {
+					SpoutManager.getAppearanceManager().setGlobalTitle(player, ChatColor.WHITE + ChatColor.stripColor(displayName));
+				}
 			}
-			// Normal color
-			else if (!getColor(name).equalsIgnoreCase("random") && !getColor(name).equalsIgnoreCase("rainbow")) {
-				SpoutManager.getAppearanceManager().setGlobalTitle(player, ChatColor.valueOf(color.toUpperCase()) + ChatColor.stripColor(exactName));
-			}
-			return true;
 		}
-		return false;
 	}
 
 	// Check if a player has a color or not
@@ -314,21 +389,14 @@ public class ColorMe extends JavaPlugin {
 		return false;
 	}
 
-	// Removes a color if exists, otherwise returns false
-	@SuppressWarnings("deprecation")
+	// Removes a color if exists, otherwise returns false | Spout causes deprecation
 	public boolean removeColor(String name) {
 		name = name.toLowerCase();
 		// If the player has got a color
 		if (hasColor(name)) {
 			colors.set(name, "");
 			saveColors();
-			// Check for Spout (because no chat event is fired we want to fire the change)
-			if (spoutEnabled == true) {
-				Player player = getServer().getPlayerExact(name);
-				String exactName = player.getName();
-				// Yep, change the color to white back
-				SpoutManager.getAppearanceManager().setGlobalTitle(player, ChatColor.WHITE + ChatColor.stripColor(exactName));
-			}
+			updateName(name);
 			return true;
 		}
 		return false;

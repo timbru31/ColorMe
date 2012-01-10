@@ -27,8 +27,6 @@ public class ColorMeCommands {
 		plugin = instance;
 	}
 	
-	//TODO Einfachere Messages?
-
 	// Commands (primary use /color <args>)
 	public boolean ColorMeCommand (CommandSender sender, Command command, String commandLabel, String[] args) {
 		if (command.getName().equalsIgnoreCase("colorme") || command.getName().equalsIgnoreCase("color") || command.getName().equalsIgnoreCase("colour")) {
@@ -237,6 +235,11 @@ public class ColorMeCommands {
 					// With economy
 					if (plugin.economy != null) {
 						double cost = plugin.config.getDouble("costs");
+						if (color.equalsIgnoreCase("white")) {
+							plugin.setColor(senderName, color);
+							sender.sendMessage(ChatColor.GREEN + "Your name color has been changed to " + ChatColor.valueOf(color.toUpperCase()) + color);
+							return true;
+						}
 						// Charge costs :)
 						if (cost > 0 && plugin.economy.has(senderName, cost)) {
 							plugin.economy.withdrawPlayer(senderName, cost);
