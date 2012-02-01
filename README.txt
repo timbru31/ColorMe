@@ -10,7 +10,7 @@ or the new dev.bukkit.org page: http://bit.ly/bukkitdevcolorme
 Thanks to Valrix for the original plugin!
 Thanks for using!
 
-This plugin sends usage statistics! If you wish to disable the usage stats, look at plugins/PluginStats/config.yml!
+This plugin sends usage statistics! If you wish to disable the usage stats, look at plugins/PluginMetrics/config.yml!
 This plugin is released under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0) license.
 
 This plugin supports economy! Required is Vault, if you want to use economy!

@@ -1,16 +1,22 @@
 name: ColorMe
 main: de.xghostkillerx.colorme.ColorMe
-version: 3.3
+version: 3.4 dev 1
 author: xGhOsTkiLLeRx
 authors: [Valrix]
 website: http://bit.ly/bukkitdevcolorme
 website: http://bit.ly/colormebukkit
-description: Sets custom color to player's name
+description: Sets custom color, prefixes and suffixes to player's name
 commands:
     color:
         usage: /color help - to see the help
         aliases: [colorme, colour]
         description: Gives the player name a color
+    prefix:
+        usage: /prefix help - to see the help
+        description: Gives the player name a prefix
+    suffix:
+        usage: /suffix help - to see the help
+        description: Gives the player name a suffix
 permissions:
     colorme.list:
         default: true
