@@ -1,6 +1,6 @@
 name: ColorMe
 main: de.xghostkillerx.colorme.ColorMe
-version: 3.4 dev 1
+version: 3.4
 author: xGhOsTkiLLeRx
 authors: [Valrix]
 website: http://bit.ly/bukkitdevcolorme
@@ -21,7 +21,86 @@ permissions:
     colorme.list:
         default: true
         description: Allows player to see list of color codes
-    colorme.self:
+    colorme.self.*:
+        children:
+            colorme.self.black: true
+            colorme.self.dark_blue: true
+            colorme.self.dark_green: true
+            colorme.self.dark_aqua: true
+            colorme.self.dark_red: true
+            colorme.self.dark_purple: true
+            colorme.self.gold: true
+            colorme.self.gray: true
+            colorme.self.dark_gray: true
+            colorme.self.blue: true
+            colorme.self.green: true
+            colorme.self.aqua: true
+            colorme.self.red: true
+            colorme.self.light_purple: true
+            colorme.self.yellow: true
+            colorme.self.magic: true
+            colorme.self.white: true
+            colorme.self.random: true
+            colorme.self.rainbow: true
+            colorme.self.custom: true
+    colorme.self.black:
+        default: op
+        description: Allows setting of own color
+    colorme.self.dark_blue:
+        default: op
+        description: Allows setting of own color
+    colorme.self.dark_green:
+        default: op
+        description: Allows setting of own color
+    colorme.self.dark_aqua:
+        default: op
+        description: Allows setting of own color
+    colorme.self.dark_red:
+        default: op
+        description: Allows setting of own color
+    colorme.self.dark_purple:
+        default: op
+        description: Allows setting of own color
+    colorme.self.gold:
+        default: op
+        description: Allows setting of own color
+    colorme.self.gray:
+        default: op
+        description: Allows setting of own color
+    colorme.self.dark_gray:
+        default: op
+        description: Allows setting of own color
+    colorme.self.blue:
+        default: op
+        description: Allows setting of own color
+    colorme.self.green:
+        default: op
+        description: Allows setting of own color
+    colorme.self.aqua:
+        default: op
+        description: Allows setting of own color
+    colorme.self.red:
+        default: op
+        description: Allows setting of own color
+    colorme.self.light_purple:
+        default: op
+        description: Allows setting of own color
+    colorme.self.yellow:
+        default: op
+        description: Allows setting of own color
+    colorme.self.magic:
+        default: op
+        description: Allows setting of own color
+    colorme.self.white:
+        default: op
+        description: Allows setting of own color
+    colorme.self.random:
+        default: op
+        description: Allows setting of own color
+    colorme.self.rainbow:
+        default: op
+        description: Allows setting of own color
+    colorme.self.custom:
         default: op
         description: Allows setting of own color
     colorme.other:
@@ -36,9 +115,55 @@ permissions:
     colorme.*:
         children:
             colorme.list: true
-            colorme.self: true
+            colorme.self.*: true
             colorme.other: true
             colorme.remove: true
             colorme.get: true
-        description: Allows all commands
+        description: Allows all commands for ColorMe
+    prefixer.list:
+        default: true
+        description: Allows player to see list of color codes
+    prefixer.self:
+        default: op
+        description: Allows setting of own prefix
+    prefixer.other:
+        default: op
+        description: Allows setting of other player's prefix
+    prefixer.remove:
+        default: op
+        description: Removes prefix
+    prefixer.get:
+        default: op
+        description: Gets actual prefix
+    prefixer.*:
+        children:
+            prefixer.list: true
+            prefixer.self: true
+            prefixer.other: true
+            prefixer.remove: true
+            prefixer.get: true
+        description: Allows all commands for Prefixer
+    suffixer.list:
+        default: true
+        description: Allows player to see list of color codes
+    suffixer.self:
+        default: op
+        description: Allows setting of own suffix
+    suffixer.other:
+        default: op
+        description: Allows setting of other player's suffix
+    suffixer.remove:
+        default: op
+        description: Removes suffix
+    suffixer.get:
+        default: op
+        description: Gets actual suffix
+    suffixer.*:
+        children:
+            suffixer.list: true
+            suffixer.self: true
+            suffixer.other: true
+            suffixer.remove: true
+            suffixer.get: true
+        description: Allows all commands for Suffixer
 softdepend: [Vault, Spout]

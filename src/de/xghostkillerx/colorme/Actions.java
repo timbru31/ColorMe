@@ -1,51 +1,87 @@
 package de.xghostkillerx.colorme;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.getspout.spoutapi.SpoutManager;
 
 public class Actions {
-	
-	static ColorMe plugin;
+	public static ColorMe plugin;
 	public Actions(ColorMe instance) {
 		plugin = instance;
 	}
+	
+	private static String actualValue, pluginPart, color, displayName, cleanDisplayName, newName, msg, message;
+	private static int i, z=0;
+	private static char ch;
 
-	// Return the player's name color
-	public static String getColor(String name) {
-		// Player in the config? Yes -> get the config, no -> nothing
-		return (plugin.colors.contains(name.toLowerCase())) ? plugin.colors.getString(name.toLowerCase()) : "";
+	
+	// Checks if the player is itself
+	static boolean self(CommandSender sender, String name) {
+		return (sender.equals(Bukkit.getServer().getPlayerExact(name))) ? true : false;
 	}
 
-	// Set player's color
-	public static boolean setColor(String name, String color) {
-		String actualColor = getColor(name);
+	// Return the player's name color/prefix/suffix
+	static String get(String name, String world, String pluginPart) {
+		// Player in the config? Yes -> get the config, no -> nothing
+		if (ColorMe.players.contains(name + "." + pluginPart + "." + world)) {
+			return ColorMe.players.getString(name + "." + pluginPart + "." + world);
+		}
+		else return "";
+	}
+
+	// Set player's color/prefix/suffix
+	static boolean set(String name, String value, String world, String pluginPart) {
+		actualValue = get(name, world, pluginPart);
 		// If the colors are the same return false
-		if (actualColor.equalsIgnoreCase(color)) {
+		if (actualValue.equalsIgnoreCase(value)) {
 			return false;
 		}
 		// Write to the config and save and update the names
-		plugin.colors.set(name, color.toLowerCase());
-		plugin.saveColors();
-		updateName(name);
+		ColorMe.players.set(name + "." + pluginPart + "." + world, value.toLowerCase());
+		ColorMe.savePlayers();
+		updateName(name, world);
 		return true;
 	}
 
-	// Update the displayName, tabName & title (after setting, removing, onJoin and onChat)
+	// Check if a player has a color/prefix/suffix or not
+	static boolean has(String name, String world, String pluginPart) {
+		if (ColorMe.players.contains(name.toLowerCase() + "." + pluginPart + "." + world)) {
+			// if longer than 1 it's a color, return true - otherwise (means '') return false
+			return (ColorMe.players.getString(name.toLowerCase() + "." + pluginPart + "." + world)).trim().length() >1 ? true : false;
+		}
+		return false;
+	}
+
+	// Removes a color/prefix/suffix if exists, otherwise returns false
+	static boolean remove(String name, String world, String pluginPart) {
+		name = name.toLowerCase();
+		// If the player has got a color
+		if (has(name, world, pluginPart)) {
+			ColorMe.players.set(name  + "." + pluginPart + "." + world, "");
+			ColorMe.savePlayers();
+			updateName(name, world);
+			return true;
+		}
+		return false;
+	}
+
+	// Update the displayName, tabName, title, prefix & suffix in a specific world (after setting, removing, onJoin and onChat)
 	@SuppressWarnings("deprecation")
-	public static void updateName(String name) {
-		Player player = plugin.getServer().getPlayerExact(name);
+	static
+	void updateName(String name, String world) {
+		Player player = Bukkit.getServer().getPlayerExact(name);
 		if (player != null) {
-			String color = getColor(name);
-			String displayName = player.getDisplayName();
-			String cleanDisplayName = ChatColor.stripColor(displayName);
-			String newName = "";
-			boolean tabList = plugin.config.getBoolean("tabList");
-			boolean playerTitle = plugin.config.getBoolean("playerTitle");
+			pluginPart = "colors";
+			color = get(name, world, pluginPart);
+			displayName = player.getDisplayName();
+			cleanDisplayName = ChatColor.stripColor(displayName);
+			boolean tabList = ColorMe.config.getBoolean("tabList");
+			boolean playerTitle = ColorMe.config.getBoolean("playerTitle");
 			// If the player has a color change the displayname
-			if (hasColor(name)) {
-				if (validColor(plugin.colors.getString(name)) == true) {
+			if (has(name, world, pluginPart)) {
+				if (validColor(ColorMe.players.getString(name + "." + pluginPart + "." + world)) == true) {
 					// Random
 					if (color.equalsIgnoreCase("random")) {
 						player.setDisplayName(randomColor(cleanDisplayName) + ChatColor.WHITE);
@@ -83,17 +119,17 @@ public class Actions {
 						}
 					}
 					// Check for Spout
-					if (plugin.spoutEnabled == true && playerTitle == true) {
+					if (ColorMe.spoutEnabled == true && playerTitle == true) {
 						// Random color
-						if (getColor(name).equalsIgnoreCase("random")) {
+						if (get(name, world, pluginPart).equalsIgnoreCase("random")) {
 							SpoutManager.getAppearanceManager().setGlobalTitle(player, randomColor(displayName));
 						}
 						// Rainbow
-						if (getColor(name).equalsIgnoreCase("rainbow")) {
+						if (get(name, world, pluginPart).equalsIgnoreCase("rainbow")) {
 							SpoutManager.getAppearanceManager().setGlobalTitle(player, rainbowColor(displayName));
 						}
 						// Normal color
-						else if (!getColor(name).equalsIgnoreCase("random") && !getColor(name).equalsIgnoreCase("rainbow")) {
+						else if (!get(name, world, pluginPart).equalsIgnoreCase("random") && !get(name, world, pluginPart).equalsIgnoreCase("rainbow")) {
 							SpoutManager.getAppearanceManager().setGlobalTitle(player, ChatColor.valueOf(color.toUpperCase()) + ChatColor.stripColor(displayName));
 						}
 					}
@@ -104,7 +140,7 @@ public class Actions {
 					player.sendMessage("or try re-coloring!");
 				}
 			}
-			if (!hasColor(name)) {
+			if (!has(name, world, pluginPart)) {
 				// No name -> back to white
 				player.setDisplayName(ChatColor.WHITE + ChatColor.stripColor(displayName));
 				if (tabList == true) {
@@ -115,63 +151,44 @@ public class Actions {
 					}
 					player.setPlayerListName(newName);
 				}
-				if (plugin.spoutEnabled == true && playerTitle == true) {
+				if (ColorMe.spoutEnabled == true && playerTitle == true) {
 					SpoutManager.getAppearanceManager().setGlobalTitle(player, ChatColor.WHITE + ChatColor.stripColor(displayName));
 				}
 			}
 		}
 	}
 
-	// Check if a player has a color or not
-	public static boolean hasColor(String name) {
-		if (plugin.colors.contains(name.toLowerCase())) {
-			// if longer than 1 it's a color, return true - otherwise (means '') return false
-			return (plugin.colors.getString(name.toLowerCase())).trim().length() >1 ? true : false;
-		}
-		return false;
-	}
-
-	// Removes a color if exists, otherwise returns false | Spout causes deprecation
-	public static boolean removeColor(String name) {
-		name = name.toLowerCase();
-		// If the player has got a color
-		if (hasColor(name)) {
-			plugin.colors.set(name, "");
-			plugin.saveColors();
-			updateName(name);
-			return true;
-		}
-		return false;
-	}
-
-	// Checks if the player is itself
-	public static boolean self(CommandSender sender, String name) {
-		return (sender.equals(plugin.getServer().getPlayerExact(name))) ? true : false;
-	}
-
 	// The list of colors
 	@SuppressWarnings("deprecation")
-	public static void listColors(CommandSender sender) {
-		sender.sendMessage("Color List:");     
-		String msg = "";
+	static void listColors(CommandSender sender) {
+		message = plugin.localization.getString("color_list");
+		message(sender, message);   
 		// As long as all colors aren't reached
 		for (int i = 0; i < ChatColor.values().length; i++) {
 			// get the name from the integer
-			String color = ChatColor.getByCode(i).name();
+			color = ChatColor.getByCode(i).name().toLowerCase();
 			// color the name of the color
-			msg += ChatColor.valueOf(color) + color.toLowerCase() + " ";
+			if (ColorMe.config.getBoolean("colors." + color) == true) {
+				msg += ChatColor.valueOf(color) + color + " ";
+			}
 		}
 		// Include custom colors
-		sender.sendMessage(msg + randomColor("random") + " " + rainbowColor("rainbow"));
+		if (ColorMe.config.getBoolean("colors.random") == true) {
+			msg += randomColor("random") + " ";
+		}
+		if (ColorMe.config.getBoolean("colors.rainbow") == true) {
+			msg += rainbowColor("rainbow");
+		}
+		sender.sendMessage(msg);
 	}
 
 	// Used to create a random effect
 	@SuppressWarnings("deprecation")
-	public static String randomColor(String name) {
-		String newName = "";
-		char ch;
+	static String randomColor(String name) {
+		newName = "";
+		i = 0;
 		// As long as the length of the name isn't reached
-		for (int i = 0; i < name.length(); i++) {
+		for (i = 0; i < name.length(); i++) {
 			// Roll the dice between 0 and 15 ;)
 			int x = (int)(Math.random()*16);
 			ch = name.charAt(i);
@@ -182,14 +199,14 @@ public class Actions {
 	}
 
 	// Used to create a rainbow effect
-	public static String rainbowColor(String name) {
-		String newName = "";
-		char ch;
-		int z = 0;
+	static String rainbowColor(String name) {
 		// Had to store the rainbow manually. Why did Mojang store it so..., forget it
+		newName = "";
+		i = 0;
+		z = 0;
 		String rainbow[] = {"DARK_RED", "RED", "GOLD", "YELLOW", "GREEN", "DARK_GREEN", "AQUA", "DARK_AQUA", "BLUE", "DARK_BLUE", "LIGHT_PURPLE", "DARK_PURPLE"};
 		// As long as the length of the name isn't reached
-		for (int i = 0; i < name.length(); i++) {
+		for (i = 0; i < name.length(); i++) {
 			// Reset if z reaches 12
 			if (z == 12) z = 0;
 			ch = name.charAt(i);
@@ -202,7 +219,7 @@ public class Actions {
 
 	// Check if the color is possible
 	@SuppressWarnings("deprecation")
-	public static boolean validColor(String color) {
+	static boolean validColor(String color) {
 		// if it's random or rainbow -> possible
 		if (color.equalsIgnoreCase("rainbow") || color.equalsIgnoreCase("random")) {
 			return true;
@@ -220,10 +237,44 @@ public class Actions {
 	}
 
 	// If the config value is disabled, return true
-	public static boolean isDisabled(String color) {
-		if (plugin.config.getBoolean("colors." + color.toLowerCase()) == true) {
+	static boolean isDisabled(String color) {
+		if (ColorMe.config.getBoolean("colors." + color.toLowerCase()) == true) {
 			return false;
 		}
 		return true;
+	}
+	
+	
+	
+	// Message sender
+	static void message(CommandSender sender, String message) {
+		sender.sendMessage(message
+				.replaceAll("&([0-9a-fk])", "\u00A7$1")
+				.replaceAll("%version", "3.4"));
+
+	}
+	
+	// Message sender
+	static void message(CommandSender sender, String message, String world) {
+		sender.sendMessage(message
+				.replaceAll("&([0-9a-fk])", "\u00A7$1")
+				.replaceAll("%world", world)
+				.replaceAll("%color", world)
+				.replaceAll("%version", "3.4"));
+	}
+	
+	// Message sender
+	static void message(CommandSender sender, String message, String world, String target) {
+		sender.sendMessage(message
+				.replaceAll("&([0-9a-fk])", "\u00A7$1")
+				.replaceAll("%world", world)
+				.replaceAll("%player", target)
+				.replaceAll("%version", "3.4"));
+	}
+
+	static void messagePlayer(Player player, String message,	String world) {
+		player.sendMessage(message
+				.replaceAll("%world", world)
+				.replaceAll("&([0-9a-fk])", "\u00A7$1"));
 	}
 }

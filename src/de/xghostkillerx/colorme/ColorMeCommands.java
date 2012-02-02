@@ -6,7 +6,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginDescriptionFile;
 
 /**
  * ColorMe for CraftBukkit/Bukkit
@@ -27,9 +26,18 @@ public class ColorMeCommands implements CommandExecutor {
 	public ColorMeCommands(ColorMe instance) {
 		plugin = instance;
 	}
+	private String pluginPart = "colors", message, target, color, senderName, world, actualColor;
+	private Integer i;
 
-	// Commands (primary use /color <args>)
+	// Commands for coloring
 	public boolean onCommand (CommandSender sender, Command command, String commandLabel, String[] args) {
+		// Stop here if ColorMe is unwanted
+		if (ColorMe.config.getBoolean("ColorMe") == false) {
+			message = plugin.localization.getString("part_disabled");
+			Actions.message(sender, message);
+			return true;
+		}
+		
 		// Reloads the configs
 		if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("colorme.reload")) {
@@ -37,7 +45,8 @@ public class ColorMeCommands implements CommandExecutor {
 				return true;
 			}
 			else {
-				sender.sendMessage(ChatColor.RED + "You don't have the permission to do this!");
+				message = plugin.localization.getString("permission_denied");
+				Actions.message(sender, message);
 				return true;
 			}
 		}
@@ -48,7 +57,8 @@ public class ColorMeCommands implements CommandExecutor {
 				return true;
 			}
 			else {
-				sender.sendMessage(ChatColor.RED + "You don't have the permission to view the color list!");
+				message = plugin.localization.getString("permission_denied");
+				Actions.message(sender, message);
 				return true;
 			}
 		}
@@ -58,86 +68,86 @@ public class ColorMeCommands implements CommandExecutor {
 			return true;
 		}
 		// Removes a color
-		if (args.length > 1 && args[0].equalsIgnoreCase("remove")) {
-			// If a player name is there, too
-			String target = args[1].toLowerCase();
-			String senderName = sender.getName().toLowerCase();
+		if (args.length >= 1 && args[0].equalsIgnoreCase("remove")) {
+			target = args[1].toLowerCase();
+			// Support for "me" -> this is the senderName!
+			if (target.equalsIgnoreCase("me")) {
+				target = sender.getName();
+			}
+			senderName = sender.getName().toLowerCase();
+			// Use standard if no world is included
+			world = "standard";
+			if (args.length > 1) {
+				world = args[2].toLowerCase();
+			}
 			// Check for permission or self
 			if (sender.hasPermission("colorme.remove") || Actions.self(sender, target)) {
 				// Trying to remove a color from a color-less player
-				if (((!Actions.hasColor(target) && plugin.colors.contains(target))) || !plugin.colors.contains(target)) {
+				if (((!Actions.has(target, world, pluginPart) && ColorMe.players.contains(target))) || !ColorMe.players.contains(target)) {
 					// Self
 					if (target.equalsIgnoreCase(senderName)) {
-						sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.RED + " don't have a colored name.");
+						message = plugin.localization.getString("no_color_self");
+						Actions.message(sender, message, world);
 						return true;
 					}
 					// Other
-					sender.sendMessage(ChatColor.YELLOW + target + ChatColor.RED + " doesn't have a colored name.");
+					message = plugin.localization.getString("no_color_other");
+					Actions.message(sender, message, world, target);
 					return true;
 				}
 				// Remove color
-				Actions.removeColor(target);
+				Actions.remove(target, world, pluginPart);
 				if (plugin.getServer().getPlayerExact(target) != null) {
 					// Notify player is online
 					Player player = plugin.getServer().getPlayerExact(target);
-					player.sendMessage(ChatColor.YELLOW + "Your" + ChatColor.GREEN + " name color has been removed.");
+					message = plugin.localization.getString("removed_color_self");
+					Actions.messagePlayer(player, message, world);
 					// If it's the console or not the same player, tell success
 					if ((sender instanceof ConsoleCommandSender) || (!target.equalsIgnoreCase(senderName))) {
-						sender.sendMessage(ChatColor.GREEN + "Removed "+ ChatColor.YELLOW + player.getName() + ChatColor.GREEN + "'s color.");
+						message = plugin.localization.getString("removed_color_other");
+						Actions.message(sender, message, world, target);
 						return true;
 					}
 					return true;
 				}
 				// If player is offline just notify the sender
-				sender.sendMessage(ChatColor.GREEN + "Removed "+ ChatColor.YELLOW + target + ChatColor.GREEN + "'s color.");
+				message = plugin.localization.getString("removed_color_other");
+				Actions.message(sender, message, world, target);
 				return true;
 			}
 			// Deny access
 			else {
-				sender.sendMessage(ChatColor.RED + "You don't have the permission to remove colors!");
+				message = plugin.localization.getString("permission_denied");
+				Actions.message(sender, message);
 				return true;
-			}
-		}
-		// If it's only the player itself
-		if (args.length == 1 && args[0].equalsIgnoreCase("remove")) {
-			String senderName = sender.getName().toLowerCase();
-			// Tell console to include a name
-			if (sender instanceof ConsoleCommandSender) {
-				sender.sendMessage(ChatColor.RED + "You have to include a name!");
-				return true;
-			}
-			// Self removal is okay that way
-			else if (Actions.self(sender, senderName)) {
-				// Check for no color
-				if (((!Actions.hasColor(senderName) && plugin.colors.contains(senderName))) || !plugin.colors.contains(senderName)) {
-					sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.RED + " don't have a colored name.");
-					return true;
-				}
-				Actions.removeColor(senderName);
-				if (plugin.getServer().getPlayerExact(senderName) != null) {
-					// Tell message the player
-					sender.sendMessage(ChatColor.YELLOW + "Your" + ChatColor.GREEN + " name color has been removed.");
-					return true;
-				}
 			}
 		}
 		// Gets a color
-		if (args.length > 1 && args[0].equalsIgnoreCase("get")) {
+		if (args.length >= 1 && args[0].equalsIgnoreCase("get")) {
 			// If a player name is there, too
-			String target = args[1].toLowerCase();
-			String senderName = sender.getName().toLowerCase();
-			String actualColor = Actions.getColor(target).toLowerCase();
+			target = args[1].toLowerCase();
+			if (target.equalsIgnoreCase("me")) {
+				target = sender.getName();
+			}
+			senderName = sender.getName().toLowerCase();
+			world = "standard";
+			if (args.length > 1) {
+				world = args[2].toLowerCase();
+			}
+			actualColor = Actions.get(target, world, pluginPart).toLowerCase();
 			// Check for permission or self
 			if (sender.hasPermission("colorme.get") || Actions.self(sender, target)) {
 				// Trying to get a color from a color-less player
-				if (((!Actions.hasColor(target) && plugin.colors.contains(target))) || !plugin.colors.contains(target)) {
+				if (((!Actions.has(target, world, pluginPart) && ColorMe.players.contains(target))) || !ColorMe.players.contains(target)) {
 					// Self
 					if (target.equalsIgnoreCase(senderName)) {
-						sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.RED + " don't have a colored name.");
+						message = plugin.localization.getString("no_color_self");
+						Actions.message(sender, message, world);
 						return true;
 					}
 					// Other
-					sender.sendMessage(ChatColor.YELLOW + target + ChatColor.RED + " doesn't have a colored name.");
+					message = plugin.localization.getString("no_color_other");
+					Actions.message(sender, message, world, target);
 					return true;
 				}
 				// Gets color
@@ -176,72 +186,63 @@ public class ColorMeCommands implements CommandExecutor {
 			}
 			// Deny access
 			else {
-				sender.sendMessage(ChatColor.RED + "You don't have the permission to get colors!");
+				message = plugin.localization.getString("permission_denied");
+				Actions.message(sender, message);
 				return true;
-			}
-		}
-		// If it's only the player itself
-		if (args.length == 1 && args[0].equalsIgnoreCase("get")) {
-			String senderName = sender.getName().toLowerCase();
-			String actualColor = Actions.getColor(senderName).toLowerCase();
-			// Tell console to include a name
-			if (sender instanceof ConsoleCommandSender) {
-				sender.sendMessage(ChatColor.RED + "The conole can't have a color! Include a name!");
-				return true;
-			}
-			else if (Actions.self(sender, senderName)) {
-				// Check for no color
-				if (((!Actions.hasColor(senderName) && plugin.colors.contains(senderName))) || !plugin.colors.contains(senderName)) {
-					sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.RED + " don't have a colored name.");
-					return true;
-				}
-				// Normal
-				if (!actualColor.equalsIgnoreCase("random") && !actualColor.equalsIgnoreCase("rainbow")) {
-					sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.GREEN + " have got the color " + ChatColor.valueOf(actualColor.toUpperCase()) + actualColor);
-					return true;
-				}
-				// Random
-				else if (actualColor.equalsIgnoreCase("random")) {
-					sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.GREEN + " have got the color " + Actions.randomColor(actualColor));
-					return true;
-				}
-				// Rainbow
-				else if (actualColor.equalsIgnoreCase("rainbow")) {
-					sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.GREEN + " have got the color " + Actions.rainbowColor(actualColor));
-					return true;
-				}
 			}
 		}
 		// Self coloring
-		if (args.length > 1 && args[0].equalsIgnoreCase("me")) {	
-			String color = args[1];
-			if (sender.hasPermission("colorme.self." + color.toLowerCase())) {
-				String senderName = sender.getName().toLowerCase();
+		if (args.length >= 1) {	
+			target = args[0].toLowerCase();
+			if (target.equalsIgnoreCase("me")) {
+				target = sender.getName();
+			}
+			color = args[1].toLowerCase();
+			senderName = sender.getName().toLowerCase();
+			world = "standard";
+			if (args.length > 1) {
+				world = args[2].toLowerCase();
+			}
+			ColorMe.log.info(args[0] + " " + args[1] + " " + args[2]);
+
+			// Unsupported colors
+			if (Actions.validColor(color) == false) {
+				message = plugin.localization.getString("invalid_color");
+				Actions.message(sender, message, color);
+				return true;
+			}
+
+			// If color is disabled
+			if (Actions.isDisabled(color) == true) {
+				message = plugin.localization.getString("disabled_color");
+				Actions.message(sender, message, color);
+				return true;
+			}
+
+			// If the colors are the same
+			if (color.equalsIgnoreCase(Actions.get(target, world, pluginPart))) {
+				if (senderName.equalsIgnoreCase(target)) {
+					message = plugin.localization.getString("same_color_self");
+					Actions.message(sender, message, world);
+					return true;
+				}	
+				message = plugin.localization.getString("same_color_other");
+				Actions.message(sender, message, world, target);
+				return true;
+			}
+
+			if (sender.hasPermission("colorme.self." + color.toLowerCase()) && Actions.self(sender, target)) {
 				// Tell console only ingame command
 				if (sender instanceof ConsoleCommandSender) {
-					sender.sendMessage(ChatColor.RED + "Sorry, this command can only be run from ingame!");
-					return true;
-				}
-				// Color is invalid
-				if (Actions.validColor(color) == false) {
-					sender.sendMessage(ChatColor.RED + "'" + ChatColor.YELLOW + color + ChatColor.RED + "' is not a supported color.");
-					return true;
-				}
-				// If the colors are the same
-				if (color.equalsIgnoreCase(Actions.getColor(senderName))) {
-					sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.RED + " already have got this color");
-					return true;
-				}
-				// If color is disabled
-				if (Actions.isDisabled(color) == true) {
-					sender.sendMessage(ChatColor.RED + "'" + ChatColor.YELLOW + color + ChatColor.RED + "' is disabled.");
+					message = plugin.localization.getString("only_ingame");
+					Actions.message(sender, message);
 					return true;
 				}
 				// With economy
 				if (plugin.economy != null) {
-					double cost = plugin.config.getDouble("costs");
+					double cost = ColorMe.config.getDouble("costs.color");
 					if (color.equalsIgnoreCase("white")) {
-						Actions.setColor(senderName, color);
+						Actions.set(senderName, color, world, pluginPart);
 						sender.sendMessage(ChatColor.GREEN + "Your name color has been changed to " + ChatColor.valueOf(color.toUpperCase()) + color);
 						return true;
 					}
@@ -249,7 +250,7 @@ public class ColorMeCommands implements CommandExecutor {
 					if (cost > 0 && plugin.economy.has(senderName, cost)) {
 						plugin.economy.withdrawPlayer(senderName, cost);
 						// Set color an notify sender
-						Actions.setColor(senderName, color);
+						Actions.set(senderName, color, world, pluginPart);
 						sender.sendMessage(ChatColor.GREEN + "You have been charged " + ChatColor.RED + plugin.economy.format(cost) + ChatColor.GREEN + '.');
 						// Normal
 						if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
@@ -263,6 +264,7 @@ public class ColorMeCommands implements CommandExecutor {
 						}
 						// Rainbow
 						else if (color.equalsIgnoreCase("rainbow")) {
+							sender.sendMessage(ChatColor.GREEN + "Your name color has been changed to " + Actions.rainbowColor(color));
 							return true;
 						}
 					}
@@ -274,7 +276,7 @@ public class ColorMeCommands implements CommandExecutor {
 					}
 					// If it's for free
 					else if (cost == 0) {
-						Actions.setColor(senderName, color);
+						Actions.set(senderName, color, world, pluginPart);
 						// Normal
 						if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
 							sender.sendMessage(ChatColor.GREEN + "Your name color has been changed to " + ChatColor.valueOf(color.toUpperCase()) + color);
@@ -294,7 +296,7 @@ public class ColorMeCommands implements CommandExecutor {
 				}
 				// No economy
 				else {
-					Actions.setColor(senderName, color);
+					Actions.set(senderName, color, world, pluginPart);
 					// Normal
 					if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
 						sender.sendMessage(ChatColor.GREEN + "Your name color has been changed to " + ChatColor.valueOf(color.toUpperCase()) + color);
@@ -307,42 +309,15 @@ public class ColorMeCommands implements CommandExecutor {
 					}
 					// Rainbow
 					else if (color.equalsIgnoreCase("rainbow")) {
+						sender.sendMessage("Wir sind hier!");
 						sender.sendMessage(ChatColor.GREEN + "Your name color has been changed to " + Actions.rainbowColor(color));
 						return true;
 					}
 				}
 			}
-			// Deny access
-			else {
-				sender.sendMessage(ChatColor.RED + "You don't have the permission to color yourself with this color!");
-				return true;
-			}
-			return false;
-		}
-
-		// Coloring someone else (name and then color)
-		if (args.length > 1) {
-			// Check for permission
-			if (sender.hasPermission("colorme.other")) {
-				String senderName = sender.getName().toLowerCase();
-				String target = args[0];
-				String color = args[1];
-				// Unsupported colors
-				if (Actions.validColor(color) == false) {
-					sender.sendMessage(ChatColor.RED + "'" + ChatColor.YELLOW + color + ChatColor.RED + "' is not a supported color.");
-					return true;
-				}
-				// If the colors are the same
-				if (color.equalsIgnoreCase(Actions.getColor(target))) {
-					if (senderName.equalsIgnoreCase(target)) {
-						sender.sendMessage(ChatColor.YELLOW + "You" + ChatColor.RED + " already have got this color");
-						return true;
-					}	
-					sender.sendMessage(ChatColor.YELLOW + target + ChatColor.RED + " already has got this color");
-					return true;
-				}
+			else if (sender.hasPermission("colorme.other")) {
 				// Set the new color
-				if (Actions.setColor(target, color)) {
+				if (Actions.set(target, color, world, pluginPart)) {
 					if (plugin.getServer().getPlayerExact(target) != null) {
 						// Tell the affected player
 						Player player = plugin.getServer().getPlayerExact(target);
@@ -358,25 +333,6 @@ public class ColorMeCommands implements CommandExecutor {
 						else if (color.equalsIgnoreCase("rainbow")) {
 							player.sendMessage(ChatColor.GREEN + "Your name color has been changed to " + Actions.rainbowColor(color));
 						}
-						// No double message
-						if (!senderName.equalsIgnoreCase(target)) {
-							// Normal
-							if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
-								sender.sendMessage(ChatColor.GREEN + "Changed " + ChatColor.YELLOW + target + ChatColor.GREEN + "'s color to " + ChatColor.valueOf(color.toUpperCase()) + color);
-								return true;
-							}
-							// Random
-							else if (color.equalsIgnoreCase("random")) {
-								sender.sendMessage(ChatColor.GREEN + "Changed " + ChatColor.YELLOW + target + ChatColor.GREEN + "'s color to " + Actions.randomColor(color));
-								return true;
-							}
-							// Rainbow
-							else if (color.equalsIgnoreCase("rainbow")) {
-								sender.sendMessage(ChatColor.GREEN + "Changed " + ChatColor.YELLOW + target + ChatColor.GREEN + "'s color to " + Actions.rainbowColor(color));
-								return true;
-							}
-						}
-						return true;
 					}
 					// If he/she/it is offline
 					// Normal
@@ -398,7 +354,8 @@ public class ColorMeCommands implements CommandExecutor {
 			}
 			// Permission check failed
 			else {
-				sender.sendMessage(ChatColor.RED + "You don't have the permission to color players!");
+				message = plugin.localization.getString("permission_denied");
+				Actions.message(sender, message);
 				return true;
 			}
 		}
@@ -407,23 +364,18 @@ public class ColorMeCommands implements CommandExecutor {
 
 	// Reloads the config with /colorme reload
 	private boolean ColorMeReload(CommandSender sender, String[] args) {
-		PluginDescriptionFile pdfFile = plugin.getDescription();
 		plugin.loadConfigsAgain();		
-		sender.sendMessage(ChatColor.GREEN + "ColorMe version " + ChatColor.RED + pdfFile.getVersion() + ChatColor.GREEN + " reloaded!");
+		message = plugin.localization.getString("reload");
+		Actions.message(sender, message);
 		return true;
 	}
 
 	// Displays the help with /colorme help
 	private boolean ColorMeHelp(CommandSender sender, String[] args) {
-		PluginDescriptionFile pdfFile = plugin.getDescription();
-		sender.sendMessage(ChatColor.GREEN	+ "Welcome to the ColorMe version " + ChatColor.RED + pdfFile.getVersion() + ChatColor.GREEN + " help!");
-		sender.sendMessage(ChatColor.RED + "<> = Required, [] = Optional");
-		sender.sendMessage("</command> help - Shows the help");
-		sender.sendMessage("/<command> list - Shows list of colors");
-		sender.sendMessage("/<command> get [name] - Gets the actual color");
-		sender.sendMessage("/<command> remove [name] - Removes color");
-		sender.sendMessage("/<command> me <color> - Sets your own color");
-		sender.sendMessage("/<command> <name> <color> - Sets player's color");
+		for (i = 1; i <= 8; i++) {
+			message = plugin.localization.getString("help_color" + Integer.toString(i));
+			Actions.message(sender, message);
+		}
 		return true;
 	}
 }

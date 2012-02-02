@@ -31,7 +31,8 @@ public class ColorMePlayerListener implements Listener {
 	public void onPlayerJoin(final PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
-		CheckRoutine(player, name);
+		String world = player.getWorld().getName();
+		CheckRoutine(player, name, world);
 	}
 
 	// Loads the color on chat and sets the color if player isn't known
@@ -39,16 +40,20 @@ public class ColorMePlayerListener implements Listener {
 	public void onPlayerChat(final PlayerChatEvent event) {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
-		CheckRoutine(player, name);
+		String world = player.getWorld().getName().toLowerCase();
+		CheckRoutine(player, name, world);
+		//if (Actions.has(name, world, "prefixer")) event.setFormat(Actions.get(name, world, "prefixer") + " " +event.getFormat());
 	}
-
-	private void CheckRoutine(Player player, String name) {
+	
+	private void CheckRoutine(Player player, String name, String world) {
 		plugin.loadConfigsAgain();
 		// If the player isn't in the players.color add him
-		if (!plugin.colors.contains(name)) {
-			plugin.colors.set(name, "");
-			plugin.saveColors();
+		if (!ColorMe.players.contains(name)) {
+			ColorMe.players.set(name + ".colors.standard", "");
+			ColorMe.players.set(name + ".prefix.standard", "");
+			ColorMe.players.set(name + ".suffix.standard", "");
+			ColorMe.savePlayers();
 		}
-		Actions.updateName(name);
+		Actions.updateName(name, world);
 	}
 }

@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.FileReader;
 import java.util.logging.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -39,20 +38,21 @@ import net.milkbowl.vault.economy.Economy;
  */
 
 public class ColorMe extends JavaPlugin {
-	public static final Logger log = Logger.getLogger("Minecraft");
+	public final static Logger log = Logger.getLogger("Minecraft");
 	private final ColorMePlayerListener playerListener = new ColorMePlayerListener(this);
 	public Economy economy = null;
-	public FileConfiguration config;
-	public FileConfiguration colors;
+	public static FileConfiguration config;
+	public static FileConfiguration players;
 	public FileConfiguration localization;
 	public File configFile;
-	public File colorsFile;
+	public static File playersFile;
 	public File localizationFile;
-	public boolean spoutEnabled;
+	public static boolean spoutEnabled;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
 	private SuffixCommands suffixExecutor;
 
+	
 	// Shutdown
 	public void onDisable() {
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -66,22 +66,22 @@ public class ColorMe extends JavaPlugin {
 		pm.registerEvents(playerListener, this);
 
 		// Player colors config		
-		colorsFile = new File(getDataFolder(), "players.color");
+		playersFile = new File(getDataFolder(), "players.yml");
 		// Copy if the config doesn't exist
-		if (!colorsFile.exists()) {
-			colorsFile.getParentFile().mkdirs();
-			copy(getResource("players.color"), colorsFile);
+		if (!playersFile.exists()) {
+			playersFile.getParentFile().mkdirs();
+			copy(getResource("players.yml"), playersFile);
 		}
 		// Try to load
 		try {
-			colors = YamlConfiguration.loadConfiguration(colorsFile);
+			players = YamlConfiguration.loadConfiguration(playersFile);
 		}
 		// if it failed, tell about the update progress
 		catch (Exception e) {
 			log.warning("ColorMe failed to load the players.color! Trying to update...");
 			try {
 				// Update colors
-				updateConfig(colorsFile);
+				updateConfig(playersFile);
 			}
 			catch (Exception exp) {
 				// if update fails, tell the admin
@@ -158,7 +158,7 @@ public class ColorMe extends JavaPlugin {
 		if (config.getBoolean("forceUpdate") == true) {
 			try {
 				// Update colors
-				updateConfig(colorsFile);
+				updateConfig(playersFile);
 			}
 			catch (Exception exp) {
 				// if update fails, tell the admin
@@ -223,14 +223,16 @@ public class ColorMe extends JavaPlugin {
 			writer.close();
 			// Delete old players.color and rename temp file
 			config.delete();
-			tempFile.renameTo(colorsFile);
+			tempFile.renameTo(playersFile);
 		}
 	}
 
 	// Loads the config at the start
 	public void loadConfig() {
 		config.options().header("For help please refer to http://bit.ly/colormebukkit or http://bit.ly/bukkitdevcolorme");
-		config.addDefault("costs", 5.00);
+		config.addDefault("costs.color", 5.00);
+		config.addDefault("costs.prefix", 5.00);
+		config.addDefault("costs.suffix", 5.00);
 		config.addDefault("forceUpdate", false);
 		config.addDefault("tabList", true);
 		config.addDefault("playerTitle", true);
@@ -245,6 +247,8 @@ public class ColorMe extends JavaPlugin {
 			// color the name of the color
 			config.addDefault("colors." + color.toLowerCase(), true);
 		}
+		config.addDefault("colors.random", true);
+		config.addDefault("colors.rainbow", true);
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
@@ -252,6 +256,30 @@ public class ColorMe extends JavaPlugin {
 	// Loads the localization
 	public void loadLocalization() {
 		localization.options().header("The underscores are used for the different lines!");
+		localization.addDefault("permission_denied", "&4You don''t have the permission to do this!");
+		localization.addDefault("part_disabled", "&4Sorry, but this command and plugin part is disabled!");
+		localization.addDefault("only_ingame", "&4Sorry, this command can only be run from ingame!");
+		localization.addDefault("color_list", "Color list:");
+		localization.addDefault("reload", "&2ColorMe &4%version &2reloaded!");
+		localization.addDefault("no_color_self", "&eYou &4don''t have a colored name in the world %world!");
+		localization.addDefault("no_color_other", "&e%player &4doesn''t have a colored name in the world %world!");
+		localization.addDefault("same_color_self", "&eYou &4already have got this color in the world %world!");
+		localization.addDefault("same_color_other", "&e%player &4already have got this color in the world %world!");
+		localization.addDefault("invalid_color", "&4'' &e%color &4'' is not a supported color.");
+		localization.addDefault("disabled_color", "&4'' &e%color &4'' is disabled.");
+		localization.addDefault("removed_color_self", "&eYour &2name color in the world %world has been removed.");
+		localization.addDefault("removed_color_other", "&2Removed &e%player&2's color in the world %world.");
+		// localization.addDefault("", "");
+		/*
+		sender.sendMessage(ChatColor.GREEN	+ "Welcome to the ColorMe version " + ChatColor.RED + pdfFile.getVersion() + ChatColor.GREEN + " help!");
+		sender.sendMessage(ChatColor.RED + "<> = Required, [] = Optional");
+		sender.sendMessage("</command> help - Shows the help");
+		sender.sendMessage("/<command> list - Shows list of colors");
+		sender.sendMessage("/<command> get [name] - Gets the actual color");
+		sender.sendMessage("/<command> remove [name] - Removes color");
+		sender.sendMessage("/<command> me <color> - Sets your own color");
+		sender.sendMessage("/<command> <name> <color> - Sets player's color");
+		 */
 		localization.options().copyDefaults(true);
 		saveLocalization();
 	}
@@ -261,15 +289,15 @@ public class ColorMe extends JavaPlugin {
 		try {
 			config.load(configFile);
 			saveConfig();
-			colors.load(colorsFile);
-			saveColors();
+			players.load(playersFile);
+			savePlayers();
 			localization.load(localizationFile);
 			saveLocalization();
 		}
 		catch (Exception e) {
 			log.warning("ColorMe failed to load the configs! Trying to update...");
 			try {
-				updateConfig(colorsFile);
+				updateConfig(playersFile);
 			}
 			catch (Exception exp) {
 				log.warning("ColorMe failed to update the players.color. Please report this!");
@@ -278,9 +306,9 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Try to save the color YML
-	public void saveColors() {
+	public static void savePlayers() {
 		try {
-			colors.save(colorsFile);
+			players.save(playersFile);
 		} catch (Exception e) {
 			log.warning("ColorMe failed to save the colors! Please report this!");
 		}
