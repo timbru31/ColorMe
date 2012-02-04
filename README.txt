@@ -1,7 +1,22 @@
 ORIGINAL README
 ------------------------------------------------------------------------------
+ColorMe:
+
 My fifth plugin which is the sister to Prefixer. It adds color to a player's
 name in the chat window.
+
+Prefixer:
+
+This is another small plugin that allows OPs to give players a custom prefix.
+The format is [PREFIX] <PLAYER_NAME> MESSAGE
+
+So if I send "Hello" with the prefix of "Admin", it looks like:
+[Admin] <Valrix> Hello
+
+To set the prefix just use the /prefix command. For example, let's give me the
+"Admin" prefix:
+
+/prefix Valrix Admin
 ------------------------------------------------------------------------------
 
 This is the README of ColorMe!

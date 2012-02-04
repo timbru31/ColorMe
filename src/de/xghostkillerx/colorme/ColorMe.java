@@ -33,7 +33,7 @@ import net.milkbowl.vault.economy.Economy;
  * 
  */
 
-// TODO &random &rainbow /color add custom
+// TODO /color add custom
 
 public class ColorMe extends JavaPlugin {
 	public final static Logger log = Logger.getLogger("Minecraft");
@@ -183,7 +183,7 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("permission_denied", "&4You don't have the permission to do this!");
 		localization.addDefault("part_disabled", "&4Sorry, but this command and plugin part is disabled!");
 		localization.addDefault("only_ingame", "&4Sorry, this command can only be run from ingame!");
-		localization.addDefault("color_list", "Color list:");
+		localization.addDefault("color_list", "Color list: (the & values are used for prefix/suffix!)");
 		localization.addDefault("reload", "&2ColorMe version &4%version &2reloaded!");
 		localization.addDefault("charged", "&2You have been charged &4%costs");
 		localization.addDefault("not_enough_money_1", "&4Sorry, you don't have enough money to do this.");

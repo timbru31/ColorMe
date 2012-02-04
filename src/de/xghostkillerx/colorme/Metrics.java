@@ -1,15 +1,17 @@
+package de.xghostkillerx.colorme;
+
 /*
  * Copyright 2011 Tyler Blair. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  *
- *    1. Redistributions of source code must retain the above copyright notice, this list of
- *       conditions and the following disclaimer.
+ * 1. Redistributions of source code must retain the above copyright notice, this list of
+ * conditions and the following disclaimer.
  *
- *    2. Redistributions in binary form must reproduce the above copyright notice, this list
- *       of conditions and the following disclaimer in the documentation and/or other materials
- *       provided with the distribution.
+ * 2. Redistributions in binary form must reproduce the above copyright notice, this list
+ * of conditions and the following disclaimer in the documentation and/or other materials
+ * provided with the distribution.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -25,8 +27,6 @@
  * authors and contributors and should not be interpreted as representing official policies,
  * either expressed or implied, of anybody else.
  */
-
-package de.xghostkillerx.colorme;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -53,207 +53,222 @@ import java.util.UUID;
  */
 public class Metrics {
 
-    /**
-     * Interface used to collect custom data for a plugin
-     */
-    public static abstract class Plotter {
+	/**
+	 * Interface used to collect custom data for a plugin
+	 */
+	public static abstract class Plotter {
 
-        /**
-         * Get the column name for the plotted point
-         *
-         * @return the plotted point's column name
-         */
-        public abstract String getColumnName();
+		/**
+		 * Get the column name for the plotted point
+		 *
+		 * @return the plotted point's column name
+		 */
+		public abstract String getColumnName();
 
-        /**
-         * Get the current value for the plotted point
-         *
-         * @return
-         */
-        public abstract int getValue();
+		/**
+		 * Get the current value for the plotted point
+		 *
+		 * @return
+		 */
+		public abstract int getValue();
 
-        @Override
-        public int hashCode() {
-            return getColumnName().hashCode() + getValue();
-        }
+		/**
+		 * Called after the website graphs have been updated
+		 */
+		public void reset() {
+		}
 
-        @Override
-        public boolean equals(Object object) {
-            if (!(object instanceof Plotter)) {
-                return false;
-            }
+		@Override
+		public int hashCode() {
+			return getColumnName().hashCode() + getValue();
+		}
 
-            Plotter plotter = (Plotter) object;
-            return plotter.getColumnName().equals(getColumnName()) && plotter.getValue() == getValue();
-        }
+		@Override
+		public boolean equals(Object object) {
+			if (!(object instanceof Plotter)) {
+				return false;
+			}
 
-    }
+			Plotter plotter = (Plotter) object;
+			return plotter.getColumnName().equals(getColumnName()) && plotter.getValue() == getValue();
+		}
 
-    /**
-     * The metrics revision number
-     */
-    private final static int REVISION = 3;
+	}
 
-    /**
-     * The base url of the metrics domain
-     */
-    private static final String BASE_URL = "http://metrics.griefcraft.com";
+	/**
+	 * The metrics revision number
+	 */
+	private final static int REVISION = 4;
 
-    /**
-     * The url used to report a server's status
-     */
-    private static final String REPORT_URL = "/report/%s";
+	/**
+	 * The base url of the metrics domain
+	 */
+	private static final String BASE_URL = "http://metrics.griefcraft.com";
 
-    /**
-     * The file where guid and opt out is stored in
-     */
-    private static final String CONFIG_FILE = "plugins/PluginMetrics/config.yml";
+	/**
+	 * The url used to report a server's status
+	 */
+	private static final String REPORT_URL = "/report/%s";
 
-    /**
-     * Interval of time to ping in minutes
-     */
-    private final static int PING_INTERVAL = 10;
+	/**
+	 * The file where guid and opt out is stored in
+	 */
+	private static final String CONFIG_FILE = "plugins/PluginMetrics/config.yml";
 
-    /**
-     * A map of the custom data plotters for plugins
-     */
-    private Map<Plugin, Set<Plotter>> customData = Collections.synchronizedMap(new HashMap<Plugin, Set<Plotter>>());
+	/**
+	 * Interval of time to ping in minutes
+	 */
+	private final static int PING_INTERVAL = 10;
 
-    /**
-     * The plugin configuration file
-     */
-    private final YamlConfiguration configuration;
+	/**
+	 * A map of the custom data plotters for plugins
+	 */
+	private Map<Plugin, Set<Plotter>> customData = Collections.synchronizedMap(new HashMap<Plugin, Set<Plotter>>());
 
-    /**
-     * Unique server id
-     */
-    private String guid;
+	/**
+	 * The plugin configuration file
+	 */
+	private final YamlConfiguration configuration;
 
-    public Metrics() throws IOException {
-        // load the config
-        File file = new File(CONFIG_FILE);
-        configuration = YamlConfiguration.loadConfiguration(file);
+	/**
+	 * Unique server id
+	 */
+	private String guid;
 
-        // add some defaults
-        configuration.addDefault("opt-out", false);
-        configuration.addDefault("guid", UUID.randomUUID().toString());
+	public Metrics() throws IOException {
+		// load the config
+		File file = new File(CONFIG_FILE);
+		configuration = YamlConfiguration.loadConfiguration(file);
 
-        // Do we need to create the file?
-        if (configuration.get("guid", null) == null) {
-            configuration.options().header("http://metrics.griefcraft.com").copyDefaults(true);
-            configuration.save(file);
-        }
+		// add some defaults
+		configuration.addDefault("opt-out", false);
+		configuration.addDefault("guid", UUID.randomUUID().toString());
 
-        // Load the guid then
-        guid = configuration.getString("guid");
-    }
+		// Do we need to create the file?
+		if (configuration.get("guid", null) == null) {
+			configuration.options().header("http://metrics.griefcraft.com").copyDefaults(true);
+			configuration.save(file);
+		}
 
-    /**
-     * Adds a custom data plotter for a given plugin
-     *
-     * @param plugin
-     * @param plotter
-     */
-    public void addCustomData(Plugin plugin, Plotter plotter) {
-        Set<Plotter> plotters = customData.get(plugin);
+		// Load the guid then
+		guid = configuration.getString("guid");
+	}
 
-        if (plotters == null) {
-            plotters = Collections.synchronizedSet(new LinkedHashSet<Plotter>());
-            customData.put(plugin, plotters);
-        }
+	/**
+	 * Adds a custom data plotter for a given plugin
+	 *
+	 * @param plugin
+	 * @param plotter
+	 */
+	public void addCustomData(Plugin plugin, Plotter plotter) {
+		Set<Plotter> plotters = customData.get(plugin);
 
-        plotters.add(plotter);
-    }
+		if (plotters == null) {
+			plotters = Collections.synchronizedSet(new LinkedHashSet<Plotter>());
+			customData.put(plugin, plotters);
+		}
 
-    /**
-     * Begin measuring a plugin
-     *
-     * @param plugin
-     */
-    public void beginMeasuringPlugin(final Plugin plugin) throws IOException {
-        // Did we opt out?
-        if (configuration.getBoolean("opt-out", false)) {
-            return;
-        }
+		plotters.add(plotter);
+	}
 
-        // First tell the server about us
-        postPlugin(plugin, false);
+	/**
+	 * Begin measuring a plugin
+	 *
+	 * @param plugin
+	 */
+	public void beginMeasuringPlugin(final Plugin plugin) throws IOException {
+		// Did we opt out?
+		if (configuration.getBoolean("opt-out", false)) {
+			return;
+		}
 
-        // Ping the server in intervals
-        plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
-            public void run() {
-                try {
-                    postPlugin(plugin, true);
-                } catch (IOException e) {
-                    System.out.println("[Metrics] " + e.getMessage());
-                }
-            }
-        }, PING_INTERVAL * 1200, PING_INTERVAL * 1200);
-    }
+		// First tell the server about us
+		postPlugin(plugin, false);
 
-    /**
-     * Generic method that posts a plugin to the metrics website
-     *
-     * @param plugin
-     */
-    private void postPlugin(Plugin plugin, boolean isPing) throws IOException {
-        // Construct the post data
-        String response = "ERR No response";
-        String data = encode("guid") + '=' + encode(guid)
-                + '&' + encode("version") + '=' + encode(plugin.getDescription().getVersion())
-                + '&' + encode("server") + '=' + encode(Bukkit.getVersion())
-                + '&' + encode("players") + '=' + encode(String.valueOf(Bukkit.getServer().getOnlinePlayers().length))
-                + '&' + encode("revision") + '=' + encode(REVISION + "");
+		// Ping the server in intervals
+		plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
+			public void run() {
+				try {
+					postPlugin(plugin, true);
+				} catch (IOException e) {
+					System.out.println("[Metrics] " + e.getMessage());
+				}
+			}
+		}, PING_INTERVAL * 1200, PING_INTERVAL * 1200);
+	}
 
-        // If we're pinging, append it
-        if (isPing) {
-            data += '&' + encode("ping") + '=' + encode("true");
-        }
+	/**
+	 * Generic method that posts a plugin to the metrics website
+	 *
+	 * @param plugin
+	 */
+	private void postPlugin(Plugin plugin, boolean isPing) throws IOException {
+		// Construct the post data
+		String response = "ERR No response";
+		String data = encode("guid") + '=' + encode(guid)
+				+ '&' + encode("version") + '=' + encode(plugin.getDescription().getVersion())
+				+ '&' + encode("server") + '=' + encode(Bukkit.getVersion())
+				+ '&' + encode("players") + '=' + encode(String.valueOf(Bukkit.getServer().getOnlinePlayers().length))
+				+ '&' + encode("revision") + '=' + encode(REVISION + "");
 
-        // Add any custom data (if applicable)
-        Set<Plotter> plotters = customData.get(plugin);
+		// If we're pinging, append it
+		if (isPing) {
+			data += '&' + encode("ping") + '=' + encode("true");
+		}
 
-        if (plotters != null) {
-            for (Plotter plotter : plotters) {
-                data += "&" + encode ("Custom" + plotter.getColumnName())
-                        + "=" + encode(Integer.toString(plotter.getValue()));
-            }
-        }
+		// Add any custom data (if applicable)
+		Set<Plotter> plotters = customData.get(plugin);
 
-        // Create the url
-        URL url = new URL(BASE_URL + String.format(REPORT_URL, plugin.getDescription().getName()));
+		if (plotters != null) {
+			for (Plotter plotter : plotters) {
+				data += "&" + encode ("Custom" + plotter.getColumnName())
+						+ "=" + encode(Integer.toString(plotter.getValue()));
+			}
+		}
 
-        // Connect to the website
-        URLConnection connection = url.openConnection();
-        connection.setDoOutput(true);
+		// Create the url
+		URL url = new URL(BASE_URL + String.format(REPORT_URL, plugin.getDescription().getName()));
 
-        // Write the data
-        OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
-        writer.write(data);
-        writer.flush();
+		// Connect to the website
+		URLConnection connection = url.openConnection();
+		connection.setDoOutput(true);
 
-        // Now read the response
-        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        response = reader.readLine();
+		// Write the data
+		OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+		writer.write(data);
+		writer.flush();
 
-        // close resources
-        writer.close();
-        reader.close();
+		// Now read the response
+		BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		response = reader.readLine();
 
-        if (response.startsWith("ERR")){
-            throw new IOException(response); //Throw the exception
-        }
-        //if (response.startsWith("OK")) - We should get "OK" followed by an optional description if everything goes right
-    }
+		// close resources
+		writer.close();
+		reader.close();
 
-    /**
-     * Encode text as UTF-8
-     *
-     * @param text
-     * @return
-     */
-    private static String encode(String text) throws UnsupportedEncodingException {
-        return URLEncoder.encode(text, "UTF-8");
-    }
+		if (response.startsWith("ERR")){
+			throw new IOException(response); //Throw the exception
+		} else {
+			// Is this the first update this hour?
+			if (response.contains("OK This is your first update this hour")) {
+				if (plotters != null) {
+					for (Plotter plotter : plotters) {
+						plotter.reset();
+					}
+				}
+			}
+		}
+		//if (response.startsWith("OK")) - We should get "OK" followed by an optional description if everything goes right
+	}
+
+	/**
+	 * Encode text as UTF-8
+	 *
+	 * @param text
+	 * @return
+	 */
+	private static String encode(String text) throws UnsupportedEncodingException {
+		return URLEncoder.encode(text, "UTF-8");
+	}
 
 }

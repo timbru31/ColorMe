@@ -12,7 +12,7 @@ public class Actions {
 		plugin = instance;
 	}
 	
-	private static String actualValue, pluginPart, color, displayName, cleanDisplayName, newName, msg, message;
+	private static String actualValue, pluginPart, color, colorChar, displayName, cleanDisplayName, newName, msg, message, sub;
 	private static int i, z = 0;
 	private static char ch;
 
@@ -26,7 +26,43 @@ public class Actions {
 	static String get(String name, String world, String pluginPart) {
 		// Player in the config? Yes -> get the config, no -> nothing
 		if (ColorMe.players.contains(name + "." + pluginPart + "." + world)) {
-			return ColorMe.players.getString(name + "." + pluginPart + "." + world);
+			String string = ColorMe.players.getString(name + "." + pluginPart + "." + world);
+			// While rainbow is in there
+			while (string.contains("&rainbow")) {
+				// Without rainbow
+				int i = string.indexOf("&rainbow") + 8;
+				int z = string.length();
+				sub = string.substring(i, z);
+				// Stop if other & is found
+				if (sub.contains("&")) {
+					sub = sub.substring(0, sub.indexOf("&"));
+				}
+				// Replace
+				string = string.replace(sub, rainbowColor(sub));
+				// Replace FIRST rainbow
+				string = string.replaceFirst("&rainbow", "");
+				sub = "";
+			}
+			// While random is in there
+			while (string.contains("&random")) {
+				// Without rainbow
+				int i = string.indexOf("&random") + 7;
+				int z = string.length();
+				sub = string.substring(i, z);
+				sub = string.substring(i, z);
+				// Stop if other & is found
+				if (sub.contains("&")) {
+					sub = sub.substring(0, sub.indexOf("&"));
+				}
+				// Replace
+				string = string.replace(sub, randomColor(sub));
+				// Replace FIRST random
+				string = string.replaceFirst("&random", "");
+				sub = "";
+			}
+			// Normal color codes!
+			string = string.replaceAll("&([0-9a-fk])", "\u00A7$1");
+			return string;
 		}
 		else return "";
 	}
@@ -169,17 +205,18 @@ public class Actions {
 		for (i = 0; i < ChatColor.values().length; i++) {
 			// get the name from the integer
 			color = ChatColor.getByCode(i).name().toLowerCase();
+			colorChar = Character.toString(ChatColor.getByCode(i).getChar());
 			// color the name of the color
 			if (ColorMe.config.getBoolean("colors." + color) == true) {
-				msg += ChatColor.valueOf(color.toUpperCase()) + color + " ";
+				msg += ChatColor.valueOf(color.toUpperCase()) + color + " (&" + colorChar + ") ";
 			}
 		}
 		// Include custom colors
 		if (ColorMe.config.getBoolean("colors.random") == true) {
-			msg += randomColor("random") + " ";
+			msg += randomColor("random") + " (&rainbow) ";
 		}
 		if (ColorMe.config.getBoolean("colors.rainbow") == true) {
-			msg += rainbowColor("rainbow");
+			msg += rainbowColor("rainbow") + " (&random)";
 		}
 		sender.sendMessage(msg);
 	}
