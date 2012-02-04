@@ -1,4 +1,30 @@
 # For help please refer to http://bit.ly/colormebukkit or http://bit.ly/bukkitdevcolorme
-costs: 5.00
-forceUpdate: false
+costs:
+  color: 5.0
+  prefix: 5.0
+  suffix: 5.0
 tabList: true
+playerTitle: true
+Prefixer: true
+Suffixer: true
+ColorMe: true
+colors:
+  black: true
+  dark_blue: true
+  dark_green: true
+  dark_aqua: true
+  dark_red: true
+  dark_purple: true
+  gold: true
+  gray: true
+  dark_gray: true
+  blue: true
+  green: true
+  aqua: true
+  red: true
+  light_purple: true
+  yellow: true
+  white: true
+  magic: true
+  random: true
+  rainbow: true

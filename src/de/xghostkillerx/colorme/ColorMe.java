@@ -1,14 +1,10 @@
 package de.xghostkillerx.colorme;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.FileReader;
 import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -37,13 +33,15 @@ import net.milkbowl.vault.economy.Economy;
  * 
  */
 
+// TODO &random &rainbow /color add custom
+
 public class ColorMe extends JavaPlugin {
 	public final static Logger log = Logger.getLogger("Minecraft");
 	private final ColorMePlayerListener playerListener = new ColorMePlayerListener(this);
-	public Economy economy = null;
+	public static Economy economy = null;
 	public static FileConfiguration config;
 	public static FileConfiguration players;
-	public FileConfiguration localization;
+	public static FileConfiguration localization;
 	public File configFile;
 	public static File playersFile;
 	public File localizationFile;
@@ -78,15 +76,7 @@ public class ColorMe extends JavaPlugin {
 		}
 		// if it failed, tell about the update progress
 		catch (Exception e) {
-			log.warning("ColorMe failed to load the players.color! Trying to update...");
-			try {
-				// Update colors
-				updateConfig(playersFile);
-			}
-			catch (Exception exp) {
-				// if update fails, tell the admin
-				log.warning("ColorMe failed to update the players.color. Please report this!");
-			}
+			log.warning("ColorMe failed to load the players.yml! Please report this!");
 		}
 
 		// Config
@@ -154,23 +144,6 @@ public class ColorMe extends JavaPlugin {
 			spoutEnabled = false;
 		}
 
-		// Update if forced
-		if (config.getBoolean("forceUpdate") == true) {
-			try {
-				// Update colors
-				updateConfig(playersFile);
-			}
-			catch (Exception exp) {
-				// if update fails, tell the admin
-				log.warning("ColorMe failed to update the players.color. Please report this!");
-			}
-			finally {
-				// Sets the forceUpdate value false again
-				config.set("forceUpdate", false);
-				saveConfig();
-			}
-		}
-
 		// Stats
 		try {
 			Metrics metrics = new Metrics();
@@ -179,61 +152,12 @@ public class ColorMe extends JavaPlugin {
 		catch (IOException e) {}
 	}
 
-	// Updated the config to the new system
-	public void updateConfig(File config) throws Exception {
-		BufferedReader reader = new BufferedReader(new FileReader(config));
-		// Create a file called temp.txt
-		File tempFile = new File(getDataFolder(), "temp.txt");
-		BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
-		String line;
-		try {
-			while ((line = reader.readLine()) != null) {
-				// Replaces all wrong colors, wrong cases, TABs and the old format (=)
-				writer.write(line
-						.replace("\t", "    ")
-						.replace("=", ": ")
-						.replaceAll("(?i)darkred", "dark_red")
-						.replaceAll("(?i)darkblue", "dark_blue")
-						.replaceAll("(?i)darkgreen", "dark_green")
-						.replaceAll("(?i)darkaqua", "dark_aqua")
-						.replaceAll("(?i)darkpurple", "dark_purple")
-						.replaceAll("(?i)darkgray", "dark_gray")
-						.replaceAll("(?i)red", "red")
-						.replaceAll("(?i)green", "green")
-						.replaceAll("(?i)aqua", "aqua")
-						.replaceAll("(?i)gold", "gold")
-						.replaceAll("(?i)yellow", "yellow")
-						.replaceAll("(?i)blue", "blue")
-						.replaceAll("(?i)black", "black")
-						.replaceAll("(?i)gray", "gray")
-						.replaceAll("(?i)white", "white")
-						.replaceAll("(?i)rainbow", "rainbow")
-						.replaceAll("(?i)random", "random")
-						.replaceAll("(?i)lightpurple", "light_purple"));
-				writer.newLine(); 
-			}
-		}
-		catch (Exception e) {
-			log.warning("ColorMe failed to update the colors! Report this please!");
-		}
-		finally {
-			// Close all
-			reader.close();
-			writer.flush();
-			writer.close();
-			// Delete old players.color and rename temp file
-			config.delete();
-			tempFile.renameTo(playersFile);
-		}
-	}
-
 	// Loads the config at the start
 	public void loadConfig() {
 		config.options().header("For help please refer to http://bit.ly/colormebukkit or http://bit.ly/bukkitdevcolorme");
 		config.addDefault("costs.color", 5.00);
 		config.addDefault("costs.prefix", 5.00);
 		config.addDefault("costs.suffix", 5.00);
-		config.addDefault("forceUpdate", false);
 		config.addDefault("tabList", true);
 		config.addDefault("playerTitle", true);
 		config.addDefault("Prefixer", true);
@@ -256,30 +180,70 @@ public class ColorMe extends JavaPlugin {
 	// Loads the localization
 	public void loadLocalization() {
 		localization.options().header("The underscores are used for the different lines!");
-		localization.addDefault("permission_denied", "&4You don''t have the permission to do this!");
+		localization.addDefault("permission_denied", "&4You don't have the permission to do this!");
 		localization.addDefault("part_disabled", "&4Sorry, but this command and plugin part is disabled!");
 		localization.addDefault("only_ingame", "&4Sorry, this command can only be run from ingame!");
 		localization.addDefault("color_list", "Color list:");
-		localization.addDefault("reload", "&2ColorMe &4%version &2reloaded!");
-		localization.addDefault("no_color_self", "&eYou &4don''t have a colored name in the world %world!");
-		localization.addDefault("no_color_other", "&e%player &4doesn''t have a colored name in the world %world!");
-		localization.addDefault("same_color_self", "&eYou &4already have got this color in the world %world!");
-		localization.addDefault("same_color_other", "&e%player &4already have got this color in the world %world!");
-		localization.addDefault("invalid_color", "&4'' &e%color &4'' is not a supported color.");
-		localization.addDefault("disabled_color", "&4'' &e%color &4'' is disabled.");
-		localization.addDefault("removed_color_self", "&eYour &2name color in the world %world has been removed.");
-		localization.addDefault("removed_color_other", "&2Removed &e%player&2's color in the world %world.");
-		// localization.addDefault("", "");
-		/*
-		sender.sendMessage(ChatColor.GREEN	+ "Welcome to the ColorMe version " + ChatColor.RED + pdfFile.getVersion() + ChatColor.GREEN + " help!");
-		sender.sendMessage(ChatColor.RED + "<> = Required, [] = Optional");
-		sender.sendMessage("</command> help - Shows the help");
-		sender.sendMessage("/<command> list - Shows list of colors");
-		sender.sendMessage("/<command> get [name] - Gets the actual color");
-		sender.sendMessage("/<command> remove [name] - Removes color");
-		sender.sendMessage("/<command> me <color> - Sets your own color");
-		sender.sendMessage("/<command> <name> <color> - Sets player's color");
-		 */
+		localization.addDefault("reload", "&2ColorMe version &4%version &2reloaded!");
+		localization.addDefault("charged", "&2You have been charged &4%costs");
+		localization.addDefault("not_enough_money_1", "&4Sorry, you don't have enough money to do this.");
+		localization.addDefault("not_enough_money_2", "&4It costs &e%costs &4to do this!");
+		localization.addDefault("no_color_self", "&eYou &4don't have a colored name in the world &e%world");
+		localization.addDefault("no_color_other", "&e%player &4doesn't have a colored name in the world &e%world");
+		localization.addDefault("same_color_self", "&eYou &4already have got this color in the world &e%world");
+		localization.addDefault("same_color_other", "&e%player &4already has got this color in the world &e%world");
+		localization.addDefault("invalid_color", "&4'&e%color&4' is not a supported color.");
+		localization.addDefault("disabled_color", "&4Sorry, but the color '&e%color&4' is disabled.");
+		localization.addDefault("removed_color_self", "&eYour &2name color in the world &e%world &2has been removed.");
+		localization.addDefault("removed_color_other", "&2Removed &e%player&2's color in the world &e%world.");
+		localization.addDefault("changed_color_self", "&eYour &2name color has been changed to &e%color &2in the world &e%world");
+		localization.addDefault("changed_color_other", "&2Changed &e%player&2's color to &e%color &2in the world &e%world");
+		localization.addDefault("get_color_self", "&eYou &2have got the color %color &2in the world &e%world");
+		localization.addDefault("get_color_other", "&e%player &2has got the color %color %2in the world &e%world");
+		localization.addDefault("help_color_1", "&2Welcome to the ColorMe version &4%version &2help!");
+		localization.addDefault("help_color_2", "&4 <> = Required, [] = Optional");
+		localization.addDefault("help_color_3", "/<command> help - Shows the help");
+		localization.addDefault("help_color_4", "/<command> list - Shows list of colors");
+		localization.addDefault("help_color_5", "/<command> get <name> [world] - Gets the actual color");
+		localization.addDefault("help_color_6", "/<command> remove <name> [world] - Removes color");
+		localization.addDefault("help_color_7", "/<command> me <color> [world] - Sets your own color");
+		localization.addDefault("help_color_8", "/<command> <name> <color> [world] - Sets player's color");
+		localization.addDefault("no_prefix_self", "&eYou &4don't have a prefix in the world &e%world");
+		localization.addDefault("no_prefix_other", "&e%player &4doesn't have a prefix in the world &e%world");
+		localization.addDefault("same_prefix_self", "&eYou &4already have got this prefix in the world &e%world");
+		localization.addDefault("same_prefix_other", "&e%player &4already has got this color in the world &e%world");
+		localization.addDefault("removed_prefix_self", "&eYour &2prefix in the world &e%world &2has been removed.");
+		localization.addDefault("removed_prefix_other", "&2Removed &e%player&2's prefix in the world &e%world.");
+		localization.addDefault("changed_prefix_self", "&eYour &2prefix has been changed to &e%prefix &2in the world &e%world");
+		localization.addDefault("changed_prefix_other", "&2Changed &e%player&2's prefix to &e%prefix &2in the world &e%world");
+		localization.addDefault("get_prefix_self", "&eYou &2have got the prefix %prefix &2in the world &e%world");
+		localization.addDefault("get_prefix_other", "&e%player &2has got the prefix %prefix %2in the world &e%world");
+		localization.addDefault("help_prefix_1", "&2Welcome to the Prefixer (part of ColorMe) version &4%version &2help!");
+		localization.addDefault("help_prefix_2", "&4 <> = Required, [] = Optional");
+		localization.addDefault("help_prefix_3", "/<command> help - Shows the help");
+		localization.addDefault("help_prefix_4", "/color list - Shows list of colors");
+		localization.addDefault("help_prefix_5", "/<command> get <name> [world] - Gets the actual prefix");
+		localization.addDefault("help_prefix_6", "/<command> remove <name> [world] - Removes prefix");
+		localization.addDefault("help_prefix_7", "/<command> me <color> [world] - Sets your own prefix");
+		localization.addDefault("help_prefix_8", "/<command> <name> <color> [world] - Sets player's prefix");
+		localization.addDefault("no_suffix_self", "&eYou &4don't have a suffix in the world &e%world");
+		localization.addDefault("no_suffix_other", "&e%player &4doesn't have a suffix in the world &e%world");
+		localization.addDefault("same_suffix_self", "&eYou &4already have got this suffix in the world &e%world");
+		localization.addDefault("same_suffix_other", "&e%player &4already has got this color in the world &e%world");
+		localization.addDefault("removed_suffix_self", "&eYour &2suffix in the world &e%world &2has been removed.");
+		localization.addDefault("removed_suffix_other", "&2Removed &e%player&2's suffix in the world &e%world.");
+		localization.addDefault("changed_suffix_self", "&eYour &2suffix has been changed to &e%suffix &2in the world &e%world");
+		localization.addDefault("changed_suffix_other", "&2Changed &e%player&2's suffix to &e%suffix &2in the world &e%world");
+		localization.addDefault("get_suffix_self", "&eYou &2have got the suffix %suffix &2in the world &e%world");
+		localization.addDefault("get_suffix_other", "&e%player &2has got the suffix %suffix %2in the world &e%world");
+		localization.addDefault("help_suffix_1", "&2Welcome to the Suffixer (part of ColorMe) version &4%version &2help!");
+		localization.addDefault("help_suffix_2", "&4 <> = Required, [] = Optional");
+		localization.addDefault("help_suffix_3", "/<command> help - Shows the help");
+		localization.addDefault("help_suffix_4", "/color list - Shows list of colors");
+		localization.addDefault("help_suffix_5", "/<command> get <name> [world] - Gets the actual suffix");
+		localization.addDefault("help_suffix_6", "/<command> remove <name> [world] - Removes suffix");
+		localization.addDefault("help_suffix_7", "/<command> me <color> [world] - Sets your own suffix");
+		localization.addDefault("help_suffix_8", "/<command> <name> <color> [world] - Sets player's suffix");
 		localization.options().copyDefaults(true);
 		saveLocalization();
 	}
@@ -295,13 +259,7 @@ public class ColorMe extends JavaPlugin {
 			saveLocalization();
 		}
 		catch (Exception e) {
-			log.warning("ColorMe failed to load the configs! Trying to update...");
-			try {
-				updateConfig(playersFile);
-			}
-			catch (Exception exp) {
-				log.warning("ColorMe failed to update the players.color. Please report this!");
-			}
+			log.warning("ColorMe failed to load the configs! Please report this!");
 		}
 	}
 
@@ -310,7 +268,7 @@ public class ColorMe extends JavaPlugin {
 		try {
 			players.save(playersFile);
 		} catch (Exception e) {
-			log.warning("ColorMe failed to save the colors! Please report this!");
+			log.warning("ColorMe failed to save the players.yml! Please report this!");
 		}
 
 	}

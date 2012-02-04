@@ -1,5 +1,6 @@
 package de.xghostkillerx.colorme;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,39 +22,97 @@ import org.bukkit.event.player.PlayerJoinEvent;
  */
 
 public class ColorMePlayerListener implements Listener {
-	protected ColorMe plugin;
+	public ColorMe plugin;
 	public ColorMePlayerListener(ColorMe instance) {
 		plugin = instance;
 	}
+	private String[] pluginPart = {"colors", "prefix", "suffix"};
+	private String actualPart, name, world, sub1, sub2, suffix = null, prefix = null;
+	private int i, length;
 
-	// Loads the color on join and sets the color if player isn't known
+	// Loads the the values and set them to default one if not known
 	@EventHandler
 	public void onPlayerJoin(final PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName().toLowerCase();
-		String world = player.getWorld().getName();
+		name = player.getName().toLowerCase();
+		world = player.getWorld().getName().toLowerCase();
 		CheckRoutine(player, name, world);
 	}
 
-	// Loads the color on chat and sets the color if player isn't known
+	// Loads the the values and set them to default one if not known
 	@EventHandler
 	public void onPlayerChat(final PlayerChatEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName().toLowerCase();
-		String world = player.getWorld().getName().toLowerCase();
+		name = player.getName().toLowerCase();
+		world = player.getWorld().getName().toLowerCase();
 		CheckRoutine(player, name, world);
-		//if (Actions.has(name, world, "prefixer")) event.setFormat(Actions.get(name, world, "prefixer") + " " +event.getFormat());
+		// Get world prefix if available
+		if (Actions.has(name, world, "prefix")) {
+			prefix = Actions.get(name, world, "prefix");
+		}
+		// Get default prefix
+		else if (Actions.has(name, "default", "prefix")) {
+			prefix = Actions.get(name, "default", "prefix");
+		}
+		// If prefix is not null change the format
+		if (prefix != null) {
+			event.setFormat(prefix + ChatColor.WHITE + " " + event.getFormat());
+		}
+		// Get world suffix if available
+		if (Actions.has(name, world, "suffix")) {
+			suffix = Actions.get(name, world, "suffix");
+		}
+		// Get default suffix
+		else if (Actions.has(name, "default", "suffix")) {
+			suffix = Actions.get(name, "default", "suffix");
+		}
+		// If suffix is not null
+		if (suffix != null) {
+			// Search the bracket
+			if (event.getFormat().contains(">")) {
+				i = event.getFormat().lastIndexOf(">") + 1;
+				length = event.getFormat().length();
+				// Substring 1 until the bracket, substring 2 after the bracket
+				sub1 = event.getFormat().substring(0, i);
+				sub2 = event.getFormat().substring(i, length);
+				// Insert the suffix between ;)
+				event.setFormat(sub1 + " " + suffix + ChatColor.WHITE + ":" + sub2);
+			}
+		}
+		prefix = null;
+		suffix = null;
 	}
-	
+
+	// Check for the player and update the file is values are unknown
 	private void CheckRoutine(Player player, String name, String world) {
 		plugin.loadConfigsAgain();
+		i = 0;
 		// If the player isn't in the players.color add him
 		if (!ColorMe.players.contains(name)) {
-			ColorMe.players.set(name + ".colors.standard", "");
-			ColorMe.players.set(name + ".prefix.standard", "");
-			ColorMe.players.set(name + ".suffix.standard", "");
+			ColorMe.players.set(name + ".colors.default", "");
+			ColorMe.players.set(name + ".prefix.default", "");
+			ColorMe.players.set(name + ".suffix.default", "");
+			ColorMe.players.set(name + ".colors." + world, "");
+			ColorMe.players.set(name + ".prefix." + world, "");
+			ColorMe.players.set(name + ".suffix." + world, "");
 			ColorMe.savePlayers();
 		}
-		Actions.updateName(name, world);
+		for (i = 0; i <= 2; i++) {
+			actualPart = pluginPart[i];
+			if (!ColorMe.players.contains(name + "." + actualPart + "." + world)) {
+				ColorMe.players.set(name + "." + actualPart + "." + world, "");
+				ColorMe.savePlayers();
+			}
+			if (!ColorMe.players.contains(name + "." + actualPart + "." + "default")) {
+				ColorMe.players.set(name + "." + actualPart + "." + "default", "");
+				ColorMe.savePlayers();
+			}
+		}
+		if (Actions.has(name, world, "colors")) {
+			Actions.updateName(name, world);
+		}
+		else if (Actions.has(name, "default", "colors")) {
+			Actions.updateName(name, "default");
+		}
 	}
 }
