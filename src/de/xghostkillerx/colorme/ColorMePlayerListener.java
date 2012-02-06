@@ -54,6 +54,10 @@ public class ColorMePlayerListener implements Listener {
 		else if (Actions.has(name, "default", "prefix")) {
 			prefix = Actions.get(name, "default", "prefix");
 		}
+		// Get the global prefix
+		else if (Actions.hasGlobal("prefix")) {
+			prefix = Actions.getGlobal("prefix");
+		}
 		// If prefix is not null change the format
 		if (prefix != null) {
 			event.setFormat(prefix + ChatColor.WHITE + " " + event.getFormat());
@@ -65,6 +69,10 @@ public class ColorMePlayerListener implements Listener {
 		// Get default suffix
 		else if (Actions.has(name, "default", "suffix")) {
 			suffix = Actions.get(name, "default", "suffix");
+		}
+		// Get the global suffix
+		else if (Actions.hasGlobal("suffix")) {
+			suffix = Actions.getGlobal("suffix");
 		}
 		// If suffix is not null
 		if (suffix != null) {
@@ -113,6 +121,9 @@ public class ColorMePlayerListener implements Listener {
 		}
 		else if (Actions.has(name, "default", "colors")) {
 			Actions.updateName(name, "default");
+		}
+		else if (Actions.hasGlobal("color")) {
+			Actions.updateNameGlobal(name);
 		}
 	}
 }

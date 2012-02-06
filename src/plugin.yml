@@ -1,6 +1,6 @@
 name: ColorMe
 main: de.xghostkillerx.colorme.ColorMe
-version: 3.4 dev 2
+version: 3.4 dev 3
 author: xGhOsTkiLLeRx
 authors: [Valrix]
 website: http://bit.ly/bukkitdevcolorme
@@ -112,6 +112,9 @@ permissions:
     colorme.get:
         default: op
         description: Gets actual color
+    colorme.global:
+        default: op
+        description: Sets the global color
     colorme.*:
         children:
             colorme.list: true
@@ -119,6 +122,7 @@ permissions:
             colorme.other: true
             colorme.remove: true
             colorme.get: true
+            colorme.global: true
         description: Allows all commands for ColorMe
     prefixer.list:
         default: true
@@ -135,6 +139,9 @@ permissions:
     prefixer.get:
         default: op
         description: Gets actual prefix
+    prefixer.global:
+        default: op
+        description: Sets the global prefix
     prefixer.*:
         children:
             prefixer.list: true
@@ -142,6 +149,7 @@ permissions:
             prefixer.other: true
             prefixer.remove: true
             prefixer.get: true
+            prefixer.global: true
         description: Allows all commands for Prefixer
     suffixer.list:
         default: true
@@ -158,6 +166,9 @@ permissions:
     suffixer.get:
         default: op
         description: Gets actual suffix
+    suffixer.global:
+        default: op
+        description: Sets the global suffix
     suffixer.*:
         children:
             suffixer.list: true
@@ -165,5 +176,6 @@ permissions:
             suffixer.other: true
             suffixer.remove: true
             suffixer.get: true
+            suffixer.global: true
         description: Allows all commands for Suffixer
 softdepend: [Vault, Spout]

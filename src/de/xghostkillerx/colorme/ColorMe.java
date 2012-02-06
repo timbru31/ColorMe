@@ -7,8 +7,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -50,7 +52,7 @@ public class ColorMe extends JavaPlugin {
 	private PrefixCommands prefixExecutor;
 	private SuffixCommands suffixExecutor;
 
-	
+
 	// Shutdown
 	public void onDisable() {
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -87,7 +89,7 @@ public class ColorMe extends JavaPlugin {
 		}
 		config = this.getConfig();
 		loadConfig();
-		
+
 		// Localization
 		localizationFile = new File(getDataFolder(), "localization.yml");
 		if(!localizationFile.exists()){
@@ -103,7 +105,7 @@ public class ColorMe extends JavaPlugin {
 		catch (Exception e) {
 			log.warning("ColorMe failed to load the localization!");
 		}
-		
+
 		// Refer to ColorMeCommands
 		colorExecutor = new ColorMeCommands(this);
 		getCommand("color").setExecutor(colorExecutor);
@@ -111,11 +113,11 @@ public class ColorMe extends JavaPlugin {
 		// Refer to PrefixCommands
 		prefixExecutor = new PrefixCommands(this);
 		getCommand("prefix").setExecutor(prefixExecutor);
-		
+
 		// Refer to SuffixCommands
 		suffixExecutor = new SuffixCommands(this);
 		getCommand("suffix").setExecutor(suffixExecutor);
-		
+
 		// Message
 		PluginDescriptionFile pdfFile = this.getDescription();
 		log.info(pdfFile.getName() + " " + pdfFile.getVersion() + " is enabled!");
@@ -158,6 +160,9 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("costs.color", 5.00);
 		config.addDefault("costs.prefix", 5.00);
 		config.addDefault("costs.suffix", 5.00);
+		config.addDefault("global_default.prefix", "");
+		config.addDefault("global_default.suffix", "");
+		config.addDefault("global_default.color", "");
 		config.addDefault("tabList", true);
 		config.addDefault("playerTitle", true);
 		config.addDefault("Prefixer", true);
@@ -176,7 +181,7 @@ public class ColorMe extends JavaPlugin {
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
-	
+
 	// Loads the localization
 	public void loadLocalization() {
 		localization.options().header("The underscores are used for the different lines!");
@@ -244,6 +249,9 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("help_suffix_6", "/<command> remove <name> [world] - Removes suffix");
 		localization.addDefault("help_suffix_7", "/<command> me <color> [world] - Sets your own suffix");
 		localization.addDefault("help_suffix_8", "/<command> <name> <color> [world] - Sets player's suffix");
+		localization.addDefault("global_change_color", "&2The global color has been changed to &e%color");
+		localization.addDefault("global_change_prefix", "&2The global prefix has been changed to &e%prefix");
+		localization.addDefault("global_change_suffix", "&2The global suffix has been changed to &e%suffix");
 		localization.options().copyDefaults(true);
 		saveLocalization();
 	}
@@ -272,7 +280,7 @@ public class ColorMe extends JavaPlugin {
 		}
 
 	}
-	
+
 	// Saves the localization
 	public void saveLocalization() {
 		try {
@@ -306,5 +314,27 @@ public class ColorMe extends JavaPlugin {
 			economy = economyProvider.getProvider();
 		}
 		return (economy != null);
+	}
+
+	// Message sender
+	public static void message(CommandSender sender, Player player, String message, String value, String world, String target, Double cost) {
+		//PluginDescriptionFile pdfFile = this.getDescription();
+		message = message
+				.replaceAll("&([0-9a-fk])", "\u00A7$1")
+				.replaceAll("%world", world)
+				.replaceAll("%color", value)
+				.replaceAll("%prefix", value)
+				.replaceAll("%suffix", value)
+				.replaceAll("%player", target)
+				.replaceAll("%version", "3.4");
+		if (cost != null) {
+			message = message.replaceAll("%costs", ColorMe.economy.format(cost));
+		}
+		if (player != null) {
+			player.sendMessage(message);
+		}
+		else if (sender != null) {
+			sender.sendMessage(message);
+		}
 	}
 }

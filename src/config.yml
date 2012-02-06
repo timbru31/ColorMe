@@ -28,3 +28,7 @@ colors:
   magic: true
   random: true
   rainbow: true
+global_default:
+  prefix: ''
+  suffix: ''
+  color: ''

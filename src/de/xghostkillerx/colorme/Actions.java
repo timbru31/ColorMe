@@ -11,12 +11,11 @@ public class Actions {
 	public Actions(ColorMe instance) {
 		plugin = instance;
 	}
-	
+
 	private static String actualValue, pluginPart, color, colorChar, displayName, cleanDisplayName, newName, msg, message, sub;
 	private static int i, z = 0;
 	private static char ch;
 
-	
 	// Checks if the player is itself
 	static boolean self(CommandSender sender, String name) {
 		return (sender.equals(Bukkit.getServer().getPlayerExact(name))) ? true : false;
@@ -67,6 +66,47 @@ public class Actions {
 		else return "";
 	}
 
+	// Get global default if not null
+	public static String getGlobal(String pluginPart) {
+		String string = ColorMe.config.getString("global_default." + pluginPart);
+		// While rainbow is in there
+		while (string.contains("&rainbow")) {
+			// Without rainbow
+			int i = string.indexOf("&rainbow") + 8;
+			int z = string.length();
+			sub = string.substring(i, z);
+			// Stop if other & is found
+			if (sub.contains("&")) {
+				sub = sub.substring(0, sub.indexOf("&"));
+			}
+			// Replace
+			string = string.replace(sub, rainbowColor(sub));
+			// Replace FIRST rainbow
+			string = string.replaceFirst("&rainbow", "");
+			sub = "";
+		}
+		// While random is in there
+		while (string.contains("&random")) {
+			// Without rainbow
+			int i = string.indexOf("&random") + 7;
+			int z = string.length();
+			sub = string.substring(i, z);
+			sub = string.substring(i, z);
+			// Stop if other & is found
+			if (sub.contains("&")) {
+				sub = sub.substring(0, sub.indexOf("&"));
+			}
+			// Replace
+			string = string.replace(sub, randomColor(sub));
+			// Replace FIRST random
+			string = string.replaceFirst("&random", "");
+			sub = "";
+		}
+		// Normal color codes!
+		string = string.replaceAll("&([0-9a-fk])", "\u00A7$1");
+		return string;
+	}
+
 	// Set player's color/prefix/suffix
 	static boolean set(String name, String value, String world, String pluginPart) {
 		actualValue = get(name, world, pluginPart);
@@ -86,9 +126,14 @@ public class Actions {
 		name = name.toLowerCase();
 		if (ColorMe.players.contains(name + "." + pluginPart + "." + world)) {
 			// if longer than 1 it's a color, return true - otherwise (means '') return false
-			return (ColorMe.players.getString(name + "." + pluginPart + "." + world)).trim().length() >1 ? true : false;
+			return (ColorMe.players.getString(name + "." + pluginPart + "." + world)).trim().length() > 1 ? true : false;
 		}
 		return false;
+	}
+
+	// Check if the global default is not null
+	public static boolean hasGlobal(String pluginPart) {
+		return ColorMe.config.getString("global_default." + pluginPart).trim().length() > 1 ? true : false;
 	}
 
 	// Removes a color/prefix/suffix if exists, otherwise returns false
@@ -194,11 +239,100 @@ public class Actions {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
+	public static void updateNameGlobal(String name) {
+		Player player = Bukkit.getServer().getPlayerExact(name);
+		if (player != null) {
+			pluginPart = "color";
+			displayName = player.getDisplayName();
+			cleanDisplayName = ChatColor.stripColor(displayName);
+			boolean tabList = ColorMe.config.getBoolean("tabList");
+			boolean playerTitle = ColorMe.config.getBoolean("playerTitle");
+			// If the player has a color change the displayname
+			if (hasGlobal(pluginPart)) {
+				if (validColor(ColorMe.config.getString("global_default." + pluginPart)) == true) {
+					// Random
+					color = getGlobal(pluginPart);
+					if (color.equalsIgnoreCase("random")) {
+						player.setDisplayName(randomColor(cleanDisplayName) + ChatColor.WHITE);
+						if (tabList == true) {
+							// If the TAB name is longer than 16 shorten it!
+							newName = randomColor(cleanDisplayName);
+							if (newName.length() > 16) {
+								newName = newName.substring(0, 12) + ChatColor.WHITE + "..";
+							}
+							player.setPlayerListName(newName);
+						}
+					}
+					// Rainbow
+					if (color.equalsIgnoreCase("rainbow")) {
+						player.setDisplayName(rainbowColor(cleanDisplayName) + ChatColor.WHITE);
+						if (tabList == true) {
+							// If the TAB name is longer than 16 shorten it!
+							newName = rainbowColor(cleanDisplayName);
+							if (newName.length() > 16) {
+								newName = newName.substring(0, 12) + ChatColor.WHITE + "..";
+							}
+							player.setPlayerListName(newName);
+						}
+					}
+					// Normal
+					else if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
+						player.setDisplayName(ChatColor.valueOf(color.toUpperCase()) + ChatColor.stripColor(displayName) + ChatColor.WHITE);
+						if (tabList == true) {
+							// If the TAB name is longer than 16 shorten it!
+							newName = ChatColor.valueOf(color.toUpperCase()) + ChatColor.stripColor(displayName);
+							if (newName.length() > 16) {
+								newName = newName.substring(0, 12) + ChatColor.WHITE + "..";
+							}
+							player.setPlayerListName(newName);
+						}
+					}
+					// Check for Spout
+					if (ColorMe.spoutEnabled == true && playerTitle == true) {
+						// Random color
+						if (getGlobal(pluginPart).equalsIgnoreCase("random")) {
+							SpoutManager.getAppearanceManager().setGlobalTitle(player, randomColor(displayName));
+						}
+						// Rainbow
+						if (getGlobal(pluginPart).equalsIgnoreCase("rainbow")) {
+							SpoutManager.getAppearanceManager().setGlobalTitle(player, rainbowColor(displayName));
+						}
+						// Normal color
+						else if (!getGlobal(pluginPart).equalsIgnoreCase("random") && !getGlobal(pluginPart).equalsIgnoreCase("rainbow")) {
+							SpoutManager.getAppearanceManager().setGlobalTitle(player, ChatColor.valueOf(color.toUpperCase()) + ChatColor.stripColor(displayName));
+						}
+					}
+				}
+				else {
+					// Tell player to report it, but suppress the error -> uses color before.
+					player.sendMessage("Your name colors seems to be invalid. Ask your admin to check it,");
+					player.sendMessage("or try re-coloring!");
+				}
+			}
+			if (!hasGlobal(pluginPart)) {
+				// No name -> back to white
+				player.setDisplayName(ChatColor.WHITE + ChatColor.stripColor(displayName));
+				if (tabList == true) {
+					// If the TAB name is longer than 16 shorten it!
+					newName = cleanDisplayName;
+					if (newName.length() > 16) {
+						newName = cleanDisplayName.substring(0, 12) + ChatColor.WHITE + "..";
+					}
+					player.setPlayerListName(newName);
+				}
+				if (ColorMe.spoutEnabled == true && playerTitle == true) {
+					SpoutManager.getAppearanceManager().setGlobalTitle(player, ChatColor.WHITE + ChatColor.stripColor(displayName));
+				}
+			}
+		}
+	}
+
 	// The list of colors
 	@SuppressWarnings("deprecation")
 	static void listColors(CommandSender sender) {
 		message = ColorMe.localization.getString("color_list");
-		message(sender, message);  
+		ColorMe.message(sender, null, message, null, null, null, null);
 		msg = "";
 		i = 0;
 		// As long as all colors aren't reached
@@ -283,73 +417,20 @@ public class Actions {
 		return true;
 	}
 	
-	
-	
-	// Message sender
-	static void message(CommandSender sender, String message) {
-		sender.sendMessage(message
-				.replaceAll("&([0-9a-fk])", "\u00A7$1")
-				.replaceAll("%version", "3.4"));
-
+	// Displays the specific help
+	static boolean help(CommandSender sender, String pluginPart) {
+		for (i = 1; i <= 8; i++) {
+			message = ColorMe.localization.getString("help_" + pluginPart + "_" + Integer.toString(i));
+			ColorMe.message(sender, null, message, null, null, null, null);
+		}
+		return true;
 	}
 	
-	// Message sender
-	static void message(CommandSender sender, String message, String value) {
-		sender.sendMessage(message
-				.replaceAll("&([0-9a-fk])", "\u00A7$1")
-				.replaceAll("%world", value)
-				.replaceAll("%color", value)
-				.replaceAll("%prefix", value)
-				.replaceAll("%suffix", value)
-				.replaceAll("%version", "3.4"));
-	}
-	
-	// Message sender
-	static void message(CommandSender sender, String message, String world, String value) {
-		sender.sendMessage(message
-				.replaceAll("&([0-9a-fk])", "\u00A7$1")
-				.replaceAll("%world", world)
-				.replaceAll("%player", value)
-				.replaceAll("%color", value)
-				.replaceAll("%prefix", value)
-				.replaceAll("%suffix", value)
-				.replaceAll("%version", "3.4"));
-	}
-
-	// Message sender
-	static void messagePlayer(Player player, String message, String world, String value) {
-		player.sendMessage(message
-				.replaceAll("%world", world)
-				.replaceAll("%prefix", value)
-				.replaceAll("%suffix", value)
-				.replaceAll("%color", value)
-				.replaceAll("&([0-9a-fk])", "\u00A7$1"));
-	}
-	
-	// Message sender
-	static void messagePlayer(Player player, String message, String world) {
-		player.sendMessage(message
-				.replaceAll("%world", world)
-				.replaceAll("&([0-9a-fk])", "\u00A7$1"));
-	}
-
-	// Message sender
-	public static void message(CommandSender sender, String message, String world, String value, String player) {
-		sender.sendMessage(message
-				.replaceAll("%world", world)
-				.replaceAll("%color", value)
-				.replaceAll("%prefix", value)
-				.replaceAll("%suffix", value)
-				.replaceAll("%version", "3.4")
-				.replaceAll("%player", player)
-				.replaceAll("&([0-9a-fk])", "\u00A7$1"));
-	}
-
-	// Message sender
-	public static void message(CommandSender sender, String message, Double cost) {
-		sender.sendMessage(message
-				.replaceAll("%version", "3.4")
-				.replaceAll("%costs", ColorMe.economy.format(cost))
-				.replaceAll("&([0-9a-fk])", "\u00A7$1"));
+	// Reloads the plugin
+	static boolean reload(CommandSender sender) {
+		plugin.loadConfigsAgain();		
+		message = ColorMe.localization.getString("reload");
+		ColorMe.message(sender, null, message, null, null, null, null);
+		return true;
 	}
 }

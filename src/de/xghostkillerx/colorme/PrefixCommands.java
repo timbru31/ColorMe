@@ -12,8 +12,7 @@ public class PrefixCommands implements CommandExecutor {
 	public PrefixCommands(ColorMe instance) {
 		plugin = instance;
 	}
-	private String pluginPart = "prefix", message, target, prefix, senderName, world = "default";
-	private Integer i;
+	private String pluginPart = "prefix", message, target, prefix, senderName, world = "default", globalPrefix;
 	private Double cost;
 
 	// Commands for prefixing
@@ -21,25 +20,41 @@ public class PrefixCommands implements CommandExecutor {
 		// Reloads the configs
 		if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("prefixer.reload")) {
-				PrefixReload(sender);
+				Actions.reload(sender);
 				return true;
 			}
 			else {
 				message = ColorMe.localization.getString("permission_denied");
-				Actions.message(sender, message);
+				ColorMe.message(sender, null, message, null, null, null, null);
 				return true;
 			}
 		}
 		// Stop here if Prefixer is unwanted
 		if (ColorMe.config.getBoolean("Prefixer") == false) {
 			message = ColorMe.localization.getString("part_disabled");
-			Actions.message(sender, message);
+			ColorMe.message(sender, null, message, null, null, null, null);
 			return true;
 		}
 		// Displays the help
 		if (args.length > 0 && args[0].equalsIgnoreCase("help")) {
-			PrefixerHelp(sender);
+			Actions.help(sender, "prefix");
 			return true;
+		}
+		// Sets the global prefix
+		if (args.length > 1 && args[0].equalsIgnoreCase("global")) {
+			globalPrefix = args[1];
+			if (sender.hasPermission("prefixer.global")) {
+				ColorMe.config.set("global_default.prefix", globalPrefix);
+				plugin.saveConfig();
+				message = ColorMe.localization.getString("global_change_prefix");
+				ColorMe.message(sender, null, message, globalPrefix, null, null, null);
+				return true;
+			}
+			else {
+				message = ColorMe.localization.getString("permission_denied");
+				ColorMe.message(sender, null, message, null, null, null, null);
+				return true;
+			}
 		}
 		// Removes a prefix
 		if (args.length > 1 && args[0].equalsIgnoreCase("remove")) {
@@ -51,7 +66,7 @@ public class PrefixCommands implements CommandExecutor {
 				// Tell console only ingame command
 				if (sender instanceof ConsoleCommandSender) {
 					message = ColorMe.localization.getString("only_ingame");
-					Actions.message(sender, message);
+					ColorMe.message(sender, null, message, null, null, null, null);
 					return true;
 				}
 			}
@@ -67,12 +82,12 @@ public class PrefixCommands implements CommandExecutor {
 					// Self
 					if (target.equalsIgnoreCase(senderName)) {
 						message = ColorMe.localization.getString("no_prefix_self");
-						Actions.message(sender, message, world);
+						ColorMe.message(sender, null, message, null, world, null, null);
 						return true;
 					}
 					// Other
 					message = ColorMe.localization.getString("no_prefix_other");
-					Actions.message(sender, message, world, target);
+					ColorMe.message(sender, null, message, null, world, target, null);
 					return true;
 				}
 				// Remove prefix
@@ -81,12 +96,12 @@ public class PrefixCommands implements CommandExecutor {
 					// Notify player is online
 					Player player = plugin.getServer().getPlayerExact(target);
 					message = ColorMe.localization.getString("removed_prefix_self");
-					Actions.messagePlayer(player, message, world);
+					ColorMe.message(null, player, message, null, world, null, null);
 				}
 				// If player is offline just notify the sender
 				if (!target.equalsIgnoreCase(senderName)) {
 					message = ColorMe.localization.getString("removed_prefix_other");
-					Actions.message(sender, message, world, target);
+					ColorMe.message(sender, null, message, null, world, target, null);
 					return true;
 				}
 				return true;
@@ -94,7 +109,7 @@ public class PrefixCommands implements CommandExecutor {
 			// Deny access
 			else {
 				message = ColorMe.localization.getString("permission_denied");
-				Actions.message(sender, message);
+				ColorMe.message(sender, null, message, null, null, null, null);
 				return true;
 			}
 		}
@@ -108,7 +123,7 @@ public class PrefixCommands implements CommandExecutor {
 				// Tell console only ingame command
 				if (sender instanceof ConsoleCommandSender) {
 					message = ColorMe.localization.getString("only_ingame");
-					Actions.message(sender, message);
+					ColorMe.message(sender, null, message, null, null, null, null);
 					return true;
 				}
 			}
@@ -125,28 +140,28 @@ public class PrefixCommands implements CommandExecutor {
 					// Self
 					if (target.equalsIgnoreCase(senderName)) {
 						message = ColorMe.localization.getString("no_prefix_self");
-						Actions.message(sender, message, world);
+						ColorMe.message(sender, null, message, null, world, null, null);
 						return true;
 					}
 					// Other
 					message = ColorMe.localization.getString("no_prefix_other");
-					Actions.message(sender, message, world, target);
+					ColorMe.message(sender, null, message, null, world, target, null);
 					return true;
 				}
 				// Gets prefix
 				if (target.equalsIgnoreCase(senderName)) {
 					message = ColorMe.localization.getString("get_prefix_self");
-					Actions.message(sender, message, world, prefix);
+					ColorMe.message(sender, null, message, prefix, world, null, null);
 					return true;
 				}
 				message = ColorMe.localization.getString("get_prefix_other");
-				Actions.message(sender, message, world, prefix, target);
+				ColorMe.message(sender, null, message, prefix, world, target, null);
 				return true;
 			}
 			// Deny access
 			else {
 				message = ColorMe.localization.getString("permission_denied");
-				Actions.message(sender, message);
+				ColorMe.message(sender, null, message, null, null, null, null);
 				return true;
 			}
 		}
@@ -159,7 +174,7 @@ public class PrefixCommands implements CommandExecutor {
 				// Tell console only ingame command
 				if (sender instanceof ConsoleCommandSender) {
 					message = ColorMe.localization.getString("only_ingame");
-					Actions.message(sender, message);
+					ColorMe.message(sender, null, message, null, null, null, null);
 					return true;
 				}
 			}
@@ -173,11 +188,11 @@ public class PrefixCommands implements CommandExecutor {
 			if (prefix.equalsIgnoreCase(Actions.get(target, world, pluginPart))) {
 				if (senderName.equalsIgnoreCase(target)) {
 					message = ColorMe.localization.getString("same_prefix_self");
-					Actions.message(sender, message, world);
+					ColorMe.message(sender, null, message, null, world, null, null);
 					return true;
 				}	
 				message = ColorMe.localization.getString("same_prefix_other");
-				Actions.message(sender, message, world, target);
+				ColorMe.message(sender, null, message, null, world, target, null);
 				return true;
 			}
 
@@ -188,7 +203,7 @@ public class PrefixCommands implements CommandExecutor {
 				if (ColorMe.economy == null || cost == 0) {
 					Actions.set(senderName, prefix, world, pluginPart);
 					message = ColorMe.localization.getString("changed_prefix_self");
-					Actions.message(sender, message, world, prefix);
+					ColorMe.message(sender, null, message, prefix, world, null, null);
 					return true;
 				}
 				// With economy
@@ -199,17 +214,17 @@ public class PrefixCommands implements CommandExecutor {
 						// Set prefix an notify sender
 						Actions.set(senderName, prefix, world, pluginPart);
 						message = ColorMe.localization.getString("charged");
-						Actions.message(sender, message, cost);
+						ColorMe.message(sender, null, message, null, null, null, cost);
 						message = ColorMe.localization.getString("changed_prefix_self");
-						Actions.message(sender, message, world, prefix);
+						ColorMe.message(sender, null, message, prefix, world, null, null);
 						return true;
 					}
 					// If player hasn't got enough money
 					else if (cost > 0 && ColorMe.economy.getBalance(senderName) < cost) {						
 						message = ColorMe.localization.getString("not_enough_money_1");
-						Actions.message(sender, message);
+						ColorMe.message(sender, null, message, null, null, null, null);
 						message = ColorMe.localization.getString("not_enough_money_2");
-						Actions.message(sender, message, cost);
+						ColorMe.message(sender, null, message, null, null, null, cost);
 						return true;
 					}
 				}
@@ -222,36 +237,19 @@ public class PrefixCommands implements CommandExecutor {
 					// Tell the affected player
 					Player player = plugin.getServer().getPlayerExact(target);
 					message = ColorMe.localization.getString("changed_prefix_self");
-					Actions.messagePlayer(player, message, world, prefix);
+					ColorMe.message(null, player, message, prefix, world, null, null);
 				}
 				message = ColorMe.localization.getString("changed_prefix_other");
-				Actions.message(sender, message, world, prefix, target);
+				ColorMe.message(sender, null, message, prefix, world, target, null);
 				return true;
 			}
 			// Permission check failed
 			else {
 				message = ColorMe.localization.getString("permission_denied");
-				Actions.message(sender, message);
+				ColorMe.message(sender, null, message, null, null, null, null);
 				return true;
 			}
 		}
 		return false;
-	}
-
-	// Reloads the config with /prefix reload
-	private boolean PrefixReload(CommandSender sender) {
-		plugin.loadConfigsAgain();		
-		message = ColorMe.localization.getString("reload");
-		Actions.message(sender, message);
-		return true;
-	}
-
-	// Displays the help with /prefix help
-	private boolean PrefixerHelp(CommandSender sender) {
-		for (i = 1; i <= 8; i++) {
-			message = ColorMe.localization.getString("help_prefix_" + Integer.toString(i));
-			Actions.message(sender, message);
-		}
-		return true;
 	}
 }

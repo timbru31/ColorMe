@@ -68,3 +68,6 @@ help_suffix_5: /<command> get <name> [world] - Gets the actual suffix
 help_suffix_6: /<command> remove <name> [world] - Removes suffix
 help_suffix_7: /<command> me <color> [world] - Sets your own suffix
 help_suffix_8: /<command> <name> <color> [world] - Sets player's suffix
+global_change_color: '&2The global color has been changed to &e%color'
+global_change_prefix: '&2The global prefix has been changed to &e%prefix'
+global_change_suffix: '&2The global suffix has been changed to &e%suffix'

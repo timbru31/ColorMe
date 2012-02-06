@@ -25,8 +25,7 @@ public class ColorMeCommands implements CommandExecutor {
 	public ColorMeCommands(ColorMe instance) {
 		plugin = instance;
 	}
-	private String pluginPart = "colors", message, target, color, senderName, world = "default";
-	private Integer i;
+	private String pluginPart = "colors", message, target, color, senderName, world = "default", globalColor;
 	private Double cost;
 
 	// Commands for coloring
@@ -39,32 +38,48 @@ public class ColorMeCommands implements CommandExecutor {
 			}
 			else {
 				message = ColorMe.localization.getString("permission_denied");
-				Actions.message(sender, message);
+				ColorMe.message(sender, null, message, null, null, null, null);
 				return true;
 			}
 		}
 		// Reloads the configs
 		if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("colorme.reload")) {
-				ColorMeReload(sender);
+				Actions.reload(sender);
 				return true;
 			}
 			else {
 				message = ColorMe.localization.getString("permission_denied");
-				Actions.message(sender, message);
+				ColorMe.message(sender, null, message, null, null, null, null);
 				return true;
 			}
 		}
 		// Stop here if ColorMe is unwanted
 		if (ColorMe.config.getBoolean("ColorMe") == false) {
 			message = ColorMe.localization.getString("part_disabled");
-			Actions.message(sender, message);
+			ColorMe.message(sender, null, message, null, null, null, null);
 			return true;
 		}
 		// Displays the help
 		if (args.length > 0 && args[0].equalsIgnoreCase("help")) {
-			ColorMeHelp(sender);
+			Actions.help(sender, "color");
 			return true;
+		}
+		// Sets the global color
+		if (args.length > 1 && args[0].equalsIgnoreCase("global")) {
+			globalColor = args[1];
+			if (sender.hasPermission("colorme.global")) {
+				ColorMe.config.set("global_default.color", globalColor);
+				plugin.saveConfig();
+				message = ColorMe.localization.getString("global_change_color");
+				ColorMe.message(sender, null, message, globalColor, null, null, null);
+				return true;
+			}
+			else {
+				message = ColorMe.localization.getString("permission_denied");
+				ColorMe.message(sender, null, message, null, null, null, null);
+				return true;
+			}
 		}
 		// Removes a color
 		if (args.length > 1 && args[0].equalsIgnoreCase("remove")) {
@@ -76,7 +91,7 @@ public class ColorMeCommands implements CommandExecutor {
 				// Tell console only ingame command
 				if (sender instanceof ConsoleCommandSender) {
 					message = ColorMe.localization.getString("only_ingame");
-					Actions.message(sender, message);
+					ColorMe.message(sender, null, message, null, null, null, null);
 					return true;
 				}
 			}
@@ -92,12 +107,12 @@ public class ColorMeCommands implements CommandExecutor {
 					// Self
 					if (target.equalsIgnoreCase(senderName)) {
 						message = ColorMe.localization.getString("no_color_self");
-						Actions.message(sender, message, world);
+						ColorMe.message(sender, null, message, null, world, null, null);
 						return true;
 					}
 					// Other
 					message = ColorMe.localization.getString("no_color_other");
-					Actions.message(sender, message, world, target);
+					ColorMe.message(sender, null, message, null, world, target, null);
 					return true;
 				}
 				// Remove color
@@ -106,12 +121,12 @@ public class ColorMeCommands implements CommandExecutor {
 					// Notify player is online
 					Player player = plugin.getServer().getPlayerExact(target);
 					message = ColorMe.localization.getString("removed_color_self");
-					Actions.messagePlayer(player, message, world);
+					ColorMe.message(null, player, message, null, world, null, null);
 				}
 				// If player is offline just notify the sender
 				if (!target.equalsIgnoreCase(senderName)) {
 					message = ColorMe.localization.getString("removed_color_other");
-					Actions.message(sender, message, world, target);
+					ColorMe.message(sender, null, message, null, world, target, null);
 					return true;
 				}
 				return true;
@@ -119,7 +134,7 @@ public class ColorMeCommands implements CommandExecutor {
 			// Deny access
 			else {
 				message = ColorMe.localization.getString("permission_denied");
-				Actions.message(sender, message);
+				ColorMe.message(sender, null, message, null, null, null, null);
 				return true;
 			}
 		}
@@ -133,7 +148,7 @@ public class ColorMeCommands implements CommandExecutor {
 				// Tell console only ingame command
 				if (sender instanceof ConsoleCommandSender) {
 					message = ColorMe.localization.getString("only_ingame");
-					Actions.message(sender, message);
+					ColorMe.message(sender, null, message, null, null, null, null);
 					return true;
 				}
 			}
@@ -150,28 +165,28 @@ public class ColorMeCommands implements CommandExecutor {
 					// Self
 					if (target.equalsIgnoreCase(senderName)) {
 						message = ColorMe.localization.getString("no_color_self");
-						Actions.message(sender, message, world);
+						ColorMe.message(sender, null, message, null, world, null, null);
 						return true;
 					}
 					// Other
 					message = ColorMe.localization.getString("no_color_other");
-					Actions.message(sender, message, world, target);
+					ColorMe.message(sender, null, message, null, world, target, null);
 					return true;
 				}
 				// Gets color
 				if (target.equalsIgnoreCase(senderName)) {
 					message = ColorMe.localization.getString("get_color_self");
-					Actions.message(sender, message, world, color);
+					ColorMe.message(sender, null, message, color, world, null, null);
 					return true;
 				}
 				message = ColorMe.localization.getString("get_color_other");
-				Actions.message(sender, message, world, color, target);
+				ColorMe.message(sender, null, message, color, world, target, null);
 				return true;
 			}
 			// Deny access
 			else {
 				message = ColorMe.localization.getString("permission_denied");
-				Actions.message(sender, message);
+				ColorMe.message(sender, null, message, null, null, null, null);
 				return true;
 			}
 		}
@@ -184,7 +199,7 @@ public class ColorMeCommands implements CommandExecutor {
 				// Tell console only ingame command
 				if (sender instanceof ConsoleCommandSender) {
 					message = ColorMe.localization.getString("only_ingame");
-					Actions.message(sender, message);
+					ColorMe.message(sender, null, message, null, null, null, null);
 					return true;
 				}
 			}
@@ -197,14 +212,14 @@ public class ColorMeCommands implements CommandExecutor {
 			// Unsupported colors
 			if (Actions.validColor(color) == false) {
 				message = ColorMe.localization.getString("invalid_color");
-				Actions.message(sender, message, color);
+				ColorMe.message(sender, null, message, color, null, null, null);
 				return true;
 			}
 
 			// If color is disabled
 			if (Actions.isDisabled(color) == true) {
 				message = ColorMe.localization.getString("disabled_color");
-				Actions.message(sender, message, color);
+				ColorMe.message(sender, null, message, color, null, null, null);
 				return true;
 			}
 
@@ -212,11 +227,11 @@ public class ColorMeCommands implements CommandExecutor {
 			if (color.equalsIgnoreCase(Actions.get(target, world, pluginPart))) {
 				if (senderName.equalsIgnoreCase(target)) {
 					message = ColorMe.localization.getString("same_color_self");
-					Actions.message(sender, message, world);
+					ColorMe.message(sender, null, message, null, world, null, null);
 					return true;
 				}	
 				message = ColorMe.localization.getString("same_color_other");
-				Actions.message(sender, message, world, target);
+				ColorMe.message(sender, null, message, null, world, target, null);
 				return true;
 			}
 
@@ -227,7 +242,7 @@ public class ColorMeCommands implements CommandExecutor {
 				if (ColorMe.economy == null || cost == 0) {
 					Actions.set(senderName, color, world, pluginPart);
 					message = ColorMe.localization.getString("changed_color_self");
-					Actions.message(sender, message, world, color);
+					ColorMe.message(sender, null, message, color, world, null, null);
 					return true;
 				}
 				// With economy
@@ -235,7 +250,7 @@ public class ColorMeCommands implements CommandExecutor {
 					if (color.equalsIgnoreCase("white")) {
 						Actions.set(senderName, color, world, pluginPart);
 						message = ColorMe.localization.getString("changed_color_self");
-						Actions.message(sender, message, world, color);
+						ColorMe.message(sender, null, message, color, world, null, null);
 						return true;
 					}
 					// Charge costs :)
@@ -244,17 +259,17 @@ public class ColorMeCommands implements CommandExecutor {
 						// Set color an notify sender
 						Actions.set(senderName, color, world, pluginPart);
 						message = ColorMe.localization.getString("charged");
-						Actions.message(sender, message, cost);
+						ColorMe.message(sender, null, message, null, null, null, cost);
 						message = ColorMe.localization.getString("changed_color_self");
-						Actions.message(sender, message, world, color);
+						ColorMe.message(sender, null, message, color, world, null, null);
 						return true;
 					}
 					// If player hasn't got enough money
 					else if (cost > 0 && ColorMe.economy.getBalance(senderName) < cost) {						
 						message = ColorMe.localization.getString("not_enough_money_1");
-						Actions.message(sender, message);
+						ColorMe.message(sender, null, message, null, null, null, null);
 						message = ColorMe.localization.getString("not_enough_money_2");
-						Actions.message(sender, message, cost);
+						ColorMe.message(sender, null, message, null, null, null, cost);
 						return true;
 					}
 				}
@@ -267,36 +282,19 @@ public class ColorMeCommands implements CommandExecutor {
 					// Tell the affected player
 					Player player = plugin.getServer().getPlayerExact(target);
 					message = ColorMe.localization.getString("changed_color_self");
-					Actions.messagePlayer(player, message, world, color);
+					ColorMe.message(null, player, message, color, world, null, null);
 				}
 				message = ColorMe.localization.getString("changed_color_other");
-				Actions.message(sender, message, world, color, target);
+				ColorMe.message(sender, null, message, color, world, target, null);
 				return true;
 			}
 			// Permission check failed
 			else {
 				message = ColorMe.localization.getString("permission_denied");
-				Actions.message(sender, message);
+				ColorMe.message(sender, null, message, null, null, null, null);
 				return true;
 			}
 		}
 		return false;
-	}
-
-	// Reloads the config with /colorme reload
-	private boolean ColorMeReload(CommandSender sender) {
-		plugin.loadConfigsAgain();		
-		message = ColorMe.localization.getString("reload");
-		Actions.message(sender, message);
-		return true;
-	}
-
-	// Displays the help with /colorme help
-	private boolean ColorMeHelp(CommandSender sender) {
-		for (i = 1; i <= 8; i++) {
-			message = ColorMe.localization.getString("help_color_" + Integer.toString(i));
-			Actions.message(sender, message);
-		}
-		return true;
 	}
 }
