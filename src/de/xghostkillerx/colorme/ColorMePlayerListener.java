@@ -116,14 +116,6 @@ public class ColorMePlayerListener implements Listener {
 				ColorMe.savePlayers();
 			}
 		}
-		if (Actions.has(name, world, "colors")) {
-			Actions.updateName(name, world);
-		}
-		else if (Actions.has(name, "default", "colors")) {
-			Actions.updateName(name, "default");
-		}
-		else if (Actions.hasGlobal("color")) {
-			Actions.updateNameGlobal(name);
-		}
+		Actions.checkNames(name, world);
 	}
 }

@@ -213,6 +213,7 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("help_color_6", "/<command> remove <name> [world] - Removes color");
 		localization.addDefault("help_color_7", "/<command> me <color> [world] - Sets your own color");
 		localization.addDefault("help_color_8", "/<command> <name> <color> [world] - Sets player's color");
+		localization.addDefault("help_color_9", "/<command> global <color> - Sets the global color");
 		localization.addDefault("no_prefix_self", "&eYou &4don't have a prefix in the world &e%world");
 		localization.addDefault("no_prefix_other", "&e%player &4doesn't have a prefix in the world &e%world");
 		localization.addDefault("same_prefix_self", "&eYou &4already have got this prefix in the world &e%world");
@@ -229,8 +230,9 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("help_prefix_4", "/color list - Shows list of colors");
 		localization.addDefault("help_prefix_5", "/<command> get <name> [world] - Gets the actual prefix");
 		localization.addDefault("help_prefix_6", "/<command> remove <name> [world] - Removes prefix");
-		localization.addDefault("help_prefix_7", "/<command> me <color> [world] - Sets your own prefix");
-		localization.addDefault("help_prefix_8", "/<command> <name> <color> [world] - Sets player's prefix");
+		localization.addDefault("help_prefix_7", "/<command> me <prefix> [world] - Sets your own prefix");
+		localization.addDefault("help_prefix_8", "/<command> <name> <prefix> [world] - Sets player's prefix");
+		localization.addDefault("help_prefix_9", "/<command> global <prefix> - Sets the global prefix");
 		localization.addDefault("no_suffix_self", "&eYou &4don't have a suffix in the world &e%world");
 		localization.addDefault("no_suffix_other", "&e%player &4doesn't have a suffix in the world &e%world");
 		localization.addDefault("same_suffix_self", "&eYou &4already have got this suffix in the world &e%world");
@@ -247,8 +249,9 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("help_suffix_4", "/color list - Shows list of colors");
 		localization.addDefault("help_suffix_5", "/<command> get <name> [world] - Gets the actual suffix");
 		localization.addDefault("help_suffix_6", "/<command> remove <name> [world] - Removes suffix");
-		localization.addDefault("help_suffix_7", "/<command> me <color> [world] - Sets your own suffix");
-		localization.addDefault("help_suffix_8", "/<command> <name> <color> [world] - Sets player's suffix");
+		localization.addDefault("help_suffix_7", "/<command> me <suffix> [world] - Sets your own suffix");
+		localization.addDefault("help_suffix_8", "/<command> <name> <suffix> [world] - Sets player's suffix");
+		localization.addDefault("help_prefix_9", "/<command> global <suffix> - Sets the global suffix");
 		localization.addDefault("global_change_color", "&2The global color has been changed to &e%color");
 		localization.addDefault("global_change_prefix", "&2The global prefix has been changed to &e%prefix");
 		localization.addDefault("global_change_suffix", "&2The global suffix has been changed to &e%suffix");
