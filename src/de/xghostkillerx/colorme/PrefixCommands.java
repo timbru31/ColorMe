@@ -44,9 +44,15 @@ public class PrefixCommands implements CommandExecutor {
 		if (args.length > 1 && args[0].equalsIgnoreCase("global")) {
 			globalPrefix = args[1];
 			if (sender.hasPermission("prefixer.global")) {
+				// If the prefixes are the same
+				if (globalPrefix.equalsIgnoreCase(Actions.getGlobal("prefix"))) {
+					message = ColorMe.localization.getString("same_prefix_global");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
 				ColorMe.config.set("global_default.prefix", globalPrefix);
 				plugin.saveConfig();
-				message = ColorMe.localization.getString("global_change_prefix");
+				message = ColorMe.localization.getString("changed_prefix_global");
 				ColorMe.message(sender, null, message, globalPrefix, null, null, null);
 				return true;
 			}
@@ -59,6 +65,28 @@ public class PrefixCommands implements CommandExecutor {
 		// Removes a prefix
 		if (args.length > 1 && args[0].equalsIgnoreCase("remove")) {
 			world = "default";
+			// Removes the global prefix
+			if (args[1].equalsIgnoreCase("global")) {
+				if (sender.hasPermission("prefixer.global")) {
+					// Trying to remove an empty global prefix
+					if (!Actions.hasGlobal("prefix")) {
+						message = ColorMe.localization.getString("no_prefix_global");
+						ColorMe.message(sender, null, message, null, null, null, null);
+						return true;
+					}
+					// Remove global prefix
+					Actions.removeGlobal("prefix");
+					message = ColorMe.localization.getString("removed_prefix_global");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
+				// Deny access
+				else {
+					message = ColorMe.localization.getString("permission_denied");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
+			}
 			target = args[1].toLowerCase();
 			// Support for "me" -> this is the senderName!
 			if (target.equalsIgnoreCase("me")) {
@@ -116,6 +144,27 @@ public class PrefixCommands implements CommandExecutor {
 		// Gets a prefix
 		if (args.length > 1 && args[0].equalsIgnoreCase("get")) {
 			world = "default";
+			// Get the global prefix if set
+			if (args[1].equalsIgnoreCase("global")) {
+				if (sender.hasPermission("prefixer.global")) {
+					// Trying to get an empty global prefix
+					if (!Actions.hasGlobal("prefix")) {
+						message = ColorMe.localization.getString("no_prefix_global");
+						ColorMe.message(sender, null, message, null, null, null, null);
+						return true;
+					}
+					prefix = Actions.getGlobal("prefix");
+					message = ColorMe.localization.getString("get_prefix_global");
+					ColorMe.message(sender, null, message, prefix, null, null, null);
+					return true;
+				}
+				// Deny access
+				else {
+					message = ColorMe.localization.getString("permission_denied");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
+			}
 			// If a player name is there, too
 			target = args[1].toLowerCase();
 			if (target.equalsIgnoreCase("me")) {

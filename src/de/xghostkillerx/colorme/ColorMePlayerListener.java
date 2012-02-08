@@ -46,45 +46,49 @@ public class ColorMePlayerListener implements Listener {
 		name = player.getName().toLowerCase();
 		world = player.getWorld().getName().toLowerCase();
 		CheckRoutine(player, name, world);
-		// Get world prefix if available
-		if (Actions.has(name, world, "prefix")) {
-			prefix = Actions.get(name, world, "prefix");
+		if (ColorMe.config.getBoolean("Prefixer") == true) {
+			// Get world prefix if available
+			if (Actions.has(name, world, "prefix")) {
+				prefix = Actions.get(name, world, "prefix");
+			}
+			// Get default prefix
+			else if (Actions.has(name, "default", "prefix")) {
+				prefix = Actions.get(name, "default", "prefix");
+			}
+			// Get the global prefix
+			else if (Actions.hasGlobal("prefix")) {
+				prefix = Actions.getGlobal("prefix");
+			}
+			// If prefix is not null change the format
+			if (prefix != null) {
+				event.setFormat(prefix + ChatColor.WHITE + " " + event.getFormat());
+			}
 		}
-		// Get default prefix
-		else if (Actions.has(name, "default", "prefix")) {
-			prefix = Actions.get(name, "default", "prefix");
-		}
-		// Get the global prefix
-		else if (Actions.hasGlobal("prefix")) {
-			prefix = Actions.getGlobal("prefix");
-		}
-		// If prefix is not null change the format
-		if (prefix != null) {
-			event.setFormat(prefix + ChatColor.WHITE + " " + event.getFormat());
-		}
-		// Get world suffix if available
-		if (Actions.has(name, world, "suffix")) {
-			suffix = Actions.get(name, world, "suffix");
-		}
-		// Get default suffix
-		else if (Actions.has(name, "default", "suffix")) {
-			suffix = Actions.get(name, "default", "suffix");
-		}
-		// Get the global suffix
-		else if (Actions.hasGlobal("suffix")) {
-			suffix = Actions.getGlobal("suffix");
-		}
-		// If suffix is not null
-		if (suffix != null) {
-			// Search the bracket
-			if (event.getFormat().contains(">")) {
-				i = event.getFormat().lastIndexOf(">") + 1;
-				length = event.getFormat().length();
-				// Substring 1 until the bracket, substring 2 after the bracket
-				sub1 = event.getFormat().substring(0, i);
-				sub2 = event.getFormat().substring(i, length);
-				// Insert the suffix between ;)
-				event.setFormat(sub1 + " " + suffix + ChatColor.WHITE + ":" + sub2);
+		if (ColorMe.config.getBoolean("Suffixer") == true) {
+			// Get world suffix if available
+			if (Actions.has(name, world, "suffix")) {
+				suffix = Actions.get(name, world, "suffix");
+			}
+			// Get default suffix
+			else if (Actions.has(name, "default", "suffix")) {
+				suffix = Actions.get(name, "default", "suffix");
+			}
+			// Get the global suffix
+			else if (Actions.hasGlobal("suffix")) {
+				suffix = Actions.getGlobal("suffix");
+			}
+			// If suffix is not null
+			if (suffix != null) {
+				// Search the bracket
+				if (event.getFormat().contains(">")) {
+					i = event.getFormat().lastIndexOf(">") + 1;
+					length = event.getFormat().length();
+					// Substring 1 until the bracket, substring 2 after the bracket
+					sub1 = event.getFormat().substring(0, i);
+					sub2 = event.getFormat().substring(i, length);
+					// Insert the suffix between ;)
+					event.setFormat(sub1 + " " + suffix + ChatColor.WHITE + ":" + sub2);
+				}
 			}
 		}
 		prefix = null;
@@ -93,7 +97,7 @@ public class ColorMePlayerListener implements Listener {
 
 	// Check for the player and update the file is values are unknown
 	private void CheckRoutine(Player player, String name, String world) {
-		plugin.loadConfigsAgain();
+		ColorMe.loadConfigsAgain();
 		i = 0;
 		// If the player isn't in the players.color add him
 		if (!ColorMe.players.contains(name)) {

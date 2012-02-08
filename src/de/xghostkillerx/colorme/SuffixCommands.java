@@ -44,9 +44,15 @@ public class SuffixCommands implements CommandExecutor {
 		if (args.length > 1 && args[0].equalsIgnoreCase("global")) {
 			globalSuffix = args[1];
 			if (sender.hasPermission("suffixer.global")) {
+				// If the prefixes are the same
+				if (globalSuffix.equalsIgnoreCase(Actions.getGlobal("suffix"))) {
+					message = ColorMe.localization.getString("same_suffix_global");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
 				ColorMe.config.set("global_default.suffix", globalSuffix);
 				plugin.saveConfig();
-				message = ColorMe.localization.getString("global_change_suffix");
+				message = ColorMe.localization.getString("changed_suffix_global");
 				ColorMe.message(sender, null, message, globalSuffix, null, null, null);
 				return true;
 			}
@@ -59,6 +65,28 @@ public class SuffixCommands implements CommandExecutor {
 		// Removes a suffix
 		if (args.length > 1 && args[0].equalsIgnoreCase("remove")) {
 			world = "default";
+			// Removes the global suffix
+			if (args[1].equalsIgnoreCase("global")) {
+				if (sender.hasPermission("suffixer.global")) {
+					// Trying to remove an empty global suffix
+					if (!Actions.hasGlobal("suffix")) {
+						message = ColorMe.localization.getString("no_suffix_global");
+						ColorMe.message(sender, null, message, null, null, null, null);
+						return true;
+					}
+					// Remove global suffix
+					Actions.removeGlobal("suffix");
+					message = ColorMe.localization.getString("removed_suffix_global");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
+				// Deny access
+				else {
+					message = ColorMe.localization.getString("permission_denied");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
+			}
 			target = args[1].toLowerCase();
 			// Support for "me" -> this is the senderName!
 			if (target.equalsIgnoreCase("me")) {
@@ -116,6 +144,27 @@ public class SuffixCommands implements CommandExecutor {
 		// Gets a suffix
 		if (args.length > 1 && args[0].equalsIgnoreCase("get")) {
 			world = "default";
+			// Get the global suffix if set
+			if (args[1].equalsIgnoreCase("global")) {
+				if (sender.hasPermission("suffixer.global")) {
+					// Trying to get an empty global suffix
+					if (!Actions.hasGlobal("suffix")) {
+						message = ColorMe.localization.getString("no_suffix_global");
+						ColorMe.message(sender, null, message, null, null, null, null);
+						return true;
+					}
+					suffix = Actions.getGlobal("suffix");
+					message = ColorMe.localization.getString("get_suffix_global");
+					ColorMe.message(sender, null, message, suffix, null, null, null);
+					return true;
+				}
+				// Deny access
+				else {
+					message = ColorMe.localization.getString("permission_denied");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
+			}
 			// If a player name is there, too
 			target = args[1].toLowerCase();
 			if (target.equalsIgnoreCase("me")) {

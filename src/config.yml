@@ -7,7 +7,10 @@ tabList: true
 playerTitle: true
 Prefixer: true
 Suffixer: true
-ColorMe: true
+ColorMe:
+  displayName: true
+  tabList: true
+  playerTitle: true
 colors:
   black: true
   dark_blue: true

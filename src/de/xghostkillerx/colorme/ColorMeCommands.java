@@ -55,7 +55,7 @@ public class ColorMeCommands implements CommandExecutor {
 			}
 		}
 		// Stop here if ColorMe is unwanted
-		if (ColorMe.config.getBoolean("ColorMe") == false) {
+		if (ColorMe.config.getBoolean("ColorMe.displayName") == false && ColorMe.config.getBoolean("ColorMe.tabList") == false && ColorMe.config.getBoolean("ColorMe.playerTitle") == false) {
 			message = ColorMe.localization.getString("part_disabled");
 			ColorMe.message(sender, null, message, null, null, null, null);
 			return true;
@@ -69,9 +69,15 @@ public class ColorMeCommands implements CommandExecutor {
 		if (args.length > 1 && args[0].equalsIgnoreCase("global")) {
 			globalColor = args[1];
 			if (sender.hasPermission("colorme.global")) {
+				// If the colors are the same
+				if (globalColor.equalsIgnoreCase(Actions.getGlobal("color"))) {
+					message = ColorMe.localization.getString("same_color_global");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
 				ColorMe.config.set("global_default.color", globalColor);
 				plugin.saveConfig();
-				message = ColorMe.localization.getString("global_change_color");
+				message = ColorMe.localization.getString("changed_color_global");
 				ColorMe.message(sender, null, message, globalColor, null, null, null);
 				return true;
 			}
@@ -84,6 +90,28 @@ public class ColorMeCommands implements CommandExecutor {
 		// Removes a color
 		if (args.length > 1 && args[0].equalsIgnoreCase("remove")) {
 			world = "default";
+			// Removes the global color
+			if (args[1].equalsIgnoreCase("global")) {
+				if (sender.hasPermission("colorme.global")) {
+					// Trying to remove an empty global color
+					if (!Actions.hasGlobal("color")) {
+						message = ColorMe.localization.getString("no_color_global");
+						ColorMe.message(sender, null, message, null, null, null, null);
+						return true;
+					}
+					// Remove global color
+					Actions.removeGlobal("color");
+					message = ColorMe.localization.getString("removed_color_global");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
+				// Deny access
+				else {
+					message = ColorMe.localization.getString("permission_denied");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
+			}
 			target = args[1].toLowerCase();
 			// Support for "me" -> this is the senderName!
 			if (target.equalsIgnoreCase("me")) {
@@ -141,7 +169,28 @@ public class ColorMeCommands implements CommandExecutor {
 		// Gets a color
 		if (args.length > 1 && args[0].equalsIgnoreCase("get")) {
 			world = "default";
-			// If a player name is there, too
+			// Get the global color if set
+			if (args[1].equalsIgnoreCase("global")) {
+				if (sender.hasPermission("colorme.global")) {
+					// Trying to get an empty global color
+					if (!Actions.hasGlobal("color")) {
+						message = ColorMe.localization.getString("no_color_global");
+						ColorMe.message(sender, null, message, null, null, null, null);
+						return true;
+					}
+					color = Actions.getGlobal("color");
+					message = ColorMe.localization.getString("get_color_global");
+					ColorMe.message(sender, null, message, color, null, null, null);
+					return true;
+				}
+				// Deny access
+				else {
+					message = ColorMe.localization.getString("permission_denied");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
+			}
+			// If a player name is there, too			
 			target = args[1].toLowerCase();
 			if (target.equalsIgnoreCase("me")) {
 				target = sender.getName().toLowerCase();
@@ -156,7 +205,6 @@ public class ColorMeCommands implements CommandExecutor {
 			if (args.length > 2) {
 				world = args[2].toLowerCase();
 			}
-			Actions.get(target, world, pluginPart).toLowerCase();
 			// Check for permission or self
 			if (sender.hasPermission("colorme.get") || Actions.self(sender, target)) {
 				// Trying to get a color from a color-less player
@@ -173,6 +221,7 @@ public class ColorMeCommands implements CommandExecutor {
 					ColorMe.message(sender, null, message, null, world, target, null);
 					return true;
 				}
+				color = Actions.get(target, world, pluginPart).toLowerCase();
 				// Gets color
 				if (target.equalsIgnoreCase(senderName)) {
 					message = ColorMe.localization.getString("get_color_self");

@@ -2,24 +2,29 @@
 permission_denied: '&4You don''t have the permission to do this!'
 part_disabled: '&4Sorry, but this command and plugin part is disabled!'
 only_ingame: '&4Sorry, this command can only be run from ingame!'
-color_list: 'Color list:'
+color_list: 'Color list: (the & values are used for prefix/suffix!)'
 reload: '&2ColorMe version &4%version &2reloaded!'
 charged: '&2You have been charged &4%costs'
 not_enough_money_1: '&4Sorry, you don''t have enough money to do this.'
 not_enough_money_2: '&4It costs &e%costs &4to do this!'
 no_color_self: '&eYou &4don''t have a colored name in the world &e%world'
 no_color_other: '&e%player &4doesn''t have a colored name in the world &e%world'
+no_color_global: '&4The global color isn''t set!'
 same_color_self: '&eYou &4already have got this color in the world &e%world'
 same_color_other: '&e%player &4already has got this color in the world &e%world'
+same_color_global: '&4The global color is already this color!'
 invalid_color: '&4''&e%color&4'' is not a supported color.'
 disabled_color: '&4Sorry, but the color ''&e%color&4'' is disabled.'
 removed_color_self: '&eYour &2name color in the world &e%world &2has been removed.'
 removed_color_other: '&2Removed &e%player&2''s color in the world &e%world.'
+removed_color_global: '&2Removed the global color.'
 changed_color_self: '&eYour &2name color has been changed to &e%color &2in the world
   &e%world'
 changed_color_other: '&2Changed &e%player&2''s color to &e%color &2in the world &e%world'
+changed_color_global: '&2The global color has been changed to &e%color'
 get_color_self: '&eYou &2have got the color %color &2in the world &e%world'
-get_color_other: '&e%player &2has got the color %color %2in the world &e%world'
+get_color_other: '&e%player &2has got the color %color &2in the world &e%world'
+get_color_global: '&2The global color is &e%color'
 help_color_1: '&2Welcome to the ColorMe version &4%version &2help!'
 help_color_2: '&4 <> = Required, [] = Optional'
 help_color_3: /<command> help - Shows the help
@@ -28,46 +33,55 @@ help_color_5: /<command> get <name> [world] - Gets the actual color
 help_color_6: /<command> remove <name> [world] - Removes color
 help_color_7: /<command> me <color> [world] - Sets your own color
 help_color_8: /<command> <name> <color> [world] - Sets player's color
+help_color_9: /<command> global <color> - Sets the global color
 no_prefix_self: '&eYou &4don''t have a prefix in the world &e%world'
 no_prefix_other: '&e%player &4doesn''t have a prefix in the world &e%world'
+no_prefix_global: '&4The global prefix isn''t set!'
 same_prefix_self: '&eYou &4already have got this prefix in the world &e%world'
 same_prefix_other: '&e%player &4already has got this color in the world &e%world'
+same_prefix_global: '&4The global prefix is already this prefix!'
 removed_prefix_self: '&eYour &2prefix in the world &e%world &2has been removed.'
 removed_prefix_other: '&2Removed &e%player&2''s prefix in the world &e%world.'
+removed_prefix_global: '&2Removed the global prefix.'
 changed_prefix_self: '&eYour &2prefix has been changed to &e%prefix &2in the world
   &e%world'
 changed_prefix_other: '&2Changed &e%player&2''s prefix to &e%prefix &2in the world
   &e%world'
+changed_prefix_global: '&2The global prefix has been changed to &e%prefix'
 get_prefix_self: '&eYou &2have got the prefix %prefix &2in the world &e%world'
 get_prefix_other: '&e%player &2has got the prefix %prefix %2in the world &e%world'
+get_prefix_global: '&2The global prefix is &e%prefix'
 help_prefix_1: '&2Welcome to the Prefixer (part of ColorMe) version &4%version &2help!'
 help_prefix_2: '&4 <> = Required, [] = Optional'
 help_prefix_3: /<command> help - Shows the help
 help_prefix_4: /color list - Shows list of colors
 help_prefix_5: /<command> get <name> [world] - Gets the actual prefix
 help_prefix_6: /<command> remove <name> [world] - Removes prefix
-help_prefix_7: /<command> me <color> [world] - Sets your own prefix
-help_prefix_8: /<command> <name> <color> [world] - Sets player's prefix
+help_prefix_7: /<command> me <prefix> [world] - Sets your own prefix
+help_prefix_8: /<command> <name> <prefix> [world] - Sets player's prefix
+help_prefix_9: /<command> global <suffix> - Sets the global suffix
 no_suffix_self: '&eYou &4don''t have a suffix in the world &e%world'
 no_suffix_other: '&e%player &4doesn''t have a suffix in the world &e%world'
+no_suffix_global: '&4The global suffix isn''t set!'
 same_suffix_self: '&eYou &4already have got this suffix in the world &e%world'
 same_suffix_other: '&e%player &4already has got this color in the world &e%world'
+same_suffix_global: '&4The global suffix is already this suffix!'
 removed_suffix_self: '&eYour &2suffix in the world &e%world &2has been removed.'
 removed_suffix_other: '&2Removed &e%player&2''s suffix in the world &e%world.'
+removed_suffix_global: '&2Removed the global suffix.'
 changed_suffix_self: '&eYour &2suffix has been changed to &e%suffix &2in the world
   &e%world'
 changed_suffix_other: '&2Changed &e%player&2''s suffix to &e%suffix &2in the world
   &e%world'
+changed_suffix_global: '&2The global suffix has been changed to &e%suffix'
 get_suffix_self: '&eYou &2have got the suffix %suffix &2in the world &e%world'
 get_suffix_other: '&e%player &2has got the suffix %suffix %2in the world &e%world'
+get_suffix_global: '&2The global suffix is &e%suffix'
 help_suffix_1: '&2Welcome to the Suffixer (part of ColorMe) version &4%version &2help!'
 help_suffix_2: '&4 <> = Required, [] = Optional'
 help_suffix_3: /<command> help - Shows the help
 help_suffix_4: /color list - Shows list of colors
 help_suffix_5: /<command> get <name> [world] - Gets the actual suffix
 help_suffix_6: /<command> remove <name> [world] - Removes suffix
-help_suffix_7: /<command> me <color> [world] - Sets your own suffix
-help_suffix_8: /<command> <name> <color> [world] - Sets player's suffix
-global_change_color: '&2The global color has been changed to &e%color'
-global_change_prefix: '&2The global prefix has been changed to &e%prefix'
-global_change_suffix: '&2The global suffix has been changed to &e%suffix'
+help_suffix_7: /<command> me <suffix> [world] - Sets your own suffix
+help_suffix_8: /<command> <name> <suffix> [world] - Sets player's suffix

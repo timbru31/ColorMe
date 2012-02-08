@@ -38,7 +38,7 @@ public class Actions {
 		updatedString = replaceThings(string);
 		return updatedString;
 	}
-	
+
 	static String replaceThings(String string) {
 		// While rainbow is in there
 		while (string.contains("&rainbow")) {
@@ -120,6 +120,13 @@ public class Actions {
 		return false;
 	}
 
+	// Removes a color/prefix/suffix if exists, otherwise returns false
+	static boolean removeGlobal(String pluginPart) {
+		ColorMe.config.set("global_default." + pluginPart, "");
+		ColorMe.saveConfigs();
+		return false;
+	}
+
 	// Update the displayName, tabName, title, prefix & suffix in a specific world (after setting, removing, onJoin and onChat)
 	@SuppressWarnings("deprecation")
 	static void updateName(String name, String color) {
@@ -127,12 +134,26 @@ public class Actions {
 		if (player != null) {
 			displayName = player.getDisplayName();
 			cleanDisplayName = ChatColor.stripColor(displayName);
-			boolean tabList = ColorMe.config.getBoolean("tabList");
-			boolean playerTitle = ColorMe.config.getBoolean("playerTitle");
-			// Random
-			if (color.equalsIgnoreCase("random")) {
-				player.setDisplayName(randomColor(cleanDisplayName) + ChatColor.WHITE);
-				if (tabList == true) {
+			boolean tabList = ColorMe.config.getBoolean("ColorMe.tabList");
+			boolean playerTitle = ColorMe.config.getBoolean("ColorMe.playerTitle");
+			// Name color
+			if (ColorMe.config.getBoolean("ColorMe.displayName") == true) {
+				// Random
+				if (color.equalsIgnoreCase("random")) {
+					player.setDisplayName(randomColor(cleanDisplayName) + ChatColor.WHITE);
+				}
+				// Rainbow
+				if (color.equalsIgnoreCase("rainbow")) {
+					player.setDisplayName(rainbowColor(cleanDisplayName) + ChatColor.WHITE);
+				}
+				// Normal
+				else if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
+					player.setDisplayName(ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName + ChatColor.WHITE);
+				}
+			}
+			// Check for playerList
+			if (tabList == true) {
+				if (color.equalsIgnoreCase("random")) {
 					// If the tab name is longer than 16 shorten it!
 					newName = randomColor(cleanDisplayName);
 					if (newName.length() > 16) {
@@ -140,11 +161,7 @@ public class Actions {
 					}
 					player.setPlayerListName(newName);
 				}
-			}
-			// Rainbow
-			if (color.equalsIgnoreCase("rainbow")) {
-				player.setDisplayName(rainbowColor(cleanDisplayName) + ChatColor.WHITE);
-				if (tabList == true) {
+				if (color.equalsIgnoreCase("rainbow")) {
 					// If the tab name is longer than 16 shorten it!
 					newName = rainbowColor(cleanDisplayName);
 					if (newName.length() > 16) {
@@ -152,11 +169,7 @@ public class Actions {
 					}
 					player.setPlayerListName(newName);
 				}
-			}
-			// Normal
-			else if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
-				player.setDisplayName(ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName + ChatColor.WHITE);
-				if (tabList == true) {
+				else if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
 					// If the tab name is longer than 16 shorten it!
 					newName = ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName;
 					if (newName.length() > 16) {
@@ -308,7 +321,7 @@ public class Actions {
 
 	// Reloads the plugin
 	static boolean reload(CommandSender sender) {
-		plugin.loadConfigsAgain();		
+		ColorMe.loadConfigsAgain();		
 		message = ColorMe.localization.getString("reload");
 		ColorMe.message(sender, null, message, null, null, null, null);
 		return true;
