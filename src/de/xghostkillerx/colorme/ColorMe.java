@@ -304,7 +304,7 @@ public class ColorMe extends JavaPlugin {
 			log.warning("ColorMe failed to save the localization! Please report this!");
 		}
 	}
-	
+
 	// Saves the config
 	public static void saveConfigs() {
 		try {
@@ -342,23 +342,33 @@ public class ColorMe extends JavaPlugin {
 
 	// Message sender
 	public static void message(CommandSender sender, Player player, String message, String value, String world, String target, Double cost) {
-		//PluginDescriptionFile pdfFile = this.getDescription();
-		message = message
-				.replaceAll("&([0-9a-fk])", "\u00A7$1")
-				.replaceAll("%world", world)
-				.replaceAll("%color", value)
-				.replaceAll("%prefix", value)
-				.replaceAll("%suffix", value)
-				.replaceAll("%player", target)
-				.replaceAll("%version", "3.4");
-		if (cost != null) {
-			message = message.replaceAll("%costs", ColorMe.economy.format(cost));
+		if (message != null) {
+			message = message
+					.replaceAll("&([0-9a-fk])", "\u00A7$1")
+					.replaceAll("%world", world)
+					.replaceAll("%color", value)
+					.replaceAll("%prefix", value)
+					.replaceAll("%suffix", value)
+					.replaceAll("%player", target)
+					.replaceAll("%version", "3.4");
+			if (cost != null) {
+				message = message.replaceAll("%costs", ColorMe.economy.format(cost));
+			}
+			if (player != null) {
+				player.sendMessage(message);
+			}
+			else if (sender != null) {
+				sender.sendMessage(message);
+			}
 		}
-		if (player != null) {
-			player.sendMessage(message);
-		}
-		else if (sender != null) {
-			sender.sendMessage(message);
+		// If message is null
+		else {
+			if (player != null) {
+				player.sendMessage(ChatColor.DARK_RED + "Somehow this message is not defined. Please check your localization.yml");
+			}
+			else if (sender != null) {
+				sender.sendMessage(ChatColor.DARK_RED + "Somehow this message is not defined. Please check your localization.yml");
+			}
 		}
 	}
 }

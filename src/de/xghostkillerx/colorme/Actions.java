@@ -182,11 +182,11 @@ public class Actions {
 			if (ColorMe.spoutEnabled == true && playerTitle == true) {
 				// Random color
 				if (color.equalsIgnoreCase("random")) {
-					SpoutManager.getAppearanceManager().setGlobalTitle(player, randomColor(displayName));
+					SpoutManager.getAppearanceManager().setGlobalTitle(player, randomColor(cleanDisplayName));
 				}
 				// Rainbow
 				if (color.equalsIgnoreCase("rainbow")) {
-					SpoutManager.getAppearanceManager().setGlobalTitle(player, rainbowColor(displayName));
+					SpoutManager.getAppearanceManager().setGlobalTitle(player, rainbowColor(cleanDisplayName));
 				}
 				// Normal color
 				else if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
@@ -228,8 +228,8 @@ public class Actions {
 		ColorMe.message(sender, null, message, null, null, null, null);
 		msg = "";
 		i = 0;
-		// As long as all colors aren't reached
-		for (i = 0; i < ChatColor.values().length; i++) {
+		// As long as all colors aren't reached, including magic manual
+		for (i = 0; i < 16; i++) {
 			// get the name from the integer
 			color = ChatColor.getByCode(i).name().toLowerCase();
 			colorChar = Character.toString(ChatColor.getByCode(i).getChar());
@@ -238,12 +238,13 @@ public class Actions {
 				msg += ChatColor.valueOf(color.toUpperCase()) + color + " (&" + colorChar + ") ";
 			}
 		}
+		if (ColorMe.config.getBoolean("colors.magic")) msg += "magic (" + ChatColor.MAGIC + "a" + ChatColor.WHITE + ", &k) ";
 		// Include custom colors
 		if (ColorMe.config.getBoolean("colors.random") == true) {
-			msg += randomColor("random") + " (&rainbow) ";
+			msg += randomColor("random (&random)" + " ");
 		}
 		if (ColorMe.config.getBoolean("colors.rainbow") == true) {
-			msg += rainbowColor("rainbow") + " (&random)";
+			msg += rainbowColor("rainbow (&rainbow)");
 		}
 		sender.sendMessage(msg);
 	}
