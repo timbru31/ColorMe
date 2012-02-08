@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class Actions {
 	public static ColorMe plugin;
@@ -128,7 +128,6 @@ public class Actions {
 	}
 
 	// Update the displayName, tabName, title, prefix & suffix in a specific world (after setting, removing, onJoin and onChat)
-	@SuppressWarnings("deprecation")
 	static void updateName(String name, String color) {
 		Player player = Bukkit.getServer().getPlayerExact(name);
 		if (player != null) {
@@ -180,24 +179,24 @@ public class Actions {
 			}
 			// Check for Spout
 			if (ColorMe.spoutEnabled == true && playerTitle == true) {
+				SpoutPlayer spoutPlayer = (SpoutPlayer) player;
 				// Random color
 				if (color.equalsIgnoreCase("random")) {
-					SpoutManager.getAppearanceManager().setGlobalTitle(player, randomColor(cleanDisplayName));
+					spoutPlayer.setTitle(randomColor(cleanDisplayName));
 				}
 				// Rainbow
 				if (color.equalsIgnoreCase("rainbow")) {
-					SpoutManager.getAppearanceManager().setGlobalTitle(player, rainbowColor(cleanDisplayName));
+					spoutPlayer.setTitle(rainbowColor(cleanDisplayName));
 				}
 				// Normal color
 				else if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
-					SpoutManager.getAppearanceManager().setGlobalTitle(player, ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName);
+					spoutPlayer.setTitle(ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName);
 				}
 			}
 		}
 	}
 
 	// Restore the "clean", white name
-	@SuppressWarnings("deprecation")
 	public static void restorName(String name) {
 		Player player = Bukkit.getServer().getPlayerExact(name);
 		if (player != null) {
@@ -216,7 +215,8 @@ public class Actions {
 				player.setPlayerListName(newName);
 			}
 			if (ColorMe.spoutEnabled == true && playerTitle == true) {
-				SpoutManager.getAppearanceManager().setGlobalTitle(player, ChatColor.WHITE + cleanDisplayName);
+				SpoutPlayer spoutPlayer = (SpoutPlayer) player;
+				spoutPlayer.resetTitle();
 			}
 		}
 	}
@@ -256,8 +256,8 @@ public class Actions {
 		i = 0;
 		// As long as the length of the name isn't reached
 		for (i = 0; i < name.length(); i++) {
-			// Roll the dice between 0 and 15 ;)
-			int x = (int)(Math.random()*16);
+			// Roll the dice between 0 and 16 ;)
+			int x = (int)(Math.random()*17);
 			ch = name.charAt(i);
 			// Color the character
 			newName += ChatColor.getByCode(x) + Character.toString(ch);
@@ -294,7 +294,7 @@ public class Actions {
 		// Second place, cause random and rainbow aren't possible normally ;)
 		else {
 			for (int i=0; i < ChatColor.values().length; i++) {
-				// Check if the color is one of the 16
+				// Check if the color is one of the 17
 				if (color.equalsIgnoreCase(ChatColor.getByCode(i).name())) {
 					return true;
 				}
