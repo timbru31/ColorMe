@@ -288,14 +288,14 @@ public class ColorMeCommands implements CommandExecutor {
 			if (sender.hasPermission("colorme.self." + color.toLowerCase()) && Actions.self(sender, target)) {
 				// Without economy or costs are null
 				cost = ColorMe.config.getDouble("costs.color");
-				if (ColorMe.economy == null || cost == 0) {
+				if (plugin.economy == null || cost == 0) {
 					Actions.set(senderName, color, world, pluginPart);
 					message = ColorMe.localization.getString("changed_color_self");
 					ColorMe.message(sender, null, message, color, world, null, null);
 					return true;
 				}
 				// With economy
-				else if (ColorMe.economy != null){
+				else if (plugin.economy != null) {
 					if (color.equalsIgnoreCase("white")) {
 						Actions.set(senderName, color, world, pluginPart);
 						message = ColorMe.localization.getString("changed_color_self");
@@ -303,8 +303,8 @@ public class ColorMeCommands implements CommandExecutor {
 						return true;
 					}
 					// Charge costs :)
-					if (cost > 0 && ColorMe.economy.has(senderName, cost)) {
-						ColorMe.economy.withdrawPlayer(senderName, cost);
+					if (cost > 0 && plugin.economy.has(senderName, cost)) {
+						plugin.economy.withdrawPlayer(senderName, cost);
 						// Set color an notify sender
 						Actions.set(senderName, color, world, pluginPart);
 						message = ColorMe.localization.getString("charged");
@@ -314,7 +314,7 @@ public class ColorMeCommands implements CommandExecutor {
 						return true;
 					}
 					// If player hasn't got enough money
-					else if (cost > 0 && ColorMe.economy.getBalance(senderName) < cost) {						
+					else if (cost > 0 && plugin.economy.getBalance(senderName) < cost) {						
 						message = ColorMe.localization.getString("not_enough_money_1");
 						ColorMe.message(sender, null, message, null, null, null, null);
 						message = ColorMe.localization.getString("not_enough_money_2");

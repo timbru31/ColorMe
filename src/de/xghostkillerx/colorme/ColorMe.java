@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -35,12 +37,10 @@ import net.milkbowl.vault.economy.Economy;
  * 
  */
 
-// TODO /color add custom
-
 public class ColorMe extends JavaPlugin {
 	public final static Logger log = Logger.getLogger("Minecraft");
 	private final ColorMePlayerListener playerListener = new ColorMePlayerListener(this);
-	public static Economy economy = null;
+	public Economy economy = null;
 	public static FileConfiguration config;
 	public static FileConfiguration players;
 	public static FileConfiguration localization;
@@ -51,7 +51,7 @@ public class ColorMe extends JavaPlugin {
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
 	private SuffixCommands suffixExecutor;
-
+	public List<String> values = new ArrayList<String>();
 
 	// Shutdown
 	public void onDisable() {
@@ -147,11 +147,46 @@ public class ColorMe extends JavaPlugin {
 		}
 
 		// Stats
+
+		checkStatsStuff();
 		try {
 			Metrics metrics = new Metrics();
+			// Custom plotter for each part
+			for (int i = 0; i < values.size(); i++) {
+				final String value = values.get(i);
+				metrics.addCustomData(this, new Metrics.Plotter() {
+					@Override
+					public String getColumnName() {
+						return value;
+					}
+
+					@Override
+					public int getValue() {
+						return 1;
+					}
+				});
+			}
 			metrics.beginMeasuringPlugin(this);
 		}
 		catch (IOException e) {}
+	}
+
+	private void checkStatsStuff() {
+		if (config.getBoolean("Prefixer") == true) {
+			values.add("Prefixer");
+		}
+		if (config.getBoolean("Suffixer") == true) {
+			values.add("Suffixer");
+		}
+		if (config.getBoolean("ColorMe.displayName") == true) {
+			values.add("ColorMe - displayName");
+		}
+		if (config.getBoolean("ColorMe.tabList") == true) {
+			values.add("ColorMe - tabList");
+		}
+		if (config.getBoolean("ColorMe.playerTitle") == true) {
+			values.add("ColorMe - playerTitle");
+		}
 	}
 
 	// Loads the config at the start
@@ -190,7 +225,7 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("only_ingame", "&4Sorry, this command can only be run from ingame!");
 		localization.addDefault("color_list", "Color list: (the & values are used for prefix/suffix!)");
 		localization.addDefault("reload", "&2ColorMe version &4%version &2reloaded!");
-		localization.addDefault("charged", "&2You have been charged &4%costs");
+		localization.addDefault("charged", "&2You have been charged &4$%costs");
 		localization.addDefault("not_enough_money_1", "&4Sorry, you don't have enough money to do this.");
 		localization.addDefault("not_enough_money_2", "&4It costs &e%costs &4to do this!");
 		localization.addDefault("no_color_self", "&eYou &4don't have a colored name in the world &e%world");
@@ -352,7 +387,8 @@ public class ColorMe extends JavaPlugin {
 					.replaceAll("%player", target)
 					.replaceAll("%version", "3.4");
 			if (cost != null) {
-				message = message.replaceAll("%costs", ColorMe.economy.format(cost));
+				//@SuppressWarnings("static-access")
+				message = message.replaceAll("%costs", Double.toString(cost));
 			}
 			if (player != null) {
 				player.sendMessage(message);
