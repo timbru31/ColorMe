@@ -76,7 +76,7 @@ public class ColorMe extends JavaPlugin {
 		try {
 			players = YamlConfiguration.loadConfiguration(playersFile);
 		}
-		// if it failed, tell about the update progress
+		// Log if failed
 		catch (Exception e) {
 			log.warning("ColorMe failed to load the players.yml! Please report this!");
 		}
@@ -101,7 +101,7 @@ public class ColorMe extends JavaPlugin {
 			localization = YamlConfiguration.loadConfiguration(localizationFile);
 			loadLocalization();
 		}
-		// if it failed, tell it
+		// If it failed, tell it
 		catch (Exception e) {
 			log.warning("ColorMe failed to load the localization!");
 		}
