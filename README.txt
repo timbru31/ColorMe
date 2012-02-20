@@ -108,7 +108,7 @@ Node: colorme.global
 Description: Gets the global color
 
 /color me <color> [world]
-Node: colorme.self
+Node: colorme.self.<color>
 Description: Sets your own color (no world -> default)
 
 /color <name> <color> [world]

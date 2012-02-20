@@ -22,7 +22,7 @@ public class Actions {
 	}
 
 	// Return the player's name color/prefix/suffix
-	static String get(String name, String world, String pluginPart) {
+	public static String get(String name, String world, String pluginPart) {
 		// Player in the config? Yes -> get the config, no -> nothing
 		if (ColorMe.players.contains(name + "." + pluginPart + "." + world)) {
 			String string = ColorMe.players.getString(name + "." + pluginPart + "." + world);
@@ -39,7 +39,7 @@ public class Actions {
 		return updatedString;
 	}
 
-	static String replaceThings(String string) {
+	private static String replaceThings(String string) {
 		// While rainbow is in there
 		while (string.contains("&rainbow")) {
 			// Without rainbow
@@ -93,7 +93,7 @@ public class Actions {
 	}
 
 	// Check if a player has a color/prefix/suffix or not
-	static boolean has(String name, String world, String pluginPart) {
+	public static boolean has(String name, String world, String pluginPart) {
 		name = name.toLowerCase();
 		if (ColorMe.players.contains(name + "." + pluginPart + "." + world)) {
 			// if longer than 1 it's a color, return true - otherwise (means '') return false
@@ -197,7 +197,7 @@ public class Actions {
 	}
 
 	// Restore the "clean", white name
-	public static void restorName(String name) {
+	static void restoreName(String name) {
 		Player player = Bukkit.getServer().getPlayerExact(name);
 		if (player != null) {
 			displayName = player.getDisplayName();
@@ -222,19 +222,17 @@ public class Actions {
 	}
 
 	// The list of colors
-	@SuppressWarnings("deprecation")
 	static void listColors(CommandSender sender) {
 		message = ColorMe.localization.getString("color_list");
 		ColorMe.message(sender, null, message, null, null, null, null);
 		msg = "";
-		i = 0;
 		// As long as all colors aren't reached, including magic manual
-		for (i = 0; i < 16; i++) {
+		for (ChatColor value : ChatColor.values()) {
 			// get the name from the integer
-			color = ChatColor.getByCode(i).name().toLowerCase();
-			colorChar = Character.toString(ChatColor.getByCode(i).getChar());
+			color = value.name().toLowerCase();
+			colorChar = Character.toString(value.getChar());
 			// color the name of the color
-			if (ColorMe.config.getBoolean("colors." + color) == true) {
+			if (ColorMe.config.getBoolean("colors." + color) == true && !color.equalsIgnoreCase("magic")) {
 				msg += ChatColor.valueOf(color.toUpperCase()) + color + " (&" + colorChar + ") ";
 			}
 		}
@@ -250,17 +248,13 @@ public class Actions {
 	}
 
 	// Used to create a random effect
-	@SuppressWarnings("deprecation")
 	static String randomColor(String name) {
 		newName = "";
-		i = 0;
 		// As long as the length of the name isn't reached
 		for (i = 0; i < name.length(); i++) {
-			// Roll the dice between 0 and 16 ;)
-			int x = (int)(Math.random()*17);
 			ch = name.charAt(i);
 			// Color the character
-			newName += ChatColor.getByCode(x) + Character.toString(ch);
+			newName += ChatColor.values()[i] + Character.toString(ch);
 		}
 		return newName;
 	}
@@ -329,7 +323,7 @@ public class Actions {
 	}
 
 	// Update the name
-	public static void checkNames(String name, String world) {
+	static void checkNames(String name, String world) {
 		// Check for color and valid ones, else restore
 		if (Actions.has(name, world, "colors")) {
 			if (Actions.validColor(ColorMe.players.getString(name + ".colors." + world)) == true) {
@@ -337,7 +331,7 @@ public class Actions {
 				Actions.updateName(name, color);
 			}
 			else {
-				Actions.restorName(name);
+				Actions.restoreName(name);
 			}
 		}
 		else if (Actions.has(name, "default", "colors")) {
@@ -346,7 +340,7 @@ public class Actions {
 				Actions.updateName(name, color);
 			}
 			else {
-				Actions.restorName(name);
+				Actions.restoreName(name);
 			}
 		}
 		else if (Actions.hasGlobal("color")) {
@@ -355,11 +349,11 @@ public class Actions {
 				Actions.updateName(name, color);
 			}
 			else {
-				Actions.restorName(name);
+				Actions.restoreName(name);
 			}
 		}
 		else if (!Actions.has(name, world, "colors") || !Actions.has(name, "default", "colors") || !Actions.hasGlobal("color")) {
-			Actions.restorName(name);
+			Actions.restoreName(name);
 		}
 	}
 }
