@@ -279,7 +279,6 @@ public class Actions {
 	}
 
 	// Check if the color is possible
-	@SuppressWarnings("deprecation")
 	static boolean validColor(String color) {
 		// if it's random or rainbow -> possible
 		if (color.equalsIgnoreCase("rainbow") || color.equalsIgnoreCase("random")) {
@@ -287,9 +286,9 @@ public class Actions {
 		}
 		// Second place, cause random and rainbow aren't possible normally ;)
 		else {
-			for (int i=0; i < ChatColor.values().length; i++) {
+			for (ChatColor value : ChatColor.values()) {
 				// Check if the color is one of the 17
-				if (color.equalsIgnoreCase(ChatColor.getByCode(i).name())) {
+				if (color.equalsIgnoreCase(value.name().toLowerCase())) {
 					return true;
 				}
 			}

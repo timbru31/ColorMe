@@ -203,13 +203,11 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("ColorMe.displayName", true);
 		config.addDefault("ColorMe.tabList", true);
 		config.addDefault("ColorMe.playerTitle", true);
-		// As long as all colors aren't reached
-		for (int i = 0; i < ChatColor.values().length; i++) {
+		for (ChatColor value : ChatColor.values()) {
 			// get the name from the integer
-			@SuppressWarnings("deprecation")
-			String color = ChatColor.getByCode(i).name();
-			// color the name of the color
-			config.addDefault("colors." + color.toLowerCase(), true);
+			String color = value.name().toLowerCase();
+			// write to the config
+			config.addDefault("colors." + color, true);
 		}
 		config.addDefault("colors.random", true);
 		config.addDefault("colors.rainbow", true);
