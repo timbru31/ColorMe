@@ -40,37 +40,48 @@ public class Actions {
 	}
 
 	private static String replaceThings(String string) {
+		ColorMe.log.info(string);
+		// While random is in there
+		while (string.contains("&random")) {
+			// Without random
+			int i = string.indexOf("&random") + 7;
+			int z = string.length();
+			sub = string.substring(i, z);
+			ColorMe.log.info(sub);
+			// Stop if other & or § is found
+			if (sub.contains("&")) {
+				sub = sub.substring(0, sub.indexOf("&"));
+			}
+			if (sub.contains("§")) {
+				sub = sub.substring(0, sub.indexOf("§"));
+			}
+			// Replace
+			string = string.replace(sub, randomColor(sub));
+			ColorMe.log.info(string);
+			// Replace FIRST random
+			string = string.replaceFirst("&random", "");
+			sub = "";
+		}
 		// While rainbow is in there
 		while (string.contains("&rainbow")) {
 			// Without rainbow
 			int i = string.indexOf("&rainbow") + 8;
 			int z = string.length();
 			sub = string.substring(i, z);
-			// Stop if other & is found
+			ColorMe.log.info(sub);
+			// Stop if other & or § is found
 			if (sub.contains("&")) {
 				sub = sub.substring(0, sub.indexOf("&"));
+				ColorMe.log.info(sub);
+			}
+			if (sub.contains("§")) {
+				sub = sub.substring(0, sub.indexOf("§"));
 			}
 			// Replace
 			string = string.replace(sub, rainbowColor(sub));
+			ColorMe.log.info(string);
 			// Replace FIRST rainbow
 			string = string.replaceFirst("&rainbow", "");
-			sub = "";
-		}
-		// While random is in there
-		while (string.contains("&random")) {
-			// Without rainbow
-			int i = string.indexOf("&random") + 7;
-			int z = string.length();
-			sub = string.substring(i, z);
-			sub = string.substring(i, z);
-			// Stop if other & is found
-			if (sub.contains("&")) {
-				sub = sub.substring(0, sub.indexOf("&"));
-			}
-			// Replace
-			string = string.replace(sub, randomColor(sub));
-			// Replace FIRST random
-			string = string.replaceFirst("&random", "");
 			sub = "";
 		}
 		// Normal color codes!
@@ -252,9 +263,11 @@ public class Actions {
 		newName = "";
 		// As long as the length of the name isn't reached
 		for (i = 0; i < name.length(); i++) {
+			// Roll the dice between 0 and 16 ;)
+			int x = (int)(Math.random()*ChatColor.values().length);
 			ch = name.charAt(i);
 			// Color the character
-			newName += ChatColor.values()[i] + Character.toString(ch);
+			newName += ChatColor.values()[x] + Character.toString(ch);
 		}
 		return newName;
 	}

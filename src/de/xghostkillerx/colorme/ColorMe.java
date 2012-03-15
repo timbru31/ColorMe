@@ -383,7 +383,7 @@ public class ColorMe extends JavaPlugin {
 					.replaceAll("%prefix", value)
 					.replaceAll("%suffix", value)
 					.replaceAll("%player", target)
-					.replaceAll("%version", "3.4");
+					.replaceAll("%version", "3.5");
 			if (cost != null) {
 				//@SuppressWarnings("static-access")
 				message = message.replaceAll("%costs", Double.toString(cost));
