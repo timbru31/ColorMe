@@ -40,14 +40,12 @@ public class Actions {
 	}
 
 	private static String replaceThings(String string) {
-		ColorMe.log.info(string);
 		// While random is in there
 		while (string.contains("&random")) {
 			// Without random
 			int i = string.indexOf("&random") + 7;
 			int z = string.length();
 			sub = string.substring(i, z);
-			ColorMe.log.info(sub);
 			// Stop if other & or § is found
 			if (sub.contains("&")) {
 				sub = sub.substring(0, sub.indexOf("&"));
@@ -57,7 +55,6 @@ public class Actions {
 			}
 			// Replace
 			string = string.replace(sub, randomColor(sub));
-			ColorMe.log.info(string);
 			// Replace FIRST random
 			string = string.replaceFirst("&random", "");
 			sub = "";
@@ -68,18 +65,15 @@ public class Actions {
 			int i = string.indexOf("&rainbow") + 8;
 			int z = string.length();
 			sub = string.substring(i, z);
-			ColorMe.log.info(sub);
 			// Stop if other & or § is found
 			if (sub.contains("&")) {
 				sub = sub.substring(0, sub.indexOf("&"));
-				ColorMe.log.info(sub);
 			}
 			if (sub.contains("§")) {
 				sub = sub.substring(0, sub.indexOf("§"));
 			}
 			// Replace
 			string = string.replace(sub, rainbowColor(sub));
-			ColorMe.log.info(string);
 			// Replace FIRST rainbow
 			string = string.replaceFirst("&rainbow", "");
 			sub = "";
