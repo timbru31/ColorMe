@@ -27,7 +27,7 @@ public class ColorMePlayerListener implements Listener {
 		plugin = instance;
 	}
 	private String[] pluginPart = {"colors", "prefix", "suffix"};
-	private String actualPart, name, world, sub1, sub2, suffix = null, prefix = null;
+	private String actualPart, name, world, sub1, sub2, suffix = null, prefix = null, brackets;
 	private int i, length;
 
 	// Loads the the values and set them to default one if not known
@@ -91,8 +91,15 @@ public class ColorMePlayerListener implements Listener {
 				}
 			}
 		}
+		if (!ColorMe.config.getBoolean("chatBrackets")) {
+			brackets = event.getFormat();
+			brackets = brackets.replaceAll("<", " ")
+					.replaceAll(">", "");
+			event.setFormat(brackets);
+		}
 		prefix = null;
 		suffix = null;
+		brackets = null;
 	}
 
 	// Check for the player and update the file is values are unknown
