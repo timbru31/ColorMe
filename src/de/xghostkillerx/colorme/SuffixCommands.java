@@ -53,7 +53,7 @@ public class SuffixCommands implements CommandExecutor {
 				ColorMe.config.set("global_default.suffix", globalSuffix);
 				plugin.saveConfig();
 				message = ColorMe.localization.getString("changed_suffix_global");
-				ColorMe.message(sender, null, message, globalSuffix, null, null, null);
+				ColorMe.message(sender, null, message, Actions.replaceThings(globalSuffix), null, null, null);
 				return true;
 			}
 			else {
@@ -200,11 +200,11 @@ public class SuffixCommands implements CommandExecutor {
 				// Gets suffix
 				if (target.equalsIgnoreCase(senderName)) {
 					message = ColorMe.localization.getString("get_suffix_self");
-					ColorMe.message(sender, null, message, suffix, world, null, null);
+					ColorMe.message(sender, null, message, Actions.replaceThings(suffix), world, null, null);
 					return true;
 				}
 				message = ColorMe.localization.getString("get_suffix_other");
-				ColorMe.message(sender, null, message, suffix, world, target, null);
+				ColorMe.message(sender, null, message, Actions.replaceThings(suffix), world, target, null);
 				return true;
 			}
 			// Deny access
@@ -252,7 +252,7 @@ public class SuffixCommands implements CommandExecutor {
 				if (plugin.economy == null || cost == 0) {
 					Actions.set(senderName, suffix, world, pluginPart);
 					message = ColorMe.localization.getString("changed_suffix_self");
-					ColorMe.message(sender, null, message, suffix, world, null, null);
+					ColorMe.message(sender, null, message, Actions.replaceThings(suffix), world, null, null);
 					return true;
 				}
 				// With economy
@@ -265,7 +265,7 @@ public class SuffixCommands implements CommandExecutor {
 						message = ColorMe.localization.getString("charged");
 						ColorMe.message(sender, null, message, null, null, null, cost);
 						message = ColorMe.localization.getString("changed_suffix_self");
-						ColorMe.message(sender, null, message, suffix, world, null, null);
+						ColorMe.message(sender, null, message, Actions.replaceThings(suffix), world, null, null);
 						return true;
 					}
 					// If player hasn't got enough money
@@ -286,10 +286,10 @@ public class SuffixCommands implements CommandExecutor {
 					// Tell the affected player
 					Player player = plugin.getServer().getPlayerExact(target);
 					message = ColorMe.localization.getString("changed_suffix_self");
-					ColorMe.message(null, player, message, suffix, world, null, null);
+					ColorMe.message(null, player, message, Actions.replaceThings(suffix), world, null, null);
 				}
 				message = ColorMe.localization.getString("changed_suffix_other");
-				ColorMe.message(sender, null, message, suffix, world, target, null);
+				ColorMe.message(sender, null, message, Actions.replaceThings(suffix), world, target, null);
 				return true;
 			}
 			// Permission check failed

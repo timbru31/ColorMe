@@ -38,8 +38,6 @@ costs:
   color: 5.0
   prefix: 5.0
   suffix: 5.0
-tabList: true
-playerTitle: true
 Prefixer: true
 Suffixer: true
 ColorMe:

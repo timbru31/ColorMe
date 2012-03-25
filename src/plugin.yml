@@ -1,6 +1,6 @@
 name: ColorMe
 main: de.xghostkillerx.colorme.ColorMe
-version: 3.4.1
+version: 3.5
 author: xGhOsTkiLLeRx
 authors: [Valrix]
 website: http://bit.ly/bukkitdevcolorme
@@ -42,6 +42,10 @@ permissions:
             colorme.self.white: true
             colorme.self.random: true
             colorme.self.rainbow: true
+            colorme.self.bold: true
+            colorme.self.italic: true
+            colorme.self.underline: true
+            colorme.self.strikethrough: true
             colorme.self.custom: true
     colorme.self.black:
         default: op
@@ -101,6 +105,18 @@ permissions:
         default: op
         description: Allows setting of own color
     colorme.self.custom:
+        default: op
+        description: Allows setting of own color
+    colorme.self.bold:
+        default: op
+        description: Allows setting of own color
+    colorme.self.italic:
+        default: op
+        description: Allows setting of own color
+    colorme.self.underline:
+        default: op
+        description: Allows setting of own color
+    colorme.self.strikethroug:
         default: op
         description: Allows setting of own color
     colorme.other:

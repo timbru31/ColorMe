@@ -8,6 +8,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import net.milkbowl.vault.Vault;
+import net.milkbowl.vault.economy.Economy;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,9 +22,6 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-// Economy (Vault)
-import net.milkbowl.vault.Vault;
-import net.milkbowl.vault.economy.Economy;
 
 /**
  * ColorMe for CraftBukkit/Bukkit
@@ -44,9 +45,11 @@ public class ColorMe extends JavaPlugin {
 	public static FileConfiguration config;
 	public static FileConfiguration players;
 	public static FileConfiguration localization;
+	public static FileConfiguration colors;
 	public static File configFile;
 	public static File playersFile;
 	public static File localizationFile;
+	public static File colorsFile;
 	public static boolean spoutEnabled;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
@@ -79,6 +82,22 @@ public class ColorMe extends JavaPlugin {
 		// Log if failed
 		catch (Exception e) {
 			log.warning("ColorMe failed to load the players.yml! Please report this!");
+		}
+		
+		// Custom colors config		
+		colorsFile = new File(getDataFolder(), "colors.yml");
+		// Copy if the config doesn't exist
+		if (!colorsFile.exists()) {
+			colorsFile.getParentFile().mkdirs();
+			copy(getResource("colors.yml"), colorsFile);
+		}
+		// Try to load
+		try {
+			colors = YamlConfiguration.loadConfiguration(colorsFile);
+		}
+		// Log if failed
+		catch (Exception e) {
+			log.warning("ColorMe failed to load the colors.yml! Please report this!");
 		}
 
 		// Config
@@ -147,7 +166,6 @@ public class ColorMe extends JavaPlugin {
 		}
 
 		// Stats
-
 		checkStatsStuff();
 		try {
 			Metrics metrics = new Metrics();
@@ -200,10 +218,12 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("global_default.color", "");
 		config.addDefault("Prefixer", true);
 		config.addDefault("Suffixer", true);
+		config.addDefault("chatBrackets", true);
 		config.addDefault("ColorMe.displayName", true);
 		config.addDefault("ColorMe.tabList", true);
 		config.addDefault("ColorMe.playerTitle", true);
 		for (ChatColor value : ChatColor.values()) {
+			if (value.getChar() == 'r') continue;
 			// get the name from the integer
 			String color = value.name().toLowerCase();
 			// write to the config
@@ -211,6 +231,7 @@ public class ColorMe extends JavaPlugin {
 		}
 		config.addDefault("colors.random", true);
 		config.addDefault("colors.rainbow", true);
+		config.addDefault("colors.custom", true);
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
@@ -237,11 +258,11 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("removed_color_self", "&eYour &2name color in the world &e%world &2has been removed.");
 		localization.addDefault("removed_color_other", "&2Removed &e%player&2's color in the world &e%world.");
 		localization.addDefault("removed_color_global", "&2Removed the global color.");
-		localization.addDefault("changed_color_self", "&eYour &2name color has been changed to &e%color &2in the world &e%world");
+		localization.addDefault("changed_color_self", "&eYour &2name color has been changed to %color &2in the world &e%world");
 		localization.addDefault("changed_color_other", "&2Changed &e%player&2's color to &e%color &2in the world &e%world");
 		localization.addDefault("changed_color_global", "&2The global color has been changed to &e%color");
-		localization.addDefault("get_color_self", "&eYou &2have got the color %color &2in the world &e%world");
-		localization.addDefault("get_color_other", "&e%player &2has got the color %color &2in the world &e%world");
+		localization.addDefault("get_color_self", "&eYou &2have got the color &e%color &2in the world &e%world");
+		localization.addDefault("get_color_other", "&e%player &2has got the color &e%color &2in the world &e%world");
 		localization.addDefault("get_color_global", "&2The global color is &e%color");
 		localization.addDefault("help_color_1", "&2Welcome to the ColorMe version &4%version &2help!");
 		localization.addDefault("help_color_2", "&4 <> = Required, [] = Optional");
@@ -261,12 +282,12 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("removed_prefix_self", "&eYour &2prefix in the world &e%world &2has been removed.");
 		localization.addDefault("removed_prefix_other", "&2Removed &e%player&2's prefix in the world &e%world.");
 		localization.addDefault("removed_prefix_global", "&2Removed the global prefix.");
-		localization.addDefault("changed_prefix_self", "&eYour &2prefix has been changed to &e%prefix &2in the world &e%world");
-		localization.addDefault("changed_prefix_other", "&2Changed &e%player&2's prefix to &e%prefix &2in the world &e%world");
-		localization.addDefault("changed_prefix_global", "&2The global prefix has been changed to &e%prefix");
+		localization.addDefault("changed_prefix_self", "&eYour &2prefix has been changed to %prefix &2in the world &e%world");
+		localization.addDefault("changed_prefix_other", "&2Changed &e%player&2's prefix to %prefix &2in the world &e%world");
+		localization.addDefault("changed_prefix_global", "&2The global prefix has been changed to %prefix");
 		localization.addDefault("get_prefix_self", "&eYou &2have got the prefix %prefix &2in the world &e%world");
 		localization.addDefault("get_prefix_other", "&e%player &2has got the prefix %prefix %2in the world &e%world");
-		localization.addDefault("get_prefix_global", "&2The global prefix is &e%prefix");
+		localization.addDefault("get_prefix_global", "&2The global prefix is %prefix");
 		localization.addDefault("help_prefix_1", "&2Welcome to the Prefixer (part of ColorMe) version &4%version &2help!");
 		localization.addDefault("help_prefix_2", "&4 <> = Required, [] = Optional");
 		localization.addDefault("help_prefix_3", "/<command> help - Shows the help");
@@ -285,9 +306,9 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("removed_suffix_self", "&eYour &2suffix in the world &e%world &2has been removed.");
 		localization.addDefault("removed_suffix_other", "&2Removed &e%player&2's suffix in the world &e%world.");
 		localization.addDefault("removed_suffix_global", "&2Removed the global suffix.");
-		localization.addDefault("changed_suffix_self", "&eYour &2suffix has been changed to &e%suffix &2in the world &e%world");
-		localization.addDefault("changed_suffix_other", "&2Changed &e%player&2's suffix to &e%suffix &2in the world &e%world");
-		localization.addDefault("changed_suffix_global", "&2The global suffix has been changed to &e%suffix");
+		localization.addDefault("changed_suffix_self", "&eYour &2suffix has been changed to %suffix &2in the world &e%world");
+		localization.addDefault("changed_suffix_other", "&2Changed &e%player&2's suffix to %suffix &2in the world &e%world");
+		localization.addDefault("changed_suffix_global", "&2The global suffix has been changed to %suffix");
 		localization.addDefault("get_suffix_self", "&eYou &2have got the suffix %suffix &2in the world &e%world");
 		localization.addDefault("get_suffix_other", "&e%player &2has got the suffix %suffix %2in the world &e%world");
 		localization.addDefault("get_suffix_global", "&2The global suffix is &e%suffix");
@@ -377,7 +398,7 @@ public class ColorMe extends JavaPlugin {
 	public static void message(CommandSender sender, Player player, String message, String value, String world, String target, Double cost) {
 		if (message != null) {
 			message = message
-					.replaceAll("&([0-9a-fk])", "\u00A7$1")
+					.replaceAll("&([0-9a-fk-or])", "\u00A7$1")
 					.replaceAll("%world", world)
 					.replaceAll("%color", value)
 					.replaceAll("%prefix", value)
@@ -385,7 +406,6 @@ public class ColorMe extends JavaPlugin {
 					.replaceAll("%player", target)
 					.replaceAll("%version", "3.5");
 			if (cost != null) {
-				//@SuppressWarnings("static-access")
 				message = message.replaceAll("%costs", Double.toString(cost));
 			}
 			if (player != null) {

@@ -32,7 +32,7 @@ public class ColorMePlayerListener implements Listener {
 
 	// Loads the the values and set them to default one if not known
 	@EventHandler
-	public void onPlayerJoin(final PlayerJoinEvent event) {
+	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		name = player.getName().toLowerCase();
 		world = player.getWorld().getName().toLowerCase();
@@ -41,7 +41,7 @@ public class ColorMePlayerListener implements Listener {
 
 	// Loads the the values and set them to default one if not known
 	@EventHandler
-	public void onPlayerChat(final PlayerChatEvent event) {
+	public void onPlayerChat(PlayerChatEvent event) {
 		Player player = event.getPlayer();
 		name = player.getName().toLowerCase();
 		world = player.getWorld().getName().toLowerCase();

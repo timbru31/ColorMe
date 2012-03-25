@@ -39,7 +39,7 @@ public class Actions {
 		return updatedString;
 	}
 
-	private static String replaceThings(String string) {
+	public static String replaceThings(String string) {
 		// While random is in there
 		while (string.contains("&random")) {
 			// Without random
@@ -79,7 +79,7 @@ public class Actions {
 			sub = "";
 		}
 		// Normal color codes!
-		string = string.replaceAll("&([0-9a-fk])", "\u00A7$1");
+		string = string.replaceAll("&([0-9a-fk-or])", "\u00A7$1");
 		return string;
 	}
 
@@ -236,11 +236,17 @@ public class Actions {
 			// get the name from the integer
 			color = value.name().toLowerCase();
 			colorChar = Character.toString(value.getChar());
+			if (colorChar.equalsIgnoreCase("r")) continue;
+			if (colorChar.equalsIgnoreCase("n")) continue;
+			if (colorChar.equalsIgnoreCase("m")) continue;
+			if (colorChar.equalsIgnoreCase("k")) continue;
 			// color the name of the color
-			if (ColorMe.config.getBoolean("colors." + color) == true && !color.equalsIgnoreCase("magic")) {
-				msg += ChatColor.valueOf(color.toUpperCase()) + color + " (&" + colorChar + ") ";
+			if (ColorMe.config.getBoolean("colors." + color) == true) {
+				msg += ChatColor.valueOf(color.toUpperCase()) + color + " (&" + colorChar + ") " + ChatColor.WHITE;
 			}
 		}
+		if (ColorMe.config.getBoolean("colors.strikethrough")) msg += ChatColor.STRIKETHROUGH + "striketrough" + ChatColor.WHITE + " (&m) ";
+		if (ColorMe.config.getBoolean("colors.underline")) msg += ChatColor.UNDERLINE + "underline" + ChatColor.WHITE + " (&n) ";
 		if (ColorMe.config.getBoolean("colors.magic")) msg += "magic (" + ChatColor.MAGIC + "a" + ChatColor.WHITE + ", &k) ";
 		// Include custom colors
 		if (ColorMe.config.getBoolean("colors.random") == true) {

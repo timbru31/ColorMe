@@ -1,7 +1,1 @@
-example:
-  colors:
-    default: gold
-  prefix:
-    default: Admin
-  suffix:
-    default: Donator
+example: '&e&a'
