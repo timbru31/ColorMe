@@ -39,6 +39,7 @@ public class ColorMePlayerListener implements Listener {
 		CheckRoutine(player, name, world);
 	}
 
+
 	// Loads the the values and set them to default one if not known
 	@EventHandler
 	public void onPlayerChat(PlayerChatEvent event) {
@@ -46,17 +47,18 @@ public class ColorMePlayerListener implements Listener {
 		name = player.getName().toLowerCase();
 		world = player.getWorld().getName().toLowerCase();
 		CheckRoutine(player, name, world);
-		if (ColorMe.config.getBoolean("Prefixer") == true) {
+		if (ColorMe.Prefixer) {
 			// Get world prefix if available
 			if (Actions.has(name, world, "prefix")) {
 				prefix = Actions.get(name, world, "prefix");
+				//mhm.put(name, prefix);
 			}
 			// Get default prefix
 			else if (Actions.has(name, "default", "prefix")) {
 				prefix = Actions.get(name, "default", "prefix");
 			}
 			// Get the global prefix
-			else if (Actions.hasGlobal("prefix")) {
+			else if (ColorMe.globalPrefix) {
 				prefix = Actions.getGlobal("prefix");
 			}
 			// If prefix is not null change the format
@@ -64,7 +66,7 @@ public class ColorMePlayerListener implements Listener {
 				event.setFormat(prefix + ChatColor.WHITE + " " + event.getFormat());
 			}
 		}
-		if (ColorMe.config.getBoolean("Suffixer") == true) {
+		if (ColorMe.Suffixer) {
 			// Get world suffix if available
 			if (Actions.has(name, world, "suffix")) {
 				suffix = Actions.get(name, world, "suffix");
@@ -74,7 +76,7 @@ public class ColorMePlayerListener implements Listener {
 				suffix = Actions.get(name, "default", "suffix");
 			}
 			// Get the global suffix
-			else if (Actions.hasGlobal("suffix")) {
+			else if (ColorMe.globalSuffix) {
 				suffix = Actions.getGlobal("suffix");
 			}
 			// If suffix is not null
@@ -104,9 +106,7 @@ public class ColorMePlayerListener implements Listener {
 
 	// Check for the player and update the file is values are unknown
 	private void CheckRoutine(Player player, String name, String world) {
-		ColorMe.loadConfigsAgain();
-		i = 0;
-		// If the player isn't in the players.color add him
+		// If the player isn't in the players.yml add him
 		if (!ColorMe.players.contains(name)) {
 			ColorMe.players.set(name + ".colors.default", "");
 			ColorMe.players.set(name + ".prefix.default", "");

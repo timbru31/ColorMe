@@ -59,6 +59,25 @@ public class Actions {
 			string = string.replaceFirst("&random", "");
 			sub = "";
 		}
+		// While random (short) is in there
+		while (string.contains("&ran")) {
+			// Without random
+			int i = string.indexOf("&ran") + 4;
+			int z = string.length();
+			sub = string.substring(i, z);
+			// Stop if other & or § is found
+			if (sub.contains("&")) {
+				sub = sub.substring(0, sub.indexOf("&"));
+			}
+			if (sub.contains("§")) {
+				sub = sub.substring(0, sub.indexOf("§"));
+			}
+			// Replace
+			string = string.replace(sub, randomColor(sub));
+			// Replace FIRST random
+			string = string.replaceFirst("&ran", "");
+			sub = "";
+		}
 		// While rainbow is in there
 		while (string.contains("&rainbow")) {
 			// Without rainbow
@@ -76,6 +95,25 @@ public class Actions {
 			string = string.replace(sub, rainbowColor(sub));
 			// Replace FIRST rainbow
 			string = string.replaceFirst("&rainbow", "");
+			sub = "";
+		}
+		// While rainbow (short) is in there
+		while (string.contains("&rai")) {
+			// Without rainbow
+			int i = string.indexOf("&rai") + 4;
+			int z = string.length();
+			sub = string.substring(i, z);
+			// Stop if other & or § is found
+			if (sub.contains("&")) {
+				sub = sub.substring(0, sub.indexOf("&"));
+			}
+			if (sub.contains("§")) {
+				sub = sub.substring(0, sub.indexOf("§"));
+			}
+			// Replace
+			string = string.replace(sub, rainbowColor(sub));
+			// Replace FIRST rainbow
+			string = string.replaceFirst("&rai", "");
 			sub = "";
 		}
 		// Normal color codes!
@@ -160,22 +198,16 @@ public class Actions {
 				if (color.equalsIgnoreCase("random")) {
 					// If the tab name is longer than 16 shorten it!
 					newName = randomColor(cleanDisplayName);
-					if (newName.length() > 16) {
-						newName = newName.substring(0, 12) + ChatColor.WHITE + "..";
-					}
-					player.setPlayerListName(newName);
 				}
 				if (color.equalsIgnoreCase("rainbow")) {
 					// If the tab name is longer than 16 shorten it!
 					newName = rainbowColor(cleanDisplayName);
-					if (newName.length() > 16) {
-						newName = newName.substring(0, 12) + ChatColor.WHITE + "..";
-					}
-					player.setPlayerListName(newName);
 				}
 				else if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
 					// If the tab name is longer than 16 shorten it!
 					newName = ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName;
+				}
+				if (newName != null || !newName.equals("")) {
 					if (newName.length() > 16) {
 						newName = newName.substring(0, 12) + ChatColor.WHITE + "..";
 					}
@@ -276,7 +308,6 @@ public class Actions {
 	static String rainbowColor(String name) {
 		// Had to store the rainbow manually. Why did Mojang store it so..., forget it
 		newName = "";
-		i = 0;
 		z = 0;
 		String rainbow[] = {"DARK_RED", "RED", "GOLD", "YELLOW", "GREEN", "DARK_GREEN", "AQUA", "DARK_AQUA", "BLUE", "DARK_BLUE", "LIGHT_PURPLE", "DARK_PURPLE"};
 		// As long as the length of the name isn't reached
@@ -355,7 +386,7 @@ public class Actions {
 				Actions.restoreName(name);
 			}
 		}
-		else if (Actions.hasGlobal("color")) {
+		else if (ColorMe.globalColor) {
 			if (Actions.validColor(ColorMe.config.getString("global_default.color")) == true) {
 				color = Actions.getGlobal("color");
 				Actions.updateName(name, color);

@@ -1,7 +1,11 @@
 package de.xghostkillerx.colorme;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,6 +45,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class ColorMe extends JavaPlugin {
 	public final static Logger log = Logger.getLogger("Minecraft");
 	private final ColorMePlayerListener playerListener = new ColorMePlayerListener(this);
+	private final ColorMeBlockListener blockListener = new ColorMeBlockListener(this);
 	public Economy economy = null;
 	public static FileConfiguration config;
 	public static FileConfiguration players;
@@ -50,7 +55,7 @@ public class ColorMe extends JavaPlugin {
 	public static File playersFile;
 	public static File localizationFile;
 	public static File colorsFile;
-	public static boolean spoutEnabled;
+	public static boolean spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
 	private SuffixCommands suffixExecutor;
@@ -67,6 +72,7 @@ public class ColorMe extends JavaPlugin {
 		// Events
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(playerListener, this);
+		pm.registerEvents(blockListener, this);
 
 		// Player colors config		
 		playersFile = new File(getDataFolder(), "players.yml");
@@ -83,7 +89,7 @@ public class ColorMe extends JavaPlugin {
 		catch (Exception e) {
 			log.warning("ColorMe failed to load the players.yml! Please report this!");
 		}
-		
+
 		// Custom colors config		
 		colorsFile = new File(getDataFolder(), "colors.yml");
 		// Copy if the config doesn't exist
@@ -125,6 +131,13 @@ public class ColorMe extends JavaPlugin {
 			log.warning("ColorMe failed to load the localization!");
 		}
 
+		try {
+			updateConfig(playersFile);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 		// Refer to ColorMeCommands
 		colorExecutor = new ColorMeCommands(this);
 		getCommand("color").setExecutor(colorExecutor);
@@ -152,7 +165,7 @@ public class ColorMe extends JavaPlugin {
 			log.warning("Vault was NOT found! Running without economy!");
 		}
 
-		//Check for Spout
+		// Check for Spout
 		Plugin spout = this.getServer().getPluginManager().getPlugin("Spout");
 		if (spout != null) {
 			log.info(String.format(pdfFile.getName() + " loaded Spout successfully"));
@@ -187,6 +200,37 @@ public class ColorMe extends JavaPlugin {
 			metrics.beginMeasuringPlugin(this);
 		}
 		catch (IOException e) {}
+
+		if (config.getBoolean("Suffixer")) Suffixer = true;
+		if (config.getBoolean("Prefixer")) Prefixer = true;
+		globalPrefix = config.getString("global_default." + "prefix").trim().length() > 1 ? true : false;
+		globalPrefix = config.getString("global_default." + "suffix").trim().length() > 1 ? true : false;
+		globalPrefix = config.getString("global_default." + "color").trim().length() > 1 ? true : false;
+	}
+
+	public void updateConfig(File config) throws Exception {
+		BufferedReader reader = new BufferedReader(new FileReader(config));
+		File tempFile = new File(getDataFolder(), "temp.txt");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+		String line;
+		try {
+			while ((line = reader.readLine()) != null) {
+				if (line.isEmpty()) continue;
+				writer.write(line);
+				writer.newLine();
+			}
+		}
+		catch (Exception e) {
+			log.warning("An error occurred! :(");
+			e.printStackTrace();
+		}
+		finally {
+			reader.close();
+			writer.flush();
+			writer.close();
+			config.delete();
+			tempFile.renameTo(config);
+		}
 	}
 
 	private void checkStatsStuff() {
@@ -222,6 +266,8 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("ColorMe.displayName", true);
 		config.addDefault("ColorMe.tabList", true);
 		config.addDefault("ColorMe.playerTitle", true);
+		config.addDefault("ColorMe.signColors", true);
+		config.addDefault("ColorMe.chatColors", true);
 		for (ChatColor value : ChatColor.values()) {
 			if (value.getChar() == 'r') continue;
 			// get the name from the integer
@@ -380,7 +426,8 @@ public class ColorMe extends JavaPlugin {
 			}
 			out.close();
 			in.close();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
