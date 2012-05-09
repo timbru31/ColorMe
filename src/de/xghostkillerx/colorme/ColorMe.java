@@ -143,11 +143,17 @@ public class ColorMe extends JavaPlugin {
 			log.warning("ColorMe failed to load the localization!");
 		}
 
-		try {
-			updateConfig(playersFile);
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		// Force to update the config (remove emtpy lines)
+		if (config.getBoolean("updateConfig")) {
+			try {
+				updateConfig(playersFile);
+			}
+			catch (Exception e) {
+				log.warning("ColorMe failed to update the config! Please report this!");
+			}
+			finally {
+				config.set("updateConfig", false);
+			}
 		}
 
 		// Refer to ColorMeCommands
@@ -236,8 +242,7 @@ public class ColorMe extends JavaPlugin {
 			}
 		}
 		catch (Exception e) {
-			log.warning("An error occurred! :(");
-			e.printStackTrace();
+			log.warning("An error occurred while updating the config!");
 		}
 		finally {
 			reader.close();
@@ -269,6 +274,7 @@ public class ColorMe extends JavaPlugin {
 	// Loads the config at the start
 	public void loadConfig() {
 		config.options().header("For help please refer to http://bit.ly/colormebukkit or http://bit.ly/bukkitdevcolorme");
+		config.addDefault("updateConfig", false);
 		config.addDefault("costs.color", 5.00);
 		config.addDefault("costs.prefix", 5.00);
 		config.addDefault("costs.suffix", 5.00);
