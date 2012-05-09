@@ -42,6 +42,18 @@ import org.bukkit.plugin.java.JavaPlugin;
  * 
  */
 
+
+
+/*
+ * 
+ * TODO
+ * 
+ * Updated included config.yml (generate new one and copy back)
+ * Update readme!
+ * Add groups
+ * Add custom colors 
+ * 
+ */
 public class ColorMe extends JavaPlugin {
 	public final static Logger log = Logger.getLogger("Minecraft");
 	private final ColorMePlayerListener playerListener = new ColorMePlayerListener(this);
@@ -55,7 +67,7 @@ public class ColorMe extends JavaPlugin {
 	public static File playersFile;
 	public static File localizationFile;
 	public static File colorsFile;
-	public static boolean spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor;
+	public static boolean spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets, chatColors, signColors;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
 	private SuffixCommands suffixExecutor;
@@ -203,9 +215,12 @@ public class ColorMe extends JavaPlugin {
 
 		if (config.getBoolean("Suffixer")) Suffixer = true;
 		if (config.getBoolean("Prefixer")) Prefixer = true;
+		if (config.getBoolean("chatBrackets")) chatBrackets = true;
+		if (config.getBoolean("ColorMe.signColors")) signColors = true;
+		if (config.getBoolean("ColorMe.chatColors")) chatColors = true;
 		globalPrefix = config.getString("global_default." + "prefix").trim().length() > 1 ? true : false;
-		globalPrefix = config.getString("global_default." + "suffix").trim().length() > 1 ? true : false;
-		globalPrefix = config.getString("global_default." + "color").trim().length() > 1 ? true : false;
+		globalSuffix = config.getString("global_default." + "suffix").trim().length() > 1 ? true : false;
+		globalColor = config.getString("global_default." + "color").trim().length() > 1 ? true : false;
 	}
 
 	public void updateConfig(File config) throws Exception {

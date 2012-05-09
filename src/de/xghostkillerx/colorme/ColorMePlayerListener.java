@@ -93,12 +93,16 @@ public class ColorMePlayerListener implements Listener {
 				}
 			}
 		}
-		if (!ColorMe.config.getBoolean("chatBrackets")) {
+		// Remove the chat brackets if wanted
+		if (!ColorMe.chatBrackets) {
 			brackets = event.getFormat();
 			brackets = brackets.replaceAll("<", " ")
 					.replaceAll(">", "");
 			event.setFormat(brackets);
 		}
+		// Color the message, too?
+		if (ColorMe.chatColors)	event.setMessage(Actions.replaceThings(event.getMessage()));
+		
 		prefix = null;
 		suffix = null;
 		brackets = null;

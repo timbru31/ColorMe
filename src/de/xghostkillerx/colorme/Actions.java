@@ -196,17 +196,15 @@ public class Actions {
 			// Check for playerList
 			if (tabList == true) {
 				if (color.equalsIgnoreCase("random")) {
-					// If the tab name is longer than 16 shorten it!
 					newName = randomColor(cleanDisplayName);
 				}
 				if (color.equalsIgnoreCase("rainbow")) {
-					// If the tab name is longer than 16 shorten it!
 					newName = rainbowColor(cleanDisplayName);
 				}
 				else if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
-					// If the tab name is longer than 16 shorten it!
 					newName = ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName;
 				}
+				// Shorten it, if too long
 				if (newName != null || !newName.equals("")) {
 					if (newName.length() > 16) {
 						newName = newName.substring(0, 12) + ChatColor.WHITE + "..";
