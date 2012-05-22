@@ -107,6 +107,7 @@ Description: Gets the global color
 
 /color me <color> [world]
 Node: colorme.self.<color>
+Node: colorme.free -> No costs
 Description: Sets your own color (no world -> default)
 
 /color <name> <color> [world]
@@ -144,6 +145,7 @@ Description: Gets the global prefix
 
 /prefix  me <prefix> [world]
 Node: prefixer.self
+Node: prefixer.free -> No costs
 Description: Sets your own prefix (no world -> default)
 
 /prefix <name> <prefix> [world]
@@ -181,6 +183,7 @@ Description: Gets the global suffix
 
 /suffix  me <suffix> [world]
 Node: suffixer.self
+Node: suffixer.free -> No costs
 Description: Sets your own suffix (no world -> default)
 
 /suffix <name> <suffix> [world]

@@ -199,11 +199,11 @@ public class ColorMe extends JavaPlugin {
 		// Stats
 		checkStatsStuff();
 		try {
-			Metrics metrics = new Metrics();
+			Metrics metrics = new Metrics(this);
 			// Custom plotter for each part
 			for (int i = 0; i < values.size(); i++) {
 				final String value = values.get(i);
-				metrics.addCustomData(this, new Metrics.Plotter() {
+				metrics.addCustomData(new Metrics.Plotter() {
 					@Override
 					public String getColumnName() {
 						return value;
@@ -215,7 +215,7 @@ public class ColorMe extends JavaPlugin {
 					}
 				});
 			}
-			metrics.beginMeasuringPlugin(this);
+			metrics.start();
 		}
 		catch (IOException e) {}
 
