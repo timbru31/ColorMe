@@ -304,7 +304,8 @@ public class ColorMeCommands implements CommandExecutor {
 					}
 					// Charge costs :)
 					if (cost > 0 && plugin.economy.has(senderName, cost)) {
-						plugin.economy.withdrawPlayer(senderName, cost);
+						// Charge player unless he has the free permissions
+						if (!sender.hasPermission("colorome.free")) plugin.economy.withdrawPlayer(senderName, cost);
 						// Set color an notify sender
 						Actions.set(senderName, color, world, pluginPart);
 						message = ColorMe.localization.getString("charged");

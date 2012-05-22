@@ -131,6 +131,9 @@ permissions:
     colorme.global:
         default: op
         description: Sets the global color
+    colorme.free:
+        default: op
+        description: No costs for coloring
     colorme.*:
         children:
             colorme.list: true
@@ -139,6 +142,7 @@ permissions:
             colorme.remove: true
             colorme.get: true
             colorme.global: true
+            colorme.free: true
         description: Allows all commands for ColorMe
     prefixer.list:
         default: true
@@ -158,6 +162,9 @@ permissions:
     prefixer.global:
         default: op
         description: Sets the global prefix
+    prefixer.free:
+        default: op
+        description: No costs for prefixing
     prefixer.*:
         children:
             prefixer.list: true
@@ -166,6 +173,7 @@ permissions:
             prefixer.remove: true
             prefixer.get: true
             prefixer.global: true
+            prefixer.free: true
         description: Allows all commands for Prefixer
     suffixer.list:
         default: true
@@ -185,6 +193,9 @@ permissions:
     suffixer.global:
         default: op
         description: Sets the global suffix
+    suffixer.free:
+        default: op
+        description: No costs for suffixing
     suffixer.*:
         children:
             suffixer.list: true
@@ -193,5 +204,6 @@ permissions:
             suffixer.remove: true
             suffixer.get: true
             suffixer.global: true
+            suffixer.free: true
         description: Allows all commands for Suffixer
 softdepend: [Vault, Spout]

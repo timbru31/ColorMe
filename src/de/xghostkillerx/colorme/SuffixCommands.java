@@ -259,7 +259,8 @@ public class SuffixCommands implements CommandExecutor {
 				else if (plugin.economy != null) {
 					// Charge costs :)
 					if (cost > 0 && plugin.economy.has(senderName, cost)) {
-						plugin.economy.withdrawPlayer(senderName, cost);
+						// Charge player unless he has the free permissions
+						if (!sender.hasPermission("suffixer.free")) plugin.economy.withdrawPlayer(senderName, cost);
 						// Set suffix an notify sender
 						Actions.set(senderName, suffix, world, pluginPart);
 						message = ColorMe.localization.getString("charged");

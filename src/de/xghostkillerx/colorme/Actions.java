@@ -179,31 +179,36 @@ public class Actions {
 			boolean tabList = ColorMe.config.getBoolean("ColorMe.tabList");
 			boolean playerTitle = ColorMe.config.getBoolean("ColorMe.playerTitle");
 			// Name color
-			if (ColorMe.config.getBoolean("ColorMe.displayName") == true) {
+			if (ColorMe.config.getBoolean("ColorMe.displayName")) {
 				// Random
 				if (color.equalsIgnoreCase("random")) {
 					player.setDisplayName(randomColor(cleanDisplayName) + ChatColor.WHITE);
 				}
 				// Rainbow
-				if (color.equalsIgnoreCase("rainbow")) {
+				else if (color.equalsIgnoreCase("rainbow")) {
 					player.setDisplayName(rainbowColor(cleanDisplayName) + ChatColor.WHITE);
 				}
+				// Custom colors
+				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
+					player.sendMessage("DEBUG");
+				}
 				// Normal
-				else if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
+				else {
 					player.setDisplayName(ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName + ChatColor.WHITE);
 				}
 			}
 			// Check for playerList
-			if (tabList == true) {
+			if (tabList) {
 				if (color.equalsIgnoreCase("random")) {
 					newName = randomColor(cleanDisplayName);
 				}
-				if (color.equalsIgnoreCase("rainbow")) {
+				else if (color.equalsIgnoreCase("rainbow")) {
 					newName = rainbowColor(cleanDisplayName);
 				}
-				else if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
-					newName = ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName;
+				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
+					player.sendMessage("DEBUG 2");
 				}
+				else newName = ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName;
 				// Shorten it, if too long
 				if (newName != null || !newName.equals("")) {
 					if (newName.length() > 16) {
@@ -213,20 +218,21 @@ public class Actions {
 				}
 			}
 			// Check for Spout
-			if (ColorMe.spoutEnabled == true && playerTitle == true) {
+			if (ColorMe.spoutEnabled && playerTitle) {
 				SpoutPlayer spoutPlayer = (SpoutPlayer) player;
 				// Random color
 				if (color.equalsIgnoreCase("random")) {
 					spoutPlayer.setTitle(randomColor(cleanDisplayName));
 				}
 				// Rainbow
-				if (color.equalsIgnoreCase("rainbow")) {
+				else if (color.equalsIgnoreCase("rainbow")) {
 					spoutPlayer.setTitle(rainbowColor(cleanDisplayName));
 				}
-				// Normal color
-				else if (!color.equalsIgnoreCase("random") && !color.equalsIgnoreCase("rainbow")) {
-					spoutPlayer.setTitle(ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName);
+				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
+					player.sendMessage("DEBUG 3");
 				}
+				// Normal color
+				else spoutPlayer.setTitle(ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName);
 			}
 		}
 	}
@@ -326,6 +332,8 @@ public class Actions {
 		if (color.equalsIgnoreCase("rainbow") || color.equalsIgnoreCase("random")) {
 			return true;
 		}
+		// Custom color? (Must contain something!!! NOT '' or null)
+		if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) return true;
 		// Second place, cause random and rainbow aren't possible normally ;)
 		else {
 			for (ChatColor value : ChatColor.values()) {
@@ -343,6 +351,8 @@ public class Actions {
 		if (ColorMe.config.getBoolean("colors." + color.toLowerCase()) == true) {
 			return false;
 		}
+		// Custom color? (Must contain something!!! NOT '' or null)
+		if ((ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) return false;
 		return true;
 	}
 
@@ -371,27 +381,21 @@ public class Actions {
 				color = Actions.get(name, world, "colors");
 				Actions.updateName(name, color);
 			}
-			else {
-				Actions.restoreName(name);
-			}
+			else Actions.restoreName(name);
 		}
 		else if (Actions.has(name, "default", "colors")) {
 			if (Actions.validColor(ColorMe.players.getString(name + ".colors.default")) == true) {
 				color = Actions.get(name, "default", "colors");
 				Actions.updateName(name, color);
 			}
-			else {
-				Actions.restoreName(name);
-			}
+			else Actions.restoreName(name);
 		}
 		else if (ColorMe.globalColor) {
 			if (Actions.validColor(ColorMe.config.getString("global_default.color")) == true) {
 				color = Actions.getGlobal("color");
 				Actions.updateName(name, color);
 			}
-			else {
-				Actions.restoreName(name);
-			}
+			else Actions.restoreName(name);
 		}
 		else if (!Actions.has(name, world, "colors") || !Actions.has(name, "default", "colors") || !Actions.hasGlobal("color")) {
 			Actions.restoreName(name);

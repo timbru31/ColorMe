@@ -143,7 +143,7 @@ public class ColorMe extends JavaPlugin {
 			log.warning("ColorMe failed to load the localization!");
 		}
 
-		// Force to update the config (remove emtpy lines)
+		// Force to update the config (remove empty lines)
 		if (config.getBoolean("updateConfig")) {
 			try {
 				updateConfig(playersFile);
@@ -254,21 +254,13 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	private void checkStatsStuff() {
-		if (config.getBoolean("Prefixer") == true) {
-			values.add("Prefixer");
-		}
-		if (config.getBoolean("Suffixer") == true) {
-			values.add("Suffixer");
-		}
-		if (config.getBoolean("ColorMe.displayName") == true) {
-			values.add("ColorMe - displayName");
-		}
-		if (config.getBoolean("ColorMe.tabList") == true) {
-			values.add("ColorMe - tabList");
-		}
-		if (config.getBoolean("ColorMe.playerTitle") == true) {
-			values.add("ColorMe - playerTitle");
-		}
+		if (Prefixer) values.add("Prefixer");
+		if (Suffixer) values.add("Suffixer");
+		if (config.getBoolean("ColorMe.displayName")) values.add("ColorMe - displayName");
+		if (config.getBoolean("ColorMe.tabList")) values.add("ColorMe - tabList");
+		if (config.getBoolean("ColorMe.playerTitle")) values.add("ColorMe - playerTitle");
+		if (chatColors) values.add("ColorMe - chatColors");
+		if (signColors) values.add("ColorMe - signColors");
 	}
 
 	// Loads the config at the start

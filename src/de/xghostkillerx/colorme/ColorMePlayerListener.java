@@ -101,7 +101,9 @@ public class ColorMePlayerListener implements Listener {
 			event.setFormat(brackets);
 		}
 		// Color the message, too?
-		if (ColorMe.chatColors)	event.setMessage(Actions.replaceThings(event.getMessage()));
+		if (ColorMe.chatColors)	{
+			event.setMessage(Actions.replaceThings(event.getMessage()));
+		}
 		
 		prefix = null;
 		suffix = null;
