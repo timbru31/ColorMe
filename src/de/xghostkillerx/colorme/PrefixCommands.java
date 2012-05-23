@@ -12,11 +12,10 @@ public class PrefixCommands implements CommandExecutor {
 	public PrefixCommands(ColorMe instance) {
 		plugin = instance;
 	}
-	private String pluginPart = "prefix", message, target, prefix, senderName, world = "default", globalPrefix;
-	private Double cost;
 
 	// Commands for prefixing
 	public boolean onCommand (CommandSender sender, Command command, String commandLabel, String[] args) {
+		String message, globalPrefix, target, senderName, prefix = "", pluginPart = "prefix", world = "default";
 		// Reloads the configs
 		if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("prefixer.reload")) {
@@ -248,7 +247,7 @@ public class PrefixCommands implements CommandExecutor {
 			// Self prefixing
 			if (sender.hasPermission("prefixer.self") && Actions.self(sender, target)) {
 				// Without economy or costs are null
-				cost = ColorMe.config.getDouble("costs.prefix");
+				Double cost = ColorMe.config.getDouble("costs.prefix");
 				if (plugin.economy == null || cost == 0) {
 					Actions.set(senderName, prefix, world, pluginPart);
 					message = ColorMe.localization.getString("changed_prefix_self");

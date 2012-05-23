@@ -12,11 +12,10 @@ public class SuffixCommands implements CommandExecutor {
 	public SuffixCommands(ColorMe instance) {
 		plugin = instance;
 	}
-	private String pluginPart = "suffix", message, target, suffix, senderName, world = "default", globalSuffix;
-	private Double cost;
 
 	// Commands for suffixing
 	public boolean onCommand (CommandSender sender, Command command, String commandLabel, String[] args) {
+		String pluginPart = "suffix", message, target, suffix = "", senderName, world = "default", globalSuffix;
 		// Reloads the configs
 		if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("suffixer.reload")) {
@@ -248,7 +247,7 @@ public class SuffixCommands implements CommandExecutor {
 			// Self suffixing
 			if (sender.hasPermission("suffixer.self") && Actions.self(sender, target)) {
 				// Without economy or costs are null
-				cost = ColorMe.config.getDouble("costs.suffix");
+				Double cost = ColorMe.config.getDouble("costs.suffix");
 				if (plugin.economy == null || cost == 0) {
 					Actions.set(senderName, suffix, world, pluginPart);
 					message = ColorMe.localization.getString("changed_suffix_self");

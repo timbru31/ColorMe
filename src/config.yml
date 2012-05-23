@@ -9,6 +9,8 @@ ColorMe:
   displayName: true
   tabList: true
   playerTitle: true
+  signColors: true
+  chatColors: true
 colors:
   black: true
   dark_blue: true
@@ -29,7 +31,14 @@ colors:
   magic: true
   random: true
   rainbow: true
+  bold: true
+  strikethrough: true
+  underline: true
+  italic: true
+  custom: true
 global_default:
   prefix: ''
   suffix: ''
   color: ''
+updateConfig: false
+chatBrackets: true

@@ -12,10 +12,6 @@ public class Actions {
 		plugin = instance;
 	}
 
-	private static String actualValue, color, colorChar, displayName, cleanDisplayName, newName, msg, message, sub, updatedString;
-	private static int i, z = 0;
-	private static char ch;
-
 	// Checks if the player is itself
 	static boolean self(CommandSender sender, String name) {
 		return (sender.equals(Bukkit.getServer().getPlayerExact(name))) ? true : false;
@@ -26,7 +22,7 @@ public class Actions {
 		// Player in the config? Yes -> get the config, no -> nothing
 		if (ColorMe.players.contains(name + "." + pluginPart + "." + world)) {
 			String string = ColorMe.players.getString(name + "." + pluginPart + "." + world);
-			updatedString = replaceThings(string);
+			String updatedString = replaceThings(string);
 			return updatedString;
 		}
 		else return "";
@@ -35,12 +31,13 @@ public class Actions {
 	// Get global default
 	public static String getGlobal(String pluginPart) {
 		String string = ColorMe.config.getString("global_default." + pluginPart);
-		updatedString = replaceThings(string);
+		String updatedString = replaceThings(string);
 		return updatedString;
 	}
 
 	public static String replaceThings(String string) {
 		// While random is in there
+		String sub;
 		while (string.contains("&random")) {
 			// Without random
 			int i = string.indexOf("&random") + 7;
@@ -123,7 +120,7 @@ public class Actions {
 
 	// Set player's color/prefix/suffix
 	static boolean set(String name, String value, String world, String pluginPart) {
-		actualValue = get(name, world, pluginPart);
+		String actualValue = get(name, world, pluginPart);
 		// If the colors are the same return false
 		if (actualValue.equalsIgnoreCase(value)) {
 			return false;
@@ -171,11 +168,13 @@ public class Actions {
 	}
 
 	// Update the displayName, tabName, title, prefix & suffix in a specific world (after setting, removing, onJoin and onChat)
+	@SuppressWarnings("null")
 	static void updateName(String name, String color) {
 		Player player = Bukkit.getServer().getPlayerExact(name);
 		if (player != null) {
-			displayName = player.getDisplayName();
-			cleanDisplayName = ChatColor.stripColor(displayName);
+			String displayName = player.getDisplayName();
+			String cleanDisplayName = ChatColor.stripColor(displayName);
+			String newName;
 			boolean tabList = ColorMe.config.getBoolean("ColorMe.tabList");
 			boolean playerTitle = ColorMe.config.getBoolean("ColorMe.playerTitle");
 			// Name color
@@ -190,7 +189,7 @@ public class Actions {
 				}
 				// Custom colors
 				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
-					player.sendMessage("DEBUG");
+					player.setDisplayName(updateCustomColor(color, cleanDisplayName, player) + ChatColor.WHITE);
 				}
 				// Normal
 				else {
@@ -206,7 +205,7 @@ public class Actions {
 					newName = rainbowColor(cleanDisplayName);
 				}
 				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
-					player.sendMessage("DEBUG 2");
+					newName = updateCustomColor(color, cleanDisplayName, player);
 				}
 				else newName = ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName;
 				// Shorten it, if too long
@@ -229,7 +228,7 @@ public class Actions {
 					spoutPlayer.setTitle(rainbowColor(cleanDisplayName));
 				}
 				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
-					player.sendMessage("DEBUG 3");
+					spoutPlayer.setTitle(updateCustomColor(color, cleanDisplayName, player));
 				}
 				// Normal color
 				else spoutPlayer.setTitle(ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName);
@@ -237,19 +236,41 @@ public class Actions {
 		}
 	}
 
+	static String updateCustomColor(String color, String text, Player player) {
+		/* How to: Get Color. Color one char. Get next value, color next char. Same char = Multiple values.
+		 * Beispiel: &c&e&c&e, name -> ChatColor.RED + "n" + ChatColor.YELLOW + "a". RAINBOW/RANDOM?!
+		 */
+		String updatedText = "";
+		String colorChars = ColorMe.colors.getString(color).replaceAll("&([0-9a-fk-or])", "\u00A7$1");
+		if (!colorChars.contains("§") || colorChars.contains("&") || !colorChars.startsWith("§")) return text;
+		String sub = colorChars, sub2 = "";
+		for (int i = 0; i < text.length(); i++) {
+			// If substring is empty of values, reset
+			if (!sub.contains("§")) sub = colorChars;
+			// Get the § extracted
+			if (sub.contains("§")) {
+				sub2 = sub.substring(0, 2);
+			}
+			updatedText += sub2 + text.charAt(i);
+			sub = sub.replaceFirst(sub2, "");
+		}
+		
+		return updatedText;
+	}
+
 	// Restore the "clean", white name
 	static void restoreName(String name) {
 		Player player = Bukkit.getServer().getPlayerExact(name);
 		if (player != null) {
-			displayName = player.getDisplayName();
-			cleanDisplayName = ChatColor.stripColor(displayName);
+			String displayName = player.getDisplayName();
+			String cleanDisplayName = ChatColor.stripColor(displayName);
 			boolean tabList = ColorMe.config.getBoolean("tabList");
 			boolean playerTitle = ColorMe.config.getBoolean("playerTitle");
 			// No name -> back to white
 			player.setDisplayName(ChatColor.WHITE + cleanDisplayName);
 			if (tabList == true) {
 				// If the TAB name is longer than 16 shorten it!
-				newName = cleanDisplayName;
+				String newName = cleanDisplayName;
 				if (newName.length() > 16) {
 					newName = cleanDisplayName.substring(0, 12) + ChatColor.WHITE + "..";
 				}
@@ -264,14 +285,14 @@ public class Actions {
 
 	// The list of colors
 	static void listColors(CommandSender sender) {
-		message = ColorMe.localization.getString("color_list");
+		String message = ColorMe.localization.getString("color_list");
 		ColorMe.message(sender, null, message, null, null, null, null);
-		msg = "";
+		String msg = "";
 		// As long as all colors aren't reached, including magic manual
 		for (ChatColor value : ChatColor.values()) {
 			// get the name from the integer
-			color = value.name().toLowerCase();
-			colorChar = Character.toString(value.getChar());
+			String color = value.name().toLowerCase();
+			String colorChar = Character.toString(value.getChar());
 			if (colorChar.equalsIgnoreCase("r")) continue;
 			if (colorChar.equalsIgnoreCase("n")) continue;
 			if (colorChar.equalsIgnoreCase("m")) continue;
@@ -296,12 +317,12 @@ public class Actions {
 
 	// Used to create a random effect
 	static String randomColor(String name) {
-		newName = "";
+		String newName = "";
 		// As long as the length of the name isn't reached
-		for (i = 0; i < name.length(); i++) {
+		for (int i = 0; i < name.length(); i++) {
 			// Roll the dice between 0 and 16 ;)
 			int x = (int)(Math.random()*ChatColor.values().length);
-			ch = name.charAt(i);
+			char ch = name.charAt(i);
 			// Color the character
 			newName += ChatColor.values()[x] + Character.toString(ch);
 		}
@@ -311,14 +332,14 @@ public class Actions {
 	// Used to create a rainbow effect
 	static String rainbowColor(String name) {
 		// Had to store the rainbow manually. Why did Mojang store it so..., forget it
-		newName = "";
-		z = 0;
+		String newName = "";
+		int z = 0;
 		String rainbow[] = {"DARK_RED", "RED", "GOLD", "YELLOW", "GREEN", "DARK_GREEN", "AQUA", "DARK_AQUA", "BLUE", "DARK_BLUE", "LIGHT_PURPLE", "DARK_PURPLE"};
 		// As long as the length of the name isn't reached
-		for (i = 0; i < name.length(); i++) {
+		for (int i = 0; i < name.length(); i++) {
 			// Reset if z reaches 12
 			if (z == 12) z = 0;
-			ch = name.charAt(i);
+			char ch = name.charAt(i);
 			// Add to the new name the colored character
 			newName += ChatColor.valueOf(rainbow[z]) + Character.toString(ch);
 			z++;
@@ -358,8 +379,8 @@ public class Actions {
 
 	// Displays the specific help
 	static boolean help(CommandSender sender, String pluginPart) {
-		for (i = 1; i <= 9; i++) {
-			message = ColorMe.localization.getString("help_" + pluginPart + "_" + Integer.toString(i));
+		for (int i = 1; i <= 9; i++) {
+			String message = ColorMe.localization.getString("help_" + pluginPart + "_" + Integer.toString(i));
 			ColorMe.message(sender, null, message, null, null, null, null);
 		}
 		return true;
@@ -368,13 +389,14 @@ public class Actions {
 	// Reloads the plugin
 	static boolean reload(CommandSender sender) {
 		ColorMe.loadConfigsAgain();		
-		message = ColorMe.localization.getString("reload");
+		String message = ColorMe.localization.getString("reload");
 		ColorMe.message(sender, null, message, null, null, null, null);
 		return true;
 	}
 
 	// Update the name
 	static void checkNames(String name, String world) {
+		String color;
 		// Check for color and valid ones, else restore
 		if (Actions.has(name, world, "colors")) {
 			if (Actions.validColor(ColorMe.players.getString(name + ".colors." + world)) == true) {

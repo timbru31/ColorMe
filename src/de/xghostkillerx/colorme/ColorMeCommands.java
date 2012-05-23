@@ -25,11 +25,10 @@ public class ColorMeCommands implements CommandExecutor {
 	public ColorMeCommands(ColorMe instance) {
 		plugin = instance;
 	}
-	private String pluginPart = "colors", message, target, color, senderName, world = "default", globalColor;
-	private Double cost;
-
+	
 	// Commands for coloring
 	public boolean onCommand (CommandSender sender, Command command, String commandLabel, String[] args) {
+		String pluginPart = "colors", message, target, color, senderName, world = "default", globalColor;
 		// Returns the color list
 		if (args.length > 0 && args[0].equalsIgnoreCase("list")) {
 			if (sender.hasPermission("colorme.list") || sender.hasPermission("prefixer.list") || sender.hasPermission("suffixer.list")) {
@@ -287,7 +286,7 @@ public class ColorMeCommands implements CommandExecutor {
 			// Self coloring
 			if (sender.hasPermission("colorme.self." + color.toLowerCase()) && Actions.self(sender, target)) {
 				// Without economy or costs are null
-				cost = ColorMe.config.getDouble("costs.color");
+				Double cost = ColorMe.config.getDouble("costs.color");
 				if (plugin.economy == null || cost == 0) {
 					Actions.set(senderName, color, world, pluginPart);
 					message = ColorMe.localization.getString("changed_color_self");

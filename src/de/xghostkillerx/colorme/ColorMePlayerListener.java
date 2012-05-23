@@ -27,15 +27,13 @@ public class ColorMePlayerListener implements Listener {
 		plugin = instance;
 	}
 	private String[] pluginPart = {"colors", "prefix", "suffix"};
-	private String actualPart, name, world, sub1, sub2, suffix = null, prefix = null, brackets;
-	private int i, length;
 
 	// Loads the the values and set them to default one if not known
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		name = player.getName().toLowerCase();
-		world = player.getWorld().getName().toLowerCase();
+		String name = player.getName().toLowerCase();
+		String world = player.getWorld().getName().toLowerCase();
 		CheckRoutine(player, name, world);
 	}
 
@@ -44,8 +42,9 @@ public class ColorMePlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerChat(PlayerChatEvent event) {
 		Player player = event.getPlayer();
-		name = player.getName().toLowerCase();
-		world = player.getWorld().getName().toLowerCase();
+		String name = player.getName().toLowerCase();
+		String world = player.getWorld().getName().toLowerCase();
+		String prefix = "", suffix = "";
 		CheckRoutine(player, name, world);
 		if (ColorMe.Prefixer) {
 			// Get world prefix if available
@@ -83,11 +82,11 @@ public class ColorMePlayerListener implements Listener {
 			if (suffix != null) {
 				// Search the bracket
 				if (event.getFormat().contains(">")) {
-					i = event.getFormat().lastIndexOf(">") + 1;
-					length = event.getFormat().length();
+					int i = event.getFormat().lastIndexOf(">") + 1;
+					int length = event.getFormat().length();
 					// Substring 1 until the bracket, substring 2 after the bracket
-					sub1 = event.getFormat().substring(0, i);
-					sub2 = event.getFormat().substring(i, length);
+					String sub1 = event.getFormat().substring(0, i);
+					String sub2 = event.getFormat().substring(i, length);
 					// Insert the suffix between ;)
 					event.setFormat(sub1 + " " + suffix + ChatColor.WHITE + ":" + sub2);
 				}
@@ -95,7 +94,7 @@ public class ColorMePlayerListener implements Listener {
 		}
 		// Remove the chat brackets if wanted
 		if (!ColorMe.chatBrackets) {
-			brackets = event.getFormat();
+			String brackets = event.getFormat();
 			brackets = brackets.replaceAll("<", " ")
 					.replaceAll(">", "");
 			event.setFormat(brackets);
@@ -104,10 +103,6 @@ public class ColorMePlayerListener implements Listener {
 		if (ColorMe.chatColors)	{
 			event.setMessage(Actions.replaceThings(event.getMessage()));
 		}
-		
-		prefix = null;
-		suffix = null;
-		brackets = null;
 	}
 
 	// Check for the player and update the file is values are unknown
@@ -122,8 +117,8 @@ public class ColorMePlayerListener implements Listener {
 			ColorMe.players.set(name + ".suffix." + world, "");
 			ColorMe.savePlayers();
 		}
-		for (i = 0; i <= 2; i++) {
-			actualPart = pluginPart[i];
+		for (int i = 0; i <= 2; i++) {
+			String actualPart = pluginPart[i];
 			if (!ColorMe.players.contains(name + "." + actualPart + "." + world)) {
 				ColorMe.players.set(name + "." + actualPart + "." + world, "");
 				ColorMe.savePlayers();
