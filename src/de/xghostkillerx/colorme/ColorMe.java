@@ -325,13 +325,13 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("get_color_global", "&2The global color is &e%color");
 		localization.addDefault("help_color_1", "&2Welcome to the ColorMe version &4%version &2help!");
 		localization.addDefault("help_color_2", "&4 <> = Required, [] = Optional");
-		localization.addDefault("help_color_3", "/<command> help - Shows the help");
-		localization.addDefault("help_color_4", "/<command> list - Shows list of colors");
-		localization.addDefault("help_color_5", "/<command> get <name> [world] - Gets the actual color");
-		localization.addDefault("help_color_6", "/<command> remove <name> [world] - Removes color");
-		localization.addDefault("help_color_7", "/<command> me <color> [world] - Sets your own color");
-		localization.addDefault("help_color_8", "/<command> <name> <color> [world] - Sets player's color");
-		localization.addDefault("help_color_9", "/<command> global <color> - Sets the global color");
+		localization.addDefault("help_color_3", "/color help - Shows the help");
+		localization.addDefault("help_color_4", "/color list - Shows list of colors");
+		localization.addDefault("help_color_5", "/color get <name> [world] - Gets the actual color");
+		localization.addDefault("help_color_6", "/color remove <name> [world] - Removes color");
+		localization.addDefault("help_color_7", "/color me <color> [world] - Sets your own color");
+		localization.addDefault("help_color_8", "/color <name> <color> [world] - Sets player's color");
+		localization.addDefault("help_color_9", "/color global <color> - Sets the global color");
 		localization.addDefault("no_prefix_self", "&eYou &4don't have a prefix in the world &e%world");
 		localization.addDefault("no_prefix_other", "&e%player &4doesn't have a prefix in the world &e%world");
 		localization.addDefault("no_prefix_global", "&4The global prefix isn't set!");
@@ -349,13 +349,13 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("get_prefix_global", "&2The global prefix is %prefix");
 		localization.addDefault("help_prefix_1", "&2Welcome to the Prefixer (part of ColorMe) version &4%version &2help!");
 		localization.addDefault("help_prefix_2", "&4 <> = Required, [] = Optional");
-		localization.addDefault("help_prefix_3", "/<command> help - Shows the help");
+		localization.addDefault("help_prefix_3", "/prefixer help - Shows the help");
 		localization.addDefault("help_prefix_4", "/color list - Shows list of colors");
-		localization.addDefault("help_prefix_5", "/<command> get <name> [world] - Gets the actual prefix");
-		localization.addDefault("help_prefix_6", "/<command> remove <name> [world] - Removes prefix");
-		localization.addDefault("help_prefix_7", "/<command> me <prefix> [world] - Sets your own prefix");
-		localization.addDefault("help_prefix_8", "/<command> <name> <prefix> [world] - Sets player's prefix");
-		localization.addDefault("help_prefix_9", "/<command> global <prefix> - Sets the global prefix");
+		localization.addDefault("help_prefix_5", "/prefixer get <name> [world] - Gets the actual prefix");
+		localization.addDefault("help_prefix_6", "/prefixer remove <name> [world] - Removes prefix");
+		localization.addDefault("help_prefix_7", "/prefixer me <prefix> [world] - Sets your own prefix");
+		localization.addDefault("help_prefix_8", "/prefixer <name> <prefix> [world] - Sets player's prefix");
+		localization.addDefault("help_prefix_9", "/prefixer global <prefix> - Sets the global prefix");
 		localization.addDefault("no_suffix_self", "&eYou &4don't have a suffix in the world &e%world");
 		localization.addDefault("no_suffix_other", "&e%player &4doesn't have a suffix in the world &e%world");
 		localization.addDefault("no_suffix_global", "&4The global suffix isn't set!");
@@ -373,13 +373,14 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("get_suffix_global", "&2The global suffix is &e%suffix");
 		localization.addDefault("help_suffix_1", "&2Welcome to the Suffixer (part of ColorMe) version &4%version &2help!");
 		localization.addDefault("help_suffix_2", "&4 <> = Required, [] = Optional");
-		localization.addDefault("help_suffix_3", "/<command> help - Shows the help");
+		localization.addDefault("help_suffix_3", "/suffixer help - Shows the help");
 		localization.addDefault("help_suffix_4", "/color list - Shows list of colors");
-		localization.addDefault("help_suffix_5", "/<command> get <name> [world] - Gets the actual suffix");
-		localization.addDefault("help_suffix_6", "/<command> remove <name> [world] - Removes suffix");
-		localization.addDefault("help_suffix_7", "/<command> me <suffix> [world] - Sets your own suffix");
-		localization.addDefault("help_suffix_8", "/<command> <name> <suffix> [world] - Sets player's suffix");
-		localization.addDefault("help_prefix_9", "/<command> global <suffix> - Sets the global suffix");
+		localization.addDefault("help_suffix_5", "/suffixer get <name> [world] - Gets the actual suffix");
+		localization.addDefault("help_suffix_6", "/suffixer remove <name> [world] - Removes suffix");
+		localization.addDefault("help_suffix_7", "/suffixer me <suffix> [world] - Sets your own suffix");
+		localization.addDefault("help_suffix_8", "/suffixer <name> <suffix> [world] - Sets player's suffix");
+		localization.addDefault("help_prefix_9", "/suffixer global <suffix> - Sets the global suffix");
+		localization.addDefault("custom_colors_enabled", "&4Custom colors are enabled, too! Please ask your admin for them!");
 		localization.options().copyDefaults(true);
 		saveLocalization();
 	}
@@ -393,6 +394,8 @@ public class ColorMe extends JavaPlugin {
 			savePlayers();
 			localization.load(localizationFile);
 			saveLocalization();
+			colors.load(colorsFile);
+			saveColors();
 		}
 		catch (Exception e) {
 			log.warning("ColorMe failed to load the configs! Please report this!");
@@ -425,6 +428,16 @@ public class ColorMe extends JavaPlugin {
 		}
 		catch (IOException e) {
 			log.warning("ColorMe failed to save the config! Please report this!");
+		}
+	}
+	
+	// Saves the colors file
+	public static void saveColors() {
+		try {
+			colors.save(colorsFile);
+		}
+		catch (IOException e) {
+			log.warning("ColorMe failed to save the colors! Please report this!");
 		}
 	}
 

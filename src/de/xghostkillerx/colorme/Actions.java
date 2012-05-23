@@ -276,7 +276,7 @@ public class Actions {
 			if (colorChar.equalsIgnoreCase("m")) continue;
 			if (colorChar.equalsIgnoreCase("k")) continue;
 			// color the name of the color
-			if (ColorMe.config.getBoolean("colors." + color) == true) {
+			if (ColorMe.config.getBoolean("colors." + color)) {
 				msg += ChatColor.valueOf(color.toUpperCase()) + color + " (&" + colorChar + ") " + ChatColor.WHITE;
 			}
 		}
@@ -284,11 +284,10 @@ public class Actions {
 		if (ColorMe.config.getBoolean("colors.underline")) msg += ChatColor.UNDERLINE + "underline" + ChatColor.WHITE + " (&n) ";
 		if (ColorMe.config.getBoolean("colors.magic")) msg += "magic (" + ChatColor.MAGIC + "a" + ChatColor.WHITE + ", &k) ";
 		// Include custom colors
-		if (ColorMe.config.getBoolean("colors.random") == true) {
-			msg += randomColor("random (&random)" + " ");
-		}
-		if (ColorMe.config.getBoolean("colors.rainbow") == true) {
-			msg += rainbowColor("rainbow (&rainbow)");
+		if (ColorMe.config.getBoolean("colors.random")) msg += randomColor("random (&random)" + " ");
+		if (ColorMe.config.getBoolean("colors.rainbow")) msg += rainbowColor("rainbow (&rainbow)") + " ";
+		if (ColorMe.config.getBoolean("colors.custom")) {
+			msg += ColorMe.localization.getString("custom_colors_enabled").replaceAll("&([0-9a-fk-or])", "\u00A7$1");
 		}
 		sender.sendMessage(msg);
 	}
@@ -299,7 +298,7 @@ public class Actions {
 		// As long as the length of the name isn't reached
 		for (int i = 0; i < name.length(); i++) {
 			// Roll the dice between 0 and 16 ;)
-			int x = (int)(Math.random()*ChatColor.values().length);
+			int x = (int) (Math.random()*ChatColor.values().length);
 			char ch = name.charAt(i);
 			// Color the character
 			newName += ChatColor.values()[x] + Character.toString(ch);
@@ -371,11 +370,11 @@ public class Actions {
 
 	// If the config value is disabled, return true
 	static boolean isDisabled(String color) {
-		if (ColorMe.config.getBoolean("colors." + color.toLowerCase()) == true) {
+		if (ColorMe.config.getBoolean("colors." + color.toLowerCase())) {
 			return false;
 		}
 		// Custom color? (Must contain something!!! NOT '' or null)
-		if ((ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) return false;
+		if ((ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true && ColorMe.config.getBoolean("colors.custom")) return false;
 		return true;
 	}
 
