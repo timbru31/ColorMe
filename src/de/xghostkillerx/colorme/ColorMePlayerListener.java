@@ -44,7 +44,7 @@ public class ColorMePlayerListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 		String world = player.getWorld().getName().toLowerCase();
-		String prefix = "", suffix = "";
+		String prefix = null, suffix = null;
 		CheckRoutine(player, name, world);
 		if (ColorMe.Prefixer) {
 			// Get world prefix if available

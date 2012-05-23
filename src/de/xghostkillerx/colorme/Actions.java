@@ -236,28 +236,6 @@ public class Actions {
 		}
 	}
 
-	static String updateCustomColor(String color, String text, Player player) {
-		/* How to: Get Color. Color one char. Get next value, color next char. Same char = Multiple values.
-		 * Beispiel: &c&e&c&e, name -> ChatColor.RED + "n" + ChatColor.YELLOW + "a". RAINBOW/RANDOM?!
-		 */
-		String updatedText = "";
-		String colorChars = ColorMe.colors.getString(color).replaceAll("&([0-9a-fk-or])", "\u00A7$1");
-		if (!colorChars.contains("§") || colorChars.contains("&") || !colorChars.startsWith("§")) return text;
-		String sub = colorChars, sub2 = "";
-		for (int i = 0; i < text.length(); i++) {
-			// If substring is empty of values, reset
-			if (!sub.contains("§")) sub = colorChars;
-			// Get the § extracted
-			if (sub.contains("§")) {
-				sub2 = sub.substring(0, 2);
-			}
-			updatedText += sub2 + text.charAt(i);
-			sub = sub.replaceFirst(sub2, "");
-		}
-		
-		return updatedText;
-	}
-
 	// Restore the "clean", white name
 	static void restoreName(String name) {
 		Player player = Bukkit.getServer().getPlayerExact(name);
@@ -345,6 +323,30 @@ public class Actions {
 			z++;
 		}
 		return newName;
+	}
+	
+	// Make the custom colors!
+	static String updateCustomColor(String color, String text, Player player) {
+		// Get color
+		String updatedText = "";
+		String colorChars = ColorMe.colors.getString(color).replaceAll("&([0-9a-fk-or])", "\u00A7$1");
+		// No § or &? Not valid; doesn't start with §? Not valid! Ending without a char? Not valid!
+		if (!colorChars.contains("§") || colorChars.contains("&") || !colorChars.startsWith("§") || colorChars.endsWith("§")) return text;
+		// We use substrings
+		String sub = colorChars, sub2 = "";
+		for (int i = 0; i < text.length(); i++) {
+			// If substring is empty of values, reset
+			if (!sub.contains("§")) sub = colorChars;
+			// Get the § extracted
+			if (sub.contains("§")) {
+				sub2 = sub.substring(0, 2);
+			}
+			// Add the substring (color value) plus the char
+			updatedText += sub2 + text.charAt(i);
+			// Now replace the color value. (.replaceFirst -> otherwise double things would be removed, too!)
+			sub = sub.replaceFirst(sub2, "");
+		}
+		return updatedText;
 	}
 
 	// Check if the color is possible
