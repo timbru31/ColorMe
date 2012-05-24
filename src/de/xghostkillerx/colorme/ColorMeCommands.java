@@ -25,7 +25,7 @@ public class ColorMeCommands implements CommandExecutor {
 	public ColorMeCommands(ColorMe instance) {
 		plugin = instance;
 	}
-	
+
 	// Commands for coloring
 	public boolean onCommand (CommandSender sender, Command command, String commandLabel, String[] args) {
 		String pluginPart = "colors", message, target, color, senderName, world = "default", globalColor;
@@ -282,9 +282,13 @@ public class ColorMeCommands implements CommandExecutor {
 				ColorMe.message(sender, null, message, null, world, target, null);
 				return true;
 			}
+			
+			// Check for name of the color
+			String colorName = color.toLowerCase();
+			if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) colorName = "custom";
 
 			// Self coloring
-			if (sender.hasPermission("colorme.self." + color.toLowerCase()) && Actions.self(sender, target)) {
+			if (sender.hasPermission("colorme.self." + colorName) && Actions.self(sender, target)) {
 				// Without economy or costs are null
 				Double cost = ColorMe.config.getDouble("costs.color");
 				if (plugin.economy == null || cost == 0) {
@@ -302,23 +306,28 @@ public class ColorMeCommands implements CommandExecutor {
 						return true;
 					}
 					// Charge costs :)
-					if (cost > 0 && plugin.economy.has(senderName, cost)) {
+					if (cost > 0) {
 						// Charge player unless he has the free permissions
-						if (!sender.hasPermission("colorome.free")) plugin.economy.withdrawPlayer(senderName, cost);
-						// Set color an notify sender
+						if (!sender.hasPermission("colorme.free")) {
+							// Enough money?
+							if (plugin.economy.getBalance(senderName) < cost) {
+								// Tell and return
+								message = ColorMe.localization.getString("not_enough_money_1");
+								ColorMe.message(sender, null, message, null, null, null, null);
+								message = ColorMe.localization.getString("not_enough_money_2");
+								ColorMe.message(sender, null, message, null, null, null, cost);
+								return true;
+							}
+							else {
+								plugin.economy.withdrawPlayer(senderName, cost);
+								message = ColorMe.localization.getString("charged");
+								ColorMe.message(sender, null, message, null, null, null, cost);
+							}
+						}
+						// Set color and notify sender
 						Actions.set(senderName, color, world, pluginPart);
-						message = ColorMe.localization.getString("charged");
-						ColorMe.message(sender, null, message, null, null, null, cost);
 						message = ColorMe.localization.getString("changed_color_self");
 						ColorMe.message(sender, null, message, color, world, null, null);
-						return true;
-					}
-					// If player hasn't got enough money
-					else if (cost > 0 && plugin.economy.getBalance(senderName) < cost) {						
-						message = ColorMe.localization.getString("not_enough_money_1");
-						ColorMe.message(sender, null, message, null, null, null, null);
-						message = ColorMe.localization.getString("not_enough_money_2");
-						ColorMe.message(sender, null, message, null, null, null, cost);
 						return true;
 					}
 				}

@@ -257,23 +257,28 @@ public class SuffixCommands implements CommandExecutor {
 				// With economy
 				else if (plugin.economy != null) {
 					// Charge costs :)
-					if (cost > 0 && plugin.economy.has(senderName, cost)) {
+					if (cost > 0) {
 						// Charge player unless he has the free permissions
-						if (!sender.hasPermission("suffixer.free")) plugin.economy.withdrawPlayer(senderName, cost);
-						// Set suffix an notify sender
+						if (!sender.hasPermission("suffixer.free")) {
+							// Enough money?
+							if (plugin.economy.getBalance(senderName) < cost) {
+								// Tell and return
+								message = ColorMe.localization.getString("not_enough_money_1");
+								ColorMe.message(sender, null, message, null, null, null, null);
+								message = ColorMe.localization.getString("not_enough_money_2");
+								ColorMe.message(sender, null, message, null, null, null, cost);
+								return true;
+							}
+							else {
+								plugin.economy.withdrawPlayer(senderName, cost);
+								message = ColorMe.localization.getString("charged");
+								ColorMe.message(sender, null, message, null, null, null, cost);
+							}
+						}
+						// Set suffix and notify sender
 						Actions.set(senderName, suffix, world, pluginPart);
-						message = ColorMe.localization.getString("charged");
-						ColorMe.message(sender, null, message, null, null, null, cost);
 						message = ColorMe.localization.getString("changed_suffix_self");
 						ColorMe.message(sender, null, message, Actions.replaceThings(suffix), world, null, null);
-						return true;
-					}
-					// If player hasn't got enough money
-					else if (cost > 0 && plugin.economy.getBalance(senderName) < cost) {						
-						message = ColorMe.localization.getString("not_enough_money_1");
-						ColorMe.message(sender, null, message, null, null, null, cost);
-						message = ColorMe.localization.getString("not_enough_money_2");
-						ColorMe.message(sender, null, message, null, null, null, cost);
 						return true;
 					}
 				}
