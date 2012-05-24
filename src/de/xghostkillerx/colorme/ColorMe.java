@@ -67,7 +67,7 @@ public class ColorMe extends JavaPlugin {
 	public static File playersFile;
 	public static File localizationFile;
 	public static File colorsFile;
-	public static boolean spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets, chatColors, signColors;
+	public static boolean spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets, chatColors, signColors, newColorOnJoin;
 	public static int prefixLength, suffixLength;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
@@ -287,6 +287,7 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("colors.custom", true);
 		config.addDefault("lengthLimit.Prefixer", 16);
 		config.addDefault("lengthLimit.Suffixer", 16);
+		config.addDefault("newColorOnJoin" , false);
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
@@ -402,16 +403,17 @@ public class ColorMe extends JavaPlugin {
 
 	private static void checkParts() {
 		// Maybe something changed on the fly
-		if (config.getBoolean("Suffixer")) Suffixer = true;
-		if (config.getBoolean("Prefixer")) Prefixer = true;
-		if (config.getBoolean("chatBrackets")) chatBrackets = true;
-		if (config.getBoolean("ColorMe.signColors")) signColors = true;
-		if (config.getBoolean("ColorMe.chatColors")) chatColors = true;
+		Suffixer = config.getBoolean("Suffixer");
+		Prefixer = config.getBoolean("Prefixer");
+		chatBrackets = config.getBoolean("chatBrackets");
+		signColors = config.getBoolean("ColorMe.signColors");
+		chatColors = config.getBoolean("ColorMe.chatColors");
 		globalPrefix = config.getString("global_default." + "prefix").trim().length() > 1 ? true : false;
 		globalSuffix = config.getString("global_default." + "suffix").trim().length() > 1 ? true : false;
 		globalColor = config.getString("global_default." + "color").trim().length() > 1 ? true : false;
 		prefixLength = config.getInt("lengthLimit.Prefixer");
 		suffixLength = config.getInt("lengthLimit.Suffixer");
+		newColorOnJoin = config.getBoolean("newColorOnJoin");
 	}
 
 	// Try to save the players.yml

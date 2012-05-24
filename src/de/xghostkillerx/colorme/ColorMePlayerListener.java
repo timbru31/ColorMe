@@ -34,6 +34,17 @@ public class ColorMePlayerListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 		String world = player.getWorld().getName().toLowerCase();
+		// New color onJoin?
+		if (ColorMe.newColorOnJoin) {
+			// Normal colors + rainbow & random
+			int color = (int) (Math.random()*(ChatColor.values().length + 2));
+			// 22 == Reset -> bad
+			while (color == 22) color = (int) (Math.random()*(ChatColor.values().length + 2));
+			// Set it.
+			if (color == ChatColor.values().length + 1) Actions.set(name, "rainbow", world, pluginPart[0]);
+			else if (color == ChatColor.values().length + 2) Actions.set(name, "random", world, pluginPart[0]);
+			else Actions.set(name, ChatColor.values()[color].name(), world, pluginPart[0]);
+		}
 		CheckRoutine(player, name, world);
 	}
 

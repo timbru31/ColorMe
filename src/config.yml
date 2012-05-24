@@ -42,3 +42,6 @@ global_default:
   color: ''
 updateConfig: false
 chatBrackets: true
+lengthLimit:
+  Prefixer: 16
+  Suffixer: 16
