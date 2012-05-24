@@ -68,6 +68,7 @@ public class ColorMe extends JavaPlugin {
 	public static File localizationFile;
 	public static File colorsFile;
 	public static boolean spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets, chatColors, signColors;
+	public static int prefixLength, suffixLength;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
 	private SuffixCommands suffixExecutor;
@@ -219,14 +220,7 @@ public class ColorMe extends JavaPlugin {
 		}
 		catch (IOException e) {}
 
-		if (config.getBoolean("Suffixer")) Suffixer = true;
-		if (config.getBoolean("Prefixer")) Prefixer = true;
-		if (config.getBoolean("chatBrackets")) chatBrackets = true;
-		if (config.getBoolean("ColorMe.signColors")) signColors = true;
-		if (config.getBoolean("ColorMe.chatColors")) chatColors = true;
-		globalPrefix = config.getString("global_default." + "prefix").trim().length() > 1 ? true : false;
-		globalSuffix = config.getString("global_default." + "suffix").trim().length() > 1 ? true : false;
-		globalColor = config.getString("global_default." + "color").trim().length() > 1 ? true : false;
+		checkParts();
 	}
 
 	public void updateConfig(File config) throws Exception {
@@ -283,7 +277,7 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("ColorMe.chatColors", true);
 		for (ChatColor value : ChatColor.values()) {
 			if (value.getChar() == 'r') continue;
-			// get the name from the integer
+			// get the name from the ChatColor
 			String color = value.name().toLowerCase();
 			// write to the config
 			config.addDefault("colors." + color, true);
@@ -291,6 +285,8 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("colors.random", true);
 		config.addDefault("colors.rainbow", true);
 		config.addDefault("colors.custom", true);
+		config.addDefault("lengthLimit.Prefixer", 16);
+		config.addDefault("lengthLimit.Suffixer", 16);
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
@@ -305,7 +301,7 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("reload", "&2ColorMe version &4%version &2reloaded!");
 		localization.addDefault("charged", "&2You have been charged &4$%costs");
 		localization.addDefault("not_enough_money_1", "&4Sorry, you don't have enough money to do this.");
-		localization.addDefault("not_enough_money_2", "&4It costs &e%costs &4to do this!");
+		localization.addDefault("not_enough_money_2", "&4It costs &e$%costs &4to do this!");
 		localization.addDefault("no_color_self", "&eYou &4don't have a colored name in the world &e%world");
 		localization.addDefault("no_color_other", "&e%player &4doesn't have a colored name in the world &e%world");
 		localization.addDefault("no_color_global", "&4The global color isn't set!");
@@ -317,7 +313,7 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("removed_color_self", "&eYour &2name color in the world &e%world &2has been removed.");
 		localization.addDefault("removed_color_other", "&2Removed &e%player&2's color in the world &e%world.");
 		localization.addDefault("removed_color_global", "&2Removed the global color.");
-		localization.addDefault("changed_color_self", "&eYour &2name color has been changed to %color &2in the world &e%world");
+		localization.addDefault("changed_color_self", "&eYour &2name color has been changed to &e%color &2in the world &e%world");
 		localization.addDefault("changed_color_other", "&2Changed &e%player&2's color to &e%color &2in the world &e%world");
 		localization.addDefault("changed_color_global", "&2The global color has been changed to &e%color");
 		localization.addDefault("get_color_self", "&eYou &2have got the color &e%color &2in the world &e%world");
@@ -341,9 +337,9 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("removed_prefix_self", "&eYour &2prefix in the world &e%world &2has been removed.");
 		localization.addDefault("removed_prefix_other", "&2Removed &e%player&2's prefix in the world &e%world.");
 		localization.addDefault("removed_prefix_global", "&2Removed the global prefix.");
-		localization.addDefault("changed_prefix_self", "&eYour &2prefix has been changed to %prefix &2in the world &e%world");
-		localization.addDefault("changed_prefix_other", "&2Changed &e%player&2's prefix to %prefix &2in the world &e%world");
-		localization.addDefault("changed_prefix_global", "&2The global prefix has been changed to %prefix");
+		localization.addDefault("changed_prefix_self", "&eYour &2prefix has been changed to &f%prefix &2in the world &e%world");
+		localization.addDefault("changed_prefix_other", "&2Changed &e%player&2's prefix to &f%prefix &2in the world &e%world");
+		localization.addDefault("changed_prefix_global", "&2The global prefix has been changed to &f%prefix");
 		localization.addDefault("get_prefix_self", "&eYou &2have got the prefix %prefix &2in the world &e%world");
 		localization.addDefault("get_prefix_other", "&e%player &2has got the prefix %prefix %2in the world &e%world");
 		localization.addDefault("get_prefix_global", "&2The global prefix is %prefix");
@@ -365,9 +361,9 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("removed_suffix_self", "&eYour &2suffix in the world &e%world &2has been removed.");
 		localization.addDefault("removed_suffix_other", "&2Removed &e%player&2's suffix in the world &e%world.");
 		localization.addDefault("removed_suffix_global", "&2Removed the global suffix.");
-		localization.addDefault("changed_suffix_self", "&eYour &2suffix has been changed to %suffix &2in the world &e%world");
-		localization.addDefault("changed_suffix_other", "&2Changed &e%player&2's suffix to %suffix &2in the world &e%world");
-		localization.addDefault("changed_suffix_global", "&2The global suffix has been changed to %suffix");
+		localization.addDefault("changed_suffix_self", "&eYour &2suffix has been changed to &f%suffix &2in the world &e%world");
+		localization.addDefault("changed_suffix_other", "&2Changed &e%player&2's suffix to &f%suffix &2in the world &e%world");
+		localization.addDefault("changed_suffix_global", "&2The global suffix has been changed to &f%suffix");
 		localization.addDefault("get_suffix_self", "&eYou &2have got the suffix %suffix &2in the world &e%world");
 		localization.addDefault("get_suffix_other", "&e%player &2has got the suffix %suffix %2in the world &e%world");
 		localization.addDefault("get_suffix_global", "&2The global suffix is &e%suffix");
@@ -381,11 +377,12 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("help_suffix_8", "/suffixer <name> <suffix> [world] - Sets player's suffix");
 		localization.addDefault("help_prefix_9", "/suffixer global <suffix> - Sets the global suffix");
 		localization.addDefault("custom_colors_enabled", "&4Custom colors are enabled, too! Please ask your admin for them!");
+		localization.addDefault("too_long", "&4Sorry, this message is too long!");
 		localization.options().copyDefaults(true);
 		saveLocalization();
 	}
 
-	// Reloads the config via command /colorme reload
+	// Reloads the config via command /colorme reload, /prefixer reload or /suffixer reload
 	public static void loadConfigsAgain() {
 		try {
 			config.load(configFile);
@@ -396,10 +393,25 @@ public class ColorMe extends JavaPlugin {
 			saveLocalization();
 			colors.load(colorsFile);
 			saveColors();
+			checkParts();
 		}
 		catch (Exception e) {
 			log.warning("ColorMe failed to load the configs! Please report this!");
 		}
+	}
+
+	private static void checkParts() {
+		// Maybe something changed on the fly
+		if (config.getBoolean("Suffixer")) Suffixer = true;
+		if (config.getBoolean("Prefixer")) Prefixer = true;
+		if (config.getBoolean("chatBrackets")) chatBrackets = true;
+		if (config.getBoolean("ColorMe.signColors")) signColors = true;
+		if (config.getBoolean("ColorMe.chatColors")) chatColors = true;
+		globalPrefix = config.getString("global_default." + "prefix").trim().length() > 1 ? true : false;
+		globalSuffix = config.getString("global_default." + "suffix").trim().length() > 1 ? true : false;
+		globalColor = config.getString("global_default." + "color").trim().length() > 1 ? true : false;
+		prefixLength = config.getInt("lengthLimit.Prefixer");
+		suffixLength = config.getInt("lengthLimit.Suffixer");
 	}
 
 	// Try to save the players.yml
@@ -430,7 +442,7 @@ public class ColorMe extends JavaPlugin {
 			log.warning("ColorMe failed to save the config! Please report this!");
 		}
 	}
-	
+
 	// Saves the colors file
 	public static void saveColors() {
 		try {

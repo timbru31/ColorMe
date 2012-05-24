@@ -1,5 +1,6 @@
 package de.xghostkillerx.colorme;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -46,6 +47,12 @@ public class PrefixCommands implements CommandExecutor {
 				// If the prefixes are the same
 				if (globalPrefix.equalsIgnoreCase(Actions.getGlobal("prefix"))) {
 					message = ColorMe.localization.getString("same_prefix_global");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
+				// Check if the message is too long
+				if (ChatColor.stripColor(Actions.replaceThings(globalPrefix)).length() > ColorMe.prefixLength) {
+					message = ColorMe.localization.getString("too_long");
 					ColorMe.message(sender, null, message, null, null, null, null);
 					return true;
 				}
@@ -246,6 +253,12 @@ public class PrefixCommands implements CommandExecutor {
 
 			// Self prefixing
 			if (sender.hasPermission("prefixer.self") && Actions.self(sender, target)) {
+				// Check if the message is too long
+				if (ChatColor.stripColor(Actions.replaceThings(prefix)).length() > ColorMe.prefixLength) {
+					message = ColorMe.localization.getString("too_long");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
 				// Without economy or costs are null
 				Double cost = ColorMe.config.getDouble("costs.prefix");
 				if (plugin.economy == null || cost == 0) {
@@ -285,6 +298,12 @@ public class PrefixCommands implements CommandExecutor {
 			}
 			// Prefixing other
 			else if (sender.hasPermission("prefixer.other") && !Actions.self(sender, target)) {
+				// Check if the message is too long
+				if (ChatColor.stripColor(Actions.replaceThings(prefix)).length() > ColorMe.prefixLength) {
+					message = ColorMe.localization.getString("too_long");
+					ColorMe.message(sender, null, message, null, null, null, null);
+					return true;
+				}
 				// Set the new prefix
 				Actions.set(target, prefix, world, pluginPart);
 				if (plugin.getServer().getPlayerExact(target) != null) {
