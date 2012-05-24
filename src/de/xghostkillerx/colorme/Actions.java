@@ -286,9 +286,7 @@ public class Actions {
 		// Include custom colors
 		if (ColorMe.config.getBoolean("colors.random")) msg += randomColor("random (&random)" + " ");
 		if (ColorMe.config.getBoolean("colors.rainbow")) msg += rainbowColor("rainbow (&rainbow)") + " ";
-		if (ColorMe.config.getBoolean("colors.custom")) {
-			msg += ColorMe.localization.getString("custom_colors_enabled").replaceAll("&([0-9a-fk-or])", "\u00A7$1");
-		}
+		if (ColorMe.config.getBoolean("colors.custom"))	msg += ColorMe.localization.getString("custom_colors_enabled").replaceAll("&([0-9a-fk-or])", "\u00A7$1");
 		sender.sendMessage(msg);
 	}
 

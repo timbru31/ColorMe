@@ -277,7 +277,7 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("Suffixer", true);
 		config.addDefault("chatBrackets", true);
 		config.addDefault("ColorMe.displayName", true);
-		config.addDefault("ColorMe.tabList", true);
+		config.addDefault("ColorMe.tabList", false);
 		config.addDefault("ColorMe.playerTitle", true);
 		config.addDefault("ColorMe.signColors", true);
 		config.addDefault("ColorMe.chatColors", true);

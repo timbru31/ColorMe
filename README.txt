@@ -42,7 +42,7 @@ Prefixer: true
 Suffixer: true
 ColorMe:
   displayName: true
-  tabList: true
+  tabList: false
   playerTitle: true
 colors:
   black: true
