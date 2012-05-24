@@ -1,6 +1,6 @@
 name: ColorMe
 main: de.xghostkillerx.colorme.ColorMe
-version: 3.5 dev3
+version: 3.5 dev4
 author: xGhOsTkiLLeRx
 authors: [Valrix]
 website: http://bit.ly/bukkitdevcolorme
@@ -13,9 +13,11 @@ commands:
         description: Gives the player name a color
     prefix:
         usage: /prefix help - to see the help
+        aliases: [prefixme, prefixer]
         description: Gives the player name a prefix
     suffix:
         usage: /suffix help - to see the help
+        aliases: [suffixme, suffixer]
         description: Gives the player name a suffix
 permissions:
     colorme.list:
@@ -165,6 +167,9 @@ permissions:
     prefixer.free:
         default: op
         description: No costs for prefixing
+    prefixer.nofilter:
+        default: op
+        description: No filter for prefixing
     prefixer.*:
         children:
             prefixer.list: true
@@ -174,6 +179,7 @@ permissions:
             prefixer.get: true
             prefixer.global: true
             prefixer.free: true
+            prefixer.nofilter: true
         description: Allows all commands for Prefixer
     suffixer.list:
         default: true
@@ -196,6 +202,9 @@ permissions:
     suffixer.free:
         default: op
         description: No costs for suffixing
+    suffixer.nofilter:
+        default: op
+        description: No filter for suffixing
     suffixer.*:
         children:
             suffixer.list: true
@@ -205,5 +214,6 @@ permissions:
             suffixer.get: true
             suffixer.global: true
             suffixer.free: true
+            suffixer.nofilter: true
         description: Allows all commands for Suffixer
 softdepend: [Vault, Spout]

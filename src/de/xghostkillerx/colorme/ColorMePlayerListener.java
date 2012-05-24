@@ -1,5 +1,7 @@
 package de.xghostkillerx.colorme;
 
+import java.io.IOException;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -61,7 +63,6 @@ public class ColorMePlayerListener implements Listener {
 			// Get world prefix if available
 			if (Actions.has(name, world, "prefix")) {
 				prefix = Actions.get(name, world, "prefix");
-				//mhm.put(name, prefix);
 			}
 			// Get default prefix
 			else if (Actions.has(name, "default", "prefix")) {
@@ -75,6 +76,7 @@ public class ColorMePlayerListener implements Listener {
 			if (prefix != null) {
 				event.setFormat(prefix + ChatColor.WHITE + " " + event.getFormat());
 			}
+			// Display global one, too?
 			if (ColorMe.globalPrefix && ColorMe.displayAlwaysGlobalPrefix) {
 				globalPrefix = Actions.getGlobal("prefix");
 				event.setFormat(globalPrefix + ChatColor.WHITE + " " + event.getFormat());
@@ -93,7 +95,6 @@ public class ColorMePlayerListener implements Listener {
 			else if (ColorMe.globalSuffix) {
 				suffix = Actions.getGlobal("suffix");
 			}
-			// If suffix is not null
 			// Search the bracket
 			if (event.getFormat().contains(">")) {
 				int i = event.getFormat().lastIndexOf(">") + 1;
@@ -140,17 +141,29 @@ public class ColorMePlayerListener implements Listener {
 			ColorMe.players.set(name + ".colors." + world, "");
 			ColorMe.players.set(name + ".prefix." + world, "");
 			ColorMe.players.set(name + ".suffix." + world, "");
-			ColorMe.savePlayers();
+			try {
+				ColorMe.players.save(ColorMe.playersFile);
+			} catch (IOException e) {
+				ColorMe.log.warning("ColorMe failed to save the players.yml! Please report this! IOException");
+			}
 		}
 		for (int i = 0; i <= 2; i++) {
 			String actualPart = pluginPart[i];
 			if (!ColorMe.players.contains(name + "." + actualPart + "." + world)) {
 				ColorMe.players.set(name + "." + actualPart + "." + world, "");
-				ColorMe.savePlayers();
+				try {
+					ColorMe.players.save(ColorMe.playersFile);
+				} catch (IOException e) {
+					ColorMe.log.warning("ColorMe failed to save the players.yml! Please report this! IOException");
+				}
 			}
 			if (!ColorMe.players.contains(name + "." + actualPart + "." + "default")) {
 				ColorMe.players.set(name + "." + actualPart + "." + "default", "");
-				ColorMe.savePlayers();
+				try {
+					ColorMe.players.save(ColorMe.playersFile);
+				} catch (IOException e) {
+					ColorMe.log.warning("ColorMe failed to save the players.yml! Please report this! IOException");
+				}
 			}
 		}
 		Actions.checkNames(name, world);

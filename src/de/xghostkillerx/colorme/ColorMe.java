@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -47,13 +48,14 @@ public class ColorMe extends JavaPlugin {
 	private final ColorMeBlockListener blockListener = new ColorMeBlockListener(this);
 	public Economy economy = null;
 	public static FileConfiguration config, players, localization, colors;
-	public static File configFile, playersFile, localizationFile, colorsFile;
-	public static boolean spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets, chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix;
+	public static File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile;
+	public static boolean spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets, chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist;
 	public static int prefixLength, suffixLength;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
 	private SuffixCommands suffixExecutor;
 	public List<String> values = new ArrayList<String>();
+	public static List<String> bannedWords = new ArrayList<String>();
 
 	// Shutdown
 	public void onDisable() {
@@ -76,13 +78,7 @@ public class ColorMe extends JavaPlugin {
 			copy(getResource("players.yml"), playersFile);
 		}
 		// Try to load
-		try {
-			players = YamlConfiguration.loadConfiguration(playersFile);
-		}
-		// Log if failed
-		catch (Exception e) {
-			log.warning("ColorMe failed to load the players.yml! Please report this!");
-		}
+		players = YamlConfiguration.loadConfiguration(playersFile);
 
 		// Custom colors config		
 		colorsFile = new File(getDataFolder(), "colors.yml");
@@ -92,13 +88,7 @@ public class ColorMe extends JavaPlugin {
 			copy(getResource("colors.yml"), colorsFile);
 		}
 		// Try to load
-		try {
-			colors = YamlConfiguration.loadConfiguration(colorsFile);
-		}
-		// Log if failed
-		catch (Exception e) {
-			log.warning("ColorMe failed to load the colors.yml! Please report this!");
-		}
+		colors = YamlConfiguration.loadConfiguration(colorsFile);
 
 		// Config
 		configFile = new File(getDataFolder(), "config.yml");
@@ -116,13 +106,22 @@ public class ColorMe extends JavaPlugin {
 			copy(getResource("localization.yml"), localizationFile);
 		}
 		// Try to load
-		try {
-			localization = YamlConfiguration.loadConfiguration(localizationFile);
-			loadLocalization();
-		}
-		// If it failed, tell it
-		catch (Exception e) {
-			log.warning("ColorMe failed to load the localization!");
+		localization = YamlConfiguration.loadConfiguration(localizationFile);
+		loadLocalization();
+
+		if (config.getBoolean("useWordBlacklist")) {
+			// BannedWords file
+			bannedWordsFile = new File(getDataFolder(), "bannedWords.txt");
+			if(!bannedWordsFile.exists()){
+				bannedWordsFile.getParentFile().mkdirs();
+				copy(getResource("bannedWords.txt"), bannedWordsFile);
+			}
+			// Try to load
+			try {
+				loadBannedWords();
+			} catch (IOException e) {
+				log.warning("ColorMe failed to load the bannedWords.txt! Please report this! IOException");
+			}
 		}
 
 		// Force to update the config (remove empty lines)
@@ -130,8 +129,8 @@ public class ColorMe extends JavaPlugin {
 			try {
 				updateConfig(playersFile);
 			}
-			catch (Exception e) {
-				log.warning("ColorMe failed to update the config! Please report this!");
+			catch (IOException e) {
+				log.warning("ColorMe failed to update the config! Please report this! IOExcpetion");
 			}
 			finally {
 				config.set("updateConfig", false);
@@ -160,7 +159,8 @@ public class ColorMe extends JavaPlugin {
 			// If Vault is enabled, load the economy
 			log.info(pdfFile.getName() + " loaded Vault successfully");
 			setupEconomy();
-		} else {
+		}
+		else {
 			// Else tell the admin about the missing of Vault
 			log.warning("Vault was NOT found! Running without economy!");
 		}
@@ -177,6 +177,9 @@ public class ColorMe extends JavaPlugin {
 			// Spout is disabled
 			spoutEnabled = false;
 		}
+
+		// What is enabled?
+		checkParts();
 
 		// Stats
 		checkStatsStuff();
@@ -200,11 +203,28 @@ public class ColorMe extends JavaPlugin {
 			metrics.start();
 		}
 		catch (IOException e) {}
-
-		checkParts();
 	}
 
-	public void updateConfig(File config) throws Exception {
+
+	// If no config is found, copy the default one(s)!
+	private void copy(InputStream in, File file) {
+		try {
+			OutputStream out = new FileOutputStream(file);
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = in.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+			out.close();
+			in.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	// Remove empty lines
+	public void updateConfig(File config) throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(config));
 		File tempFile = new File(getDataFolder(), "temp.txt");
 		BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
@@ -228,15 +248,17 @@ public class ColorMe extends JavaPlugin {
 		}
 	}
 
-	private void checkStatsStuff() {
-		if (Prefixer) values.add("Prefixer");
-		if (Suffixer) values.add("Suffixer");
-		if (config.getBoolean("ColorMe.displayName")) values.add("ColorMe - displayName");
-		if (config.getBoolean("ColorMe.tabList")) values.add("ColorMe - tabList");
-		if (config.getBoolean("ColorMe.playerTitle")) values.add("ColorMe - playerTitle");
-		if (chatColors) values.add("ColorMe - chatColors");
-		if (signColors) values.add("ColorMe - signColors");
+	// Load the banned words
+	private void loadBannedWords() throws IOException{
+		BufferedReader reader = new BufferedReader(new FileReader(bannedWordsFile));
+		String line;
+		while ((line = reader.readLine()) != null) {
+			if (line.isEmpty()) continue;
+			bannedWords.add(line);
+		}
+		reader.close();
 	}
+
 
 	// Loads the config at the start
 	public void loadConfig() {
@@ -271,6 +293,7 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("newColorOnJoin" , false);
 		config.addDefault("displayAlways.globalSuffix", false);
 		config.addDefault("displayAlways.globalPefix", false);
+		config.addDefault("useWordBlacklist", true);
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
@@ -362,30 +385,38 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("help_prefix_9", "/suffixer global <suffix> - Sets the global suffix");
 		localization.addDefault("custom_colors_enabled", "&4Custom colors are enabled, too! Please ask your admin for them!");
 		localization.addDefault("too_long", "&4Sorry, this message is too long!");
+		localization.addDefault("bad_words", "&4Sorry,but '%s' is on the blacklist!");
 		localization.options().copyDefaults(true);
-		saveLocalization();
+		try {
+			localization.save(localizationFile);
+		} catch (IOException e) {
+			log.warning("ColorMe failed to save the localization! Please report this! IOException");
+		}
 	}
 
 	// Reloads the config via command /colorme reload, /prefixer reload or /suffixer reload
 	public static void loadConfigsAgain() {
 		try {
 			config.load(configFile);
-			saveConfigs();
+			config.save(configFile);
 			players.load(playersFile);
-			savePlayers();
+			players.save(playersFile);
 			localization.load(localizationFile);
-			saveLocalization();
+			localization.save(localizationFile);
 			colors.load(colorsFile);
-			saveColors();
+			colors.save(colorsFile);
 			checkParts();
 		}
-		catch (Exception e) {
-			log.warning("ColorMe failed to load the configs! Please report this!");
+		catch (IOException e) {
+			log.warning("ColorMe failed to load the configs! Please report this! IOException");
+		}
+		catch (InvalidConfigurationException e) {
+			log.warning("ColorMe failed to load the configs! Please report this! InvalidConfigurationException");
 		}
 	}
 
+	// Maybe something changed on the fly
 	private static void checkParts() {
-		// Maybe something changed on the fly
 		Suffixer = config.getBoolean("Suffixer");
 		Prefixer = config.getBoolean("Prefixer");
 		chatBrackets = config.getBoolean("chatBrackets");
@@ -399,62 +430,18 @@ public class ColorMe extends JavaPlugin {
 		newColorOnJoin = config.getBoolean("newColorOnJoin");
 		displayAlwaysGlobalPrefix = config.getBoolean("displayAlways.globalPefix");
 		displayAlwaysGlobalSuffix = config.getBoolean("displayAlways.globalSuffix");
+		blacklist = config.getBoolean("useWordBlacklist");
 	}
 
-	// Try to save the players.yml
-	public static void savePlayers() {
-		try {
-			players.save(playersFile);
-		} catch (Exception e) {
-			log.warning("ColorMe failed to save the players.yml! Please report this!");
-		}
-	}
-
-	// Saves the localization
-	public static void saveLocalization() {
-		try {
-			localization.save(localizationFile);
-		}
-		catch (IOException e) {
-			log.warning("ColorMe failed to save the localization! Please report this!");
-		}
-	}
-
-	// Saves the config
-	public static void saveConfigs() {
-		try {
-			config.save(configFile);
-		}
-		catch (IOException e) {
-			log.warning("ColorMe failed to save the config! Please report this!");
-		}
-	}
-
-	// Saves the colors file
-	public static void saveColors() {
-		try {
-			colors.save(colorsFile);
-		}
-		catch (IOException e) {
-			log.warning("ColorMe failed to save the colors! Please report this!");
-		}
-	}
-
-	// If no config is found, copy the default one(s)!
-	private void copy(InputStream in, File file) {
-		try {
-			OutputStream out = new FileOutputStream(file);
-			byte[] buf = new byte[1024];
-			int len;
-			while ((len = in.read(buf)) > 0) {
-				out.write(buf, 0, len);
-			}
-			out.close();
-			in.close();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+	// Used for Metrics
+	private void checkStatsStuff() {
+		if (Prefixer) values.add("Prefixer");
+		if (Suffixer) values.add("Suffixer");
+		if (config.getBoolean("ColorMe.displayName")) values.add("ColorMe - displayName");
+		if (config.getBoolean("ColorMe.tabList")) values.add("ColorMe - tabList");
+		if (config.getBoolean("ColorMe.playerTitle")) values.add("ColorMe - playerTitle");
+		if (chatColors) values.add("ColorMe - chatColors");
+		if (signColors) values.add("ColorMe - signColors");
 	}
 
 	// Initialized to work with Vault
@@ -475,6 +462,7 @@ public class ColorMe extends JavaPlugin {
 					.replaceAll("%color", value)
 					.replaceAll("%prefix", value)
 					.replaceAll("%suffix", value)
+					.replaceAll("%s", value)
 					.replaceAll("%player", target)
 					.replaceAll("%version", "3.5");
 			if (cost != null) {

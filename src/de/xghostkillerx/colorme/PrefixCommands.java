@@ -8,7 +8,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 public class PrefixCommands implements CommandExecutor {
-	
+
 	ColorMe plugin;
 	public PrefixCommands(ColorMe instance) {
 		plugin = instance;
@@ -49,6 +49,17 @@ public class PrefixCommands implements CommandExecutor {
 					message = ColorMe.localization.getString("same_prefix_global");
 					ColorMe.message(sender, null, message, null, null, null, null);
 					return true;
+				}
+				// If sender hasn't got the noFilter permission look if there are bad words in!
+				if (ColorMe.blacklist && !sender.hasPermission("prefixer.nofilter")) {
+					for (String s : ColorMe.bannedWords) {
+						if (globalPrefix.contains(s)) {
+							// Message, bad words in etc.
+							message = ColorMe.localization.getString("bad_words");
+							ColorMe.message(sender, null, message, s, null, null, null);
+							return true;
+						}
+					}
 				}
 				// Check if the message is too long
 				if (ChatColor.stripColor(Actions.replaceThings(globalPrefix)).length() > ColorMe.prefixLength) {
@@ -255,6 +266,17 @@ public class PrefixCommands implements CommandExecutor {
 
 			// Self prefixing
 			if (sender.hasPermission("prefixer.self") && Actions.self(sender, target)) {
+				// If sender hasn't got the noFilter permission look if there are bad words in!
+				if (ColorMe.blacklist && !sender.hasPermission("prefixer.nofilter")) {
+					for (String s : ColorMe.bannedWords) {
+						if (prefix.contains(s)) {
+							// Message, bad words in etc.
+							message = ColorMe.localization.getString("bad_words");
+							ColorMe.message(sender, null, message, s, null, null, null);
+							return true;
+						}
+					}
+				}
 				// Check if the message is too long
 				if (ChatColor.stripColor(Actions.replaceThings(prefix)).length() > ColorMe.prefixLength) {
 					message = ColorMe.localization.getString("too_long");
@@ -300,6 +322,17 @@ public class PrefixCommands implements CommandExecutor {
 			}
 			// Prefixing other
 			else if (sender.hasPermission("prefixer.other") && !Actions.self(sender, target)) {
+				// If sender hasn't got the noFilter permission look if there are bad words in!
+				if (ColorMe.blacklist && !sender.hasPermission("prefixer.nofilter")) {
+					for (String s : ColorMe.bannedWords) {
+						if (prefix.contains(s)) {
+							// Message, bad words in etc.
+							message = ColorMe.localization.getString("bad_words");
+							ColorMe.message(sender, null, message, s, null, null, null);
+							return true;
+						}
+					}
+				}
 				// Check if the message is too long
 				if (ChatColor.stripColor(Actions.replaceThings(prefix)).length() > ColorMe.prefixLength) {
 					message = ColorMe.localization.getString("too_long");

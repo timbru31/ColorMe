@@ -50,6 +50,17 @@ public class SuffixCommands implements CommandExecutor {
 					ColorMe.message(sender, null, message, null, null, null, null);
 					return true;
 				}
+				// If sender hasn't got the noFilter permission look if there are bad words in!
+				if (ColorMe.blacklist && !sender.hasPermission("suffixer.nofilter")) {
+					for (String s : ColorMe.bannedWords) {
+						if (globalSuffix.contains(s)) {
+							// Message, bad words in etc.
+							message = ColorMe.localization.getString("bad_words");
+							ColorMe.message(sender, null, message, s, null, null, null);
+							return true;
+						}
+					}
+				}
 				// Check if the message is too long
 				if (ChatColor.stripColor(Actions.replaceThings(globalSuffix)).length() > ColorMe.suffixLength) {
 					message = ColorMe.localization.getString("too_long");
@@ -255,6 +266,17 @@ public class SuffixCommands implements CommandExecutor {
 
 			// Self suffixing
 			if (sender.hasPermission("suffixer.self") && Actions.self(sender, target)) {
+				// If sender hasn't got the noFilter permission look if there are bad words in!
+				if (ColorMe.blacklist && !sender.hasPermission("suffixer.nofilter")) {
+					for (String s : ColorMe.bannedWords) {
+						if (suffix.contains(s)) {
+							// Message, bad words in etc.
+							message = ColorMe.localization.getString("bad_words");
+							ColorMe.message(sender, null, message, s, null, null, null);
+							return true;
+						}
+					}
+				}
 				// Check if the message is too long
 				if (ChatColor.stripColor(Actions.replaceThings(suffix)).length() > ColorMe.suffixLength) {
 					message = ColorMe.localization.getString("too_long");
@@ -300,6 +322,17 @@ public class SuffixCommands implements CommandExecutor {
 			}
 			// Suffixing other
 			else if (sender.hasPermission("suffixer.other") && !Actions.self(sender, target)) {
+				// If sender hasn't got the noFilter permission look if there are bad words in!
+				if (ColorMe.blacklist && !sender.hasPermission("suffixer.nofilter")) {
+					for (String s : ColorMe.bannedWords) {
+						if (suffix.contains(s)) {
+							// Message, bad words in etc.
+							message = ColorMe.localization.getString("bad_words");
+							ColorMe.message(sender, null, message, s, null, null, null);
+							return true;
+						}
+					}
+				}
 				// Check if the message is too long
 				if (ChatColor.stripColor(Actions.replaceThings(suffix)).length() > ColorMe.suffixLength) {
 					message = ColorMe.localization.getString("too_long");

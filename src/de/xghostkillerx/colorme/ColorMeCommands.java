@@ -74,6 +74,7 @@ public class ColorMeCommands implements CommandExecutor {
 					ColorMe.message(sender, null, message, null, null, null, null);
 					return true;
 				}
+				// Else set the global color
 				ColorMe.config.set("global_default.color", globalColor);
 				ColorMe.globalColor = true;
 				plugin.saveConfig();
@@ -222,8 +223,8 @@ public class ColorMeCommands implements CommandExecutor {
 					ColorMe.message(sender, null, message, null, world, target, null);
 					return true;
 				}
-				color = Actions.get(target, world, pluginPart).toLowerCase();
 				// Gets color
+				color = Actions.get(target, world, pluginPart).toLowerCase();
 				if (target.equalsIgnoreCase(senderName)) {
 					message = ColorMe.localization.getString("get_color_self");
 					ColorMe.message(sender, null, message, color, world, null, null);
@@ -253,6 +254,7 @@ public class ColorMeCommands implements CommandExecutor {
 					return true;
 				}
 			}
+			// Is a world explicit named? Also lower case
 			color = args[1].toLowerCase();
 			senderName = sender.getName().toLowerCase();
 			if (args.length > 2) {

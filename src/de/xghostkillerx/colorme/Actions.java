@@ -1,5 +1,7 @@
 package de.xghostkillerx.colorme;
 
+import java.io.IOException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -127,7 +129,11 @@ public class Actions {
 		}
 		// Write to the config and save and update the names
 		ColorMe.players.set(name + "." + pluginPart + "." + world, value);
-		ColorMe.savePlayers();
+		try {
+			ColorMe.players.save(ColorMe.playersFile);
+		} catch (IOException e) {
+			ColorMe.log.warning("ColorMe failed to save the player.yml! Please report this! IOException");
+		}
 		checkNames(name, world);
 		return true;
 	}
@@ -153,7 +159,11 @@ public class Actions {
 		// If the player has got a color
 		if (has(name, world, pluginPart)) {
 			ColorMe.players.set(name  + "." + pluginPart + "." + world, "");
-			ColorMe.savePlayers();
+			try {
+				ColorMe.players.save(ColorMe.playersFile);
+			} catch (IOException e) {
+				ColorMe.log.warning("ColorMe failed to save the players.yml! Please report this! IOException");
+			}
 			checkNames(name, world);
 			return true;
 		}
@@ -163,7 +173,11 @@ public class Actions {
 	// Removes a color/prefix/suffix if exists, otherwise returns false
 	static boolean removeGlobal(String pluginPart) {
 		ColorMe.config.set("global_default." + pluginPart, "");
-		ColorMe.saveConfigs();
+		try {
+			ColorMe.config.save(ColorMe.configFile);
+		} catch (IOException e) {
+			ColorMe.log.warning("ColorMe failed to save the config.yml! Please report this! IOException");
+		}
 		return false;
 	}
 
@@ -254,7 +268,7 @@ public class Actions {
 				}
 				player.setPlayerListName(newName);
 			}
-			if (ColorMe.spoutEnabled == true && playerTitle == true) {
+			if (ColorMe.spoutEnabled && playerTitle) {
 				SpoutPlayer spoutPlayer = (SpoutPlayer) player;
 				spoutPlayer.resetTitle();
 			}
