@@ -43,7 +43,7 @@ public class ColorMePlayerListener implements Listener {
 			// Set it.
 			if (color == ChatColor.values().length + 1) Actions.set(name, "rainbow", world, pluginPart[0]);
 			else if (color == ChatColor.values().length + 2) Actions.set(name, "random", world, pluginPart[0]);
-			else Actions.set(name, ChatColor.values()[color].name(), world, pluginPart[0]);
+			else Actions.set(name, ChatColor.values()[color].name().toLowerCase(), world, pluginPart[0]);
 		}
 		CheckRoutine(player, name, world);
 	}
@@ -55,7 +55,7 @@ public class ColorMePlayerListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 		String world = player.getWorld().getName().toLowerCase();
-		String prefix = null, suffix = null;
+		String prefix = null, suffix = null, globalSuffix = null, globalPrefix = null;
 		CheckRoutine(player, name, world);
 		if (ColorMe.Prefixer) {
 			// Get world prefix if available
@@ -75,6 +75,10 @@ public class ColorMePlayerListener implements Listener {
 			if (prefix != null) {
 				event.setFormat(prefix + ChatColor.WHITE + " " + event.getFormat());
 			}
+			if (ColorMe.globalPrefix && ColorMe.displayAlwaysGlobalPrefix) {
+				globalPrefix = Actions.getGlobal("prefix");
+				event.setFormat(globalPrefix + ChatColor.WHITE + " " + event.getFormat());
+			}
 		}
 		if (ColorMe.Suffixer) {
 			// Get world suffix if available
@@ -90,15 +94,25 @@ public class ColorMePlayerListener implements Listener {
 				suffix = Actions.getGlobal("suffix");
 			}
 			// If suffix is not null
-			if (suffix != null) {
-				// Search the bracket
-				if (event.getFormat().contains(">")) {
-					int i = event.getFormat().lastIndexOf(">") + 1;
-					int length = event.getFormat().length();
-					// Substring 1 until the bracket, substring 2 after the bracket
-					String sub1 = event.getFormat().substring(0, i);
-					String sub2 = event.getFormat().substring(i, length);
-					// Insert the suffix between ;)
+			// Search the bracket
+			if (event.getFormat().contains(">")) {
+				int i = event.getFormat().lastIndexOf(">") + 1;
+				int length = event.getFormat().length();
+				// Substring 1 until the bracket, substring 2 after the bracket
+				String sub1 = event.getFormat().substring(0, i);
+				String sub2 = event.getFormat().substring(i, length);
+				// Insert the suffix between ;)
+				if (ColorMe.globalSuffix && ColorMe.displayAlwaysGlobalSuffix) {
+					globalSuffix = Actions.getGlobal("suffix");
+					// Both & different
+					if (suffix != null && !suffix.equals(globalSuffix)) {
+						event.setFormat(sub1 + " " + globalSuffix + ChatColor.WHITE + " " + suffix + ChatColor.WHITE + ":" + sub2);
+					}
+					// Only global
+					else event.setFormat(sub1 + " " + globalSuffix + ChatColor.WHITE + ":" + sub2);
+				}
+				// Only normal suffix
+				else if (suffix != null) {
 					event.setFormat(sub1 + " " + suffix + ChatColor.WHITE + ":" + sub2);
 				}
 			}

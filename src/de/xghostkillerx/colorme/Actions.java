@@ -398,21 +398,21 @@ public class Actions {
 		String color;
 		// Check for color and valid ones, else restore
 		if (Actions.has(name, world, "colors")) {
-			if (Actions.validColor(ColorMe.players.getString(name + ".colors." + world)) == true) {
+			if (Actions.validColor(ColorMe.players.getString(name + ".colors." + world))) {
 				color = Actions.get(name, world, "colors");
 				Actions.updateName(name, color);
 			}
 			else Actions.restoreName(name);
 		}
 		else if (Actions.has(name, "default", "colors")) {
-			if (Actions.validColor(ColorMe.players.getString(name + ".colors.default")) == true) {
+			if (Actions.validColor(ColorMe.players.getString(name + ".colors.default"))) {
 				color = Actions.get(name, "default", "colors");
 				Actions.updateName(name, color);
 			}
 			else Actions.restoreName(name);
 		}
 		else if (ColorMe.globalColor) {
-			if (Actions.validColor(ColorMe.config.getString("global_default.color")) == true) {
+			if (Actions.validColor(ColorMe.config.getString("global_default.color"))) {
 				color = Actions.getGlobal("color");
 				Actions.updateName(name, color);
 			}

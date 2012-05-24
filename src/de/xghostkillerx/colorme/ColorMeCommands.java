@@ -75,6 +75,7 @@ public class ColorMeCommands implements CommandExecutor {
 					return true;
 				}
 				ColorMe.config.set("global_default.color", globalColor);
+				ColorMe.globalColor = true;
 				plugin.saveConfig();
 				message = ColorMe.localization.getString("changed_color_global");
 				ColorMe.message(sender, null, message, globalColor, null, null, null);
@@ -100,6 +101,7 @@ public class ColorMeCommands implements CommandExecutor {
 					}
 					// Remove global color
 					Actions.removeGlobal("color");
+					ColorMe.globalColor = false;
 					message = ColorMe.localization.getString("removed_color_global");
 					ColorMe.message(sender, null, message, null, null, null, null);
 					return true;

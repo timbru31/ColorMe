@@ -57,6 +57,7 @@ public class PrefixCommands implements CommandExecutor {
 					return true;
 				}
 				ColorMe.config.set("global_default.prefix", globalPrefix);
+				ColorMe.globalPrefix = true;
 				plugin.saveConfig();
 				message = ColorMe.localization.getString("changed_prefix_global");
 				ColorMe.message(sender, null, message, Actions.replaceThings(globalPrefix), null, null, null);
@@ -82,6 +83,7 @@ public class PrefixCommands implements CommandExecutor {
 					}
 					// Remove global prefix
 					Actions.removeGlobal("prefix");
+					ColorMe.globalPrefix = false;
 					message = ColorMe.localization.getString("removed_prefix_global");
 					ColorMe.message(sender, null, message, null, null, null, null);
 					return true;

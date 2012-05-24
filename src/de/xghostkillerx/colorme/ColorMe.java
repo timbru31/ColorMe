@@ -12,10 +12,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
-import net.milkbowl.vault.Vault;
-import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -26,6 +22,9 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+// Economy
+import net.milkbowl.vault.Vault;
+import net.milkbowl.vault.economy.Economy;
 
 /**
  * ColorMe for CraftBukkit/Bukkit
@@ -42,32 +41,14 @@ import org.bukkit.plugin.java.JavaPlugin;
  * 
  */
 
-
-
-/*
- * 
- * TODO
- * 
- * Updated included config.yml (generate new one and copy back)
- * Update readme!
- * Add groups
- * Add custom colors 
- * 
- */
 public class ColorMe extends JavaPlugin {
 	public final static Logger log = Logger.getLogger("Minecraft");
 	private final ColorMePlayerListener playerListener = new ColorMePlayerListener(this);
 	private final ColorMeBlockListener blockListener = new ColorMeBlockListener(this);
 	public Economy economy = null;
-	public static FileConfiguration config;
-	public static FileConfiguration players;
-	public static FileConfiguration localization;
-	public static FileConfiguration colors;
-	public static File configFile;
-	public static File playersFile;
-	public static File localizationFile;
-	public static File colorsFile;
-	public static boolean spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets, chatColors, signColors, newColorOnJoin;
+	public static FileConfiguration config, players, localization, colors;
+	public static File configFile, playersFile, localizationFile, colorsFile;
+	public static boolean spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets, chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix;
 	public static int prefixLength, suffixLength;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
@@ -288,6 +269,8 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("lengthLimit.Prefixer", 16);
 		config.addDefault("lengthLimit.Suffixer", 16);
 		config.addDefault("newColorOnJoin" , false);
+		config.addDefault("displayAlways.globalSuffix", false);
+		config.addDefault("displayAlways.globalPefix", false);
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
@@ -414,6 +397,8 @@ public class ColorMe extends JavaPlugin {
 		prefixLength = config.getInt("lengthLimit.Prefixer");
 		suffixLength = config.getInt("lengthLimit.Suffixer");
 		newColorOnJoin = config.getBoolean("newColorOnJoin");
+		displayAlwaysGlobalPrefix = config.getBoolean("displayAlways.globalPefix");
+		displayAlwaysGlobalSuffix = config.getBoolean("displayAlways.globalSuffix");
 	}
 
 	// Try to save the players.yml

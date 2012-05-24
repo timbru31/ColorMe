@@ -57,6 +57,7 @@ public class SuffixCommands implements CommandExecutor {
 					return true;
 				}
 				ColorMe.config.set("global_default.suffix", globalSuffix);
+				ColorMe.globalSuffix = true;
 				plugin.saveConfig();
 				message = ColorMe.localization.getString("changed_suffix_global");
 				ColorMe.message(sender, null, message, Actions.replaceThings(globalSuffix), null, null, null);
@@ -82,6 +83,7 @@ public class SuffixCommands implements CommandExecutor {
 					}
 					// Remove global suffix
 					Actions.removeGlobal("suffix");
+					ColorMe.globalSuffix = false;
 					message = ColorMe.localization.getString("removed_suffix_global");
 					ColorMe.message(sender, null, message, null, null, null, null);
 					return true;
