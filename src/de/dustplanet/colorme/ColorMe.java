@@ -1,4 +1,4 @@
-package de.xghostkillerx.colorme;
+package de.dustplanet.colorme;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

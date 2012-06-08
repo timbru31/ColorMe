@@ -1,4 +1,4 @@
-package de.xghostkillerx.colorme;
+package de.dustplanet.colorme;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

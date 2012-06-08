@@ -1,4 +1,4 @@
-package de.xghostkillerx.colorme;
+package de.dustplanet.colorme;
 
 /*
  * Copyright 2011 Tyler Blair. All rights reserved.
