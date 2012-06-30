@@ -132,7 +132,7 @@ public class Actions {
 		try {
 			ColorMe.players.save(ColorMe.playersFile);
 		} catch (IOException e) {
-			ColorMe.log.warning("ColorMe failed to save the player.yml! Please report this! IOException");
+			Bukkit.getServer().getLogger().warning("Failed to save the player.yml! Please report this! IOException");
 		}
 		checkNames(name, world);
 		return true;
@@ -162,7 +162,7 @@ public class Actions {
 			try {
 				ColorMe.players.save(ColorMe.playersFile);
 			} catch (IOException e) {
-				ColorMe.log.warning("ColorMe failed to save the players.yml! Please report this! IOException");
+				Bukkit.getServer().getLogger().warning("Failed to save the players.yml! Please report this! IOException");
 			}
 			checkNames(name, world);
 			return true;
@@ -176,7 +176,7 @@ public class Actions {
 		try {
 			ColorMe.config.save(ColorMe.configFile);
 		} catch (IOException e) {
-			ColorMe.log.warning("ColorMe failed to save the config.yml! Please report this! IOException");
+			Bukkit.getServer().getLogger().warning("Failed to save the config.yml! Please report this! IOException");
 		}
 		return false;
 	}
@@ -203,7 +203,7 @@ public class Actions {
 				}
 				// Custom colors
 				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
-					player.setDisplayName(updateCustomColor(color, cleanDisplayName, player) + ChatColor.WHITE);
+					player.setDisplayName(updateCustomColor(color, cleanDisplayName) + ChatColor.WHITE);
 				}
 				// Normal
 				else {
@@ -219,7 +219,7 @@ public class Actions {
 					newName = rainbowColor(cleanDisplayName);
 				}
 				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
-					newName = updateCustomColor(color, cleanDisplayName, player);
+					newName = updateCustomColor(color, cleanDisplayName);
 				}
 				else newName = ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName;
 				// Shorten it, if too long
@@ -242,7 +242,7 @@ public class Actions {
 					spoutPlayer.setTitle(rainbowColor(cleanDisplayName));
 				}
 				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
-					spoutPlayer.setTitle(updateCustomColor(color, cleanDisplayName, player));
+					spoutPlayer.setTitle(updateCustomColor(color, cleanDisplayName));
 				}
 				// Normal color
 				else spoutPlayer.setTitle(ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName);
@@ -337,7 +337,7 @@ public class Actions {
 	}
 	
 	// Make the custom colors!
-	static String updateCustomColor(String color, String text, Player player) {
+	static String updateCustomColor(String color, String text) {
 		// Get color
 		String updatedText = "";
 		String colorChars = ColorMe.colors.getString(color).replaceAll("&([0-9a-fk-or])", "\u00A7$1");

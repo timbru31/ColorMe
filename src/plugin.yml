@@ -1,6 +1,6 @@
 name: ColorMe
 main: de.dustplanet.colorme.ColorMe
-version: 3.5 dev4
+version: 3.5 dev5
 author: xGhOsTkiLLeRx
 authors: [Valrix]
 website: http://bit.ly/bukkitdevcolorme
@@ -136,6 +136,12 @@ permissions:
     colorme.free:
         default: op
         description: No costs for coloring
+    colorme.chat:
+        default: op
+        description: Permission for coloring signs
+    colorme.sign:
+        default: op
+        description: Permission to color the chat
     colorme.*:
         children:
             colorme.list: true
@@ -145,6 +151,8 @@ permissions:
             colorme.get: true
             colorme.global: true
             colorme.free: true
+            colorme.chat: true
+            colorme.sign: true
         description: Allows all commands for ColorMe
     prefixer.list:
         default: true

@@ -9,6 +9,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import ru.tehkode.permissions.PermissionUser;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
+
 /**
  * ColorMe for CraftBukkit/Bukkit
  * Handles the player activities
@@ -58,6 +61,21 @@ public class ColorMePlayerListener implements Listener {
 		String name = player.getName().toLowerCase();
 		String world = player.getWorld().getName().toLowerCase();
 		String prefix = null, suffix = null, globalSuffix = null, globalPrefix = null;
+
+
+
+		PermissionUser user = PermissionsEx.getUser(player);
+
+		// Returns player's groups in particular world
+		String[] groups = user.getGroupsNames(world);
+		player.sendMessage(groups);
+		// returns player prefix in specific world
+		String presfix = user.getPrefix(world);
+		player.sendMessage(presfix);
+
+		String temp = user.getOwnPrefix();
+		if (temp != null) player.sendMessage(temp);
+
 		CheckRoutine(player, name, world);
 		if (ColorMe.Prefixer) {
 			// Get world prefix if available
@@ -120,14 +138,12 @@ public class ColorMePlayerListener implements Listener {
 		}
 		// Remove the chat brackets if wanted
 		if (!ColorMe.chatBrackets) {
-			String brackets = event.getFormat();
-			brackets = brackets.replaceAll("<", " ")
-					.replaceAll(">", "");
+			String brackets = "%1$s %2$s";
 			event.setFormat(brackets);
 		}
 		// Color the message, too?
-		if (ColorMe.chatColors)	{
-			event.setMessage(Actions.replaceThings(event.getMessage()));
+		if (ColorMe.chatColors && player.hasPermission("colorme.chat"))	{
+				event.setMessage(Actions.replaceThings(event.getMessage()));
 		}
 	}
 
@@ -144,7 +160,7 @@ public class ColorMePlayerListener implements Listener {
 			try {
 				ColorMe.players.save(ColorMe.playersFile);
 			} catch (IOException e) {
-				ColorMe.log.warning("ColorMe failed to save the players.yml! Please report this! IOException");
+				plugin.getServer().getLogger().warning("Failed to save the players.yml! Please report this! IOException");
 			}
 		}
 		for (int i = 0; i <= 2; i++) {
@@ -154,7 +170,7 @@ public class ColorMePlayerListener implements Listener {
 				try {
 					ColorMe.players.save(ColorMe.playersFile);
 				} catch (IOException e) {
-					ColorMe.log.warning("ColorMe failed to save the players.yml! Please report this! IOException");
+					plugin.getServer().getLogger().warning("Failed to save the players.yml! Please report this! IOException");
 				}
 			}
 			if (!ColorMe.players.contains(name + "." + actualPart + "." + "default")) {
@@ -162,7 +178,7 @@ public class ColorMePlayerListener implements Listener {
 				try {
 					ColorMe.players.save(ColorMe.playersFile);
 				} catch (IOException e) {
-					ColorMe.log.warning("ColorMe failed to save the players.yml! Please report this! IOException");
+					plugin.getServer().getLogger().warning("Failed to save the players.yml! Please report this! IOException");
 				}
 			}
 		}

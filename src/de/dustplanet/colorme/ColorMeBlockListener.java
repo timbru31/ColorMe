@@ -13,6 +13,7 @@ public class ColorMeBlockListener implements Listener {
 	@EventHandler
 	public void onSignChange(SignChangeEvent event) {
 		if (!ColorMe.signColors) return;
+		if (!event.getPlayer().hasPermission("colorme.sign")) return;
 		// 4 lines a sign
 		for (int i = 0; i < 4; i++) {
 			// Leave empty out

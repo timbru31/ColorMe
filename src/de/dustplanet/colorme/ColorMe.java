@@ -3,6 +3,7 @@ package de.dustplanet.colorme;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -11,7 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -26,6 +27,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 // Economy
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
+
 
 /**
  * ColorMe for CraftBukkit/Bukkit
@@ -43,13 +45,13 @@ import net.milkbowl.vault.economy.Economy;
  */
 
 public class ColorMe extends JavaPlugin {
-	public final static Logger log = Logger.getLogger("Minecraft");
 	private final ColorMePlayerListener playerListener = new ColorMePlayerListener(this);
 	private final ColorMeBlockListener blockListener = new ColorMeBlockListener(this);
 	public Economy economy = null;
 	public static FileConfiguration config, players, localization, colors;
 	public static File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile;
 	public static boolean spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets, chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist;
+	public static boolean groups, ownSystem, pex, bPermissions, groupManager;
 	public static int prefixLength, suffixLength;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
@@ -60,7 +62,10 @@ public class ColorMe extends JavaPlugin {
 	// Shutdown
 	public void onDisable() {
 		PluginDescriptionFile pdfFile = this.getDescription();
-		log.info(pdfFile.getName() + " " + pdfFile.getVersion()	+ " has been disabled!");
+		this.getServer().getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion()	+ " has been disabled!");
+		// Clear stuff
+		values.clear();
+		bannedWords.clear();
 	}
 
 	// Start
@@ -120,7 +125,7 @@ public class ColorMe extends JavaPlugin {
 			try {
 				loadBannedWords();
 			} catch (IOException e) {
-				log.warning("ColorMe failed to load the bannedWords.txt! Please report this! IOException");
+				this.getServer().getLogger().warning("[ColorMe] Failed to load the bannedWords.txt! Please report this! IOException");
 			}
 		}
 
@@ -130,7 +135,7 @@ public class ColorMe extends JavaPlugin {
 				updateConfig(playersFile);
 			}
 			catch (IOException e) {
-				log.warning("ColorMe failed to update the config! Please report this! IOExcpetion");
+				this.getServer().getLogger().warning("[ColorMe] Failed to update the config! Please report this! IOExcpetion");
 			}
 			finally {
 				config.set("updateConfig", false);
@@ -151,35 +156,46 @@ public class ColorMe extends JavaPlugin {
 
 		// Message
 		PluginDescriptionFile pdfFile = this.getDescription();
-		log.info(pdfFile.getName() + " " + pdfFile.getVersion() + " is enabled!");
+		this.getServer().getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " is enabled!");
 
 		// Check for Vault
 		Plugin vault = this.getServer().getPluginManager().getPlugin("Vault");
 		if (vault != null & vault instanceof Vault) {
 			// If Vault is enabled, load the economy
-			log.info(pdfFile.getName() + " loaded Vault successfully");
+			this.getServer().getLogger().info("[ColorMe]  loaded Vault successfully");
 			setupEconomy();
 		}
 		else {
 			// Else tell the admin about the missing of Vault
-			log.warning("Vault was NOT found! Running without economy!");
+			this.getServer().getLogger().info("[ColorMe] Vault was NOT found! Running without economy!");
 		}
 
 		// Check for Spout
 		Plugin spout = this.getServer().getPluginManager().getPlugin("Spout");
 		if (spout != null) {
-			log.info(String.format(pdfFile.getName() + " loaded Spout successfully"));
+			this.getServer().getLogger().info("[ColorMe] loaded Spout successfully");
 			// Spout is enabled
 			spoutEnabled = true;
 		}
 		else {
-			log.warning("Running without Spout!");
+			this.getServer().getLogger().info("[ColorMe] Running without Spout!");
 			// Spout is disabled
 			spoutEnabled = false;
 		}
 
 		// What is enabled?
 		checkParts();
+
+		if (groups && !ownSystem) {
+			Plugin pexPlugin = this.getServer().getPluginManager().getPlugin("[ColorMe] PermissionsEx");
+			Plugin bPermissionsPlugin = this.getServer().getPluginManager().getPlugin("[ColorMe] bPermissions");
+			Plugin groupManagerPlugin = this.getServer().getPluginManager().getPlugin("[ColorMe] GroupManager");
+			if (pexPlugin != null) this.getServer().getLogger().info("[ColorMe] Found PermissionsEx. Will use it for groups!");
+			else if (bPermissionsPlugin != null) this.getLogger().info("[ColorMe] Found bPermissions. Will use it for groups!");
+			else if (groupManagerPlugin != null) this.getServer().getLogger().info("[ColorMe] Found GroupManager. Will use it for groups!");
+		}
+		else if (groups) this.getServer().getLogger().info("[ColorMe] Using own group system!");
+		else this.getServer().getLogger().info("[ColorMe] Groups disabled.");
 
 		// Stats
 		checkStatsStuff();
@@ -237,7 +253,7 @@ public class ColorMe extends JavaPlugin {
 			}
 		}
 		catch (Exception e) {
-			log.warning("An error occurred while updating the config!");
+			this.getServer().getLogger().warning("[ColorMe] An error occurred while updating the config!");
 		}
 		finally {
 			reader.close();
@@ -294,6 +310,8 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("displayAlways.globalSuffix", false);
 		config.addDefault("displayAlways.globalPefix", false);
 		config.addDefault("useWordBlacklist", true);
+		config.addDefault("groups.enable", true);
+		config.addDefault("groups.ownSystem", true);
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
@@ -390,14 +408,13 @@ public class ColorMe extends JavaPlugin {
 		try {
 			localization.save(localizationFile);
 		} catch (IOException e) {
-			log.warning("ColorMe failed to save the localization! Please report this! IOException");
+			this.getServer().getLogger().warning("[ColorMe] Failed to save the localization! Please report this! IOException");
 		}
 	}
 
 	// Reloads the config via command /colorme reload, /prefixer reload or /suffixer reload
 	public static void loadConfigsAgain() {
 		try {
-			config.load(configFile);
 			config.save(configFile);
 			players.load(playersFile);
 			players.save(playersFile);
@@ -407,11 +424,12 @@ public class ColorMe extends JavaPlugin {
 			colors.save(colorsFile);
 			checkParts();
 		}
-		catch (IOException e) {
-			log.warning("ColorMe failed to load the configs! Please report this! IOException");
-		}
-		catch (InvalidConfigurationException e) {
-			log.warning("ColorMe failed to load the configs! Please report this! InvalidConfigurationException");
+		catch (FileNotFoundException e) {
+			Bukkit.getServer().getLogger().warning("[ColorMe] Failed to load the configs! Please report this! FileNotFoundException");
+		} catch (IOException e) {
+			Bukkit.getServer().getLogger().warning("[ColorMe] Failed to load the configs! Please report this! IOException");
+		} catch (InvalidConfigurationException e) {
+			Bukkit.getServer().getLogger().warning("[ColorMe] Failed to load the configs! Please report this! InvalidConfigurationException");
 		}
 	}
 
@@ -431,6 +449,8 @@ public class ColorMe extends JavaPlugin {
 		displayAlwaysGlobalPrefix = config.getBoolean("displayAlways.globalPefix");
 		displayAlwaysGlobalSuffix = config.getBoolean("displayAlways.globalSuffix");
 		blacklist = config.getBoolean("useWordBlacklist");
+		groups = config.getBoolean("groups.enable");
+		ownSystem = config.getBoolean("groups.ownSystem");
 	}
 
 	// Used for Metrics
