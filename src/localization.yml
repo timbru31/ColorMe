@@ -38,7 +38,7 @@ no_prefix_self: '&eYou &4don''t have a prefix in the world &e%world'
 no_prefix_other: '&e%player &4doesn''t have a prefix in the world &e%world'
 no_prefix_global: '&4The global prefix isn''t set!'
 same_prefix_self: '&eYou &4already have got this prefix in the world &e%world'
-same_prefix_other: '&e%player &4already has got this color in the world &e%world'
+same_prefix_other: '&e%player &4already has got this prefix in the world &e%world'
 same_prefix_global: '&4The global prefix is already this prefix!'
 removed_prefix_self: '&eYour &2prefix in the world &e%world &2has been removed.'
 removed_prefix_other: '&2Removed &e%player&2''s prefix in the world &e%world.'
@@ -59,12 +59,12 @@ help_prefix_5: /prefixer get <name> [world] - Gets the actual prefix
 help_prefix_6: /prefixer remove <name> [world] - Removes prefix
 help_prefix_7: /prefixer me <prefix> [world] - Sets your own prefix
 help_prefix_8: /prefixer <name> <prefix> [world] - Sets player's prefix
-help_prefix_9: /suffixer global <suffix> - Sets the global suffix
+help_prefix_9: /prefixer global <prefix> - Sets the global prefix
 no_suffix_self: '&eYou &4don''t have a suffix in the world &e%world'
 no_suffix_other: '&e%player &4doesn''t have a suffix in the world &e%world'
 no_suffix_global: '&4The global suffix isn''t set!'
 same_suffix_self: '&eYou &4already have got this suffix in the world &e%world'
-same_suffix_other: '&e%player &4already has got this color in the world &e%world'
+same_suffix_other: '&e%player &4already has got this suffix in the world &e%world'
 same_suffix_global: '&4The global suffix is already this suffix!'
 removed_suffix_self: '&eYour &2suffix in the world &e%world &2has been removed.'
 removed_suffix_other: '&2Removed &e%player&2''s suffix in the world &e%world.'
@@ -85,6 +85,7 @@ help_suffix_5: /suffixer get <name> [world] - Gets the actual suffix
 help_suffix_6: /suffixer remove <name> [world] - Removes suffix
 help_suffix_7: /suffixer me <suffix> [world] - Sets your own suffix
 help_suffix_8: /suffixer <name> <suffix> [world] - Sets player's suffix
+help_suffix_9: /suffixer global <suffix> - Sets the suffix prefix
 custom_colors_enabled: '&4Custom colors are enabled, too! Please ask your admin for
   them!'
 too_long: '&4Sorry, this message is too long!'

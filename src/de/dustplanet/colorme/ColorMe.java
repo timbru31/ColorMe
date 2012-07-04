@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -187,12 +189,26 @@ public class ColorMe extends JavaPlugin {
 		checkParts();
 
 		if (groups && !ownSystem) {
-			Plugin pexPlugin = this.getServer().getPluginManager().getPlugin("[ColorMe] PermissionsEx");
-			Plugin bPermissionsPlugin = this.getServer().getPluginManager().getPlugin("[ColorMe] bPermissions");
-			Plugin groupManagerPlugin = this.getServer().getPluginManager().getPlugin("[ColorMe] GroupManager");
-			if (pexPlugin != null) this.getServer().getLogger().info("[ColorMe] Found PermissionsEx. Will use it for groups!");
-			else if (bPermissionsPlugin != null) this.getLogger().info("[ColorMe] Found bPermissions. Will use it for groups!");
-			else if (groupManagerPlugin != null) this.getServer().getLogger().info("[ColorMe] Found GroupManager. Will use it for groups!");
+			Plugin pexPlugin = this.getServer().getPluginManager().getPlugin("PermissionsEx");
+			Plugin bPermissionsPlugin = this.getServer().getPluginManager().getPlugin("bPermissions");
+			Plugin groupManagerPlugin = this.getServer().getPluginManager().getPlugin("GroupManager");
+			if (pexPlugin != null) {
+				pex = true;
+				this.getServer().getLogger().info("[ColorMe] Found PermissionsEx. Will use it for groups!");
+			}
+			else if (bPermissionsPlugin != null) {
+				bPermissions = true;
+				this.getLogger().info("[ColorMe] Found bPermissions. Will use it for groups!");
+			}
+			else if (groupManagerPlugin != null) {
+				groupManager = true;
+				this.getServer().getLogger().info("[ColorMe] Found GroupManager. Will use it for groups!");
+				ColorMePlayerListener.groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
+			}
+			else {
+				this.getServer().getLogger().info("[ColorMe] Haven't found any supported group systems. Disabling groups");
+				groups = false;
+			}
 		}
 		else if (groups) this.getServer().getLogger().info("[ColorMe] Using own group system!");
 		else this.getServer().getLogger().info("[ColorMe] Groups disabled.");
@@ -265,7 +281,7 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Load the banned words
-	private void loadBannedWords() throws IOException{
+	private static void loadBannedWords() throws IOException{
 		BufferedReader reader = new BufferedReader(new FileReader(bannedWordsFile));
 		String line;
 		while ((line = reader.readLine()) != null) {
@@ -357,7 +373,7 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("no_prefix_other", "&e%player &4doesn't have a prefix in the world &e%world");
 		localization.addDefault("no_prefix_global", "&4The global prefix isn't set!");
 		localization.addDefault("same_prefix_self", "&eYou &4already have got this prefix in the world &e%world");
-		localization.addDefault("same_prefix_other", "&e%player &4already has got this color in the world &e%world");
+		localization.addDefault("same_prefix_other", "&e%player &4already has got this prefix in the world &e%world");
 		localization.addDefault("same_prefix_global", "&4The global prefix is already this prefix!");
 		localization.addDefault("removed_prefix_self", "&eYour &2prefix in the world &e%world &2has been removed.");
 		localization.addDefault("removed_prefix_other", "&2Removed &e%player&2's prefix in the world &e%world.");
@@ -381,7 +397,7 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("no_suffix_other", "&e%player &4doesn't have a suffix in the world &e%world");
 		localization.addDefault("no_suffix_global", "&4The global suffix isn't set!");
 		localization.addDefault("same_suffix_self", "&eYou &4already have got this suffix in the world &e%world");
-		localization.addDefault("same_suffix_other", "&e%player &4already has got this color in the world &e%world");
+		localization.addDefault("same_suffix_other", "&e%player &4already has got this suffix in the world &e%world");
 		localization.addDefault("same_suffix_global", "&4The global suffix is already this suffix!");
 		localization.addDefault("removed_suffix_self", "&eYour &2suffix in the world &e%world &2has been removed.");
 		localization.addDefault("removed_suffix_other", "&2Removed &e%player&2's suffix in the world &e%world.");
@@ -400,7 +416,7 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("help_suffix_6", "/suffixer remove <name> [world] - Removes suffix");
 		localization.addDefault("help_suffix_7", "/suffixer me <suffix> [world] - Sets your own suffix");
 		localization.addDefault("help_suffix_8", "/suffixer <name> <suffix> [world] - Sets player's suffix");
-		localization.addDefault("help_prefix_9", "/suffixer global <suffix> - Sets the global suffix");
+		localization.addDefault("help_suffix_9", "/suffixer global <suffix> - Sets the global suffix");
 		localization.addDefault("custom_colors_enabled", "&4Custom colors are enabled, too! Please ask your admin for them!");
 		localization.addDefault("too_long", "&4Sorry, this message is too long!");
 		localization.addDefault("bad_words", "&4Sorry,but '%s' is on the blacklist!");
@@ -416,12 +432,14 @@ public class ColorMe extends JavaPlugin {
 	public static void loadConfigsAgain() {
 		try {
 			config.save(configFile);
+			config.load(configFile);
 			players.load(playersFile);
 			players.save(playersFile);
 			localization.load(localizationFile);
 			localization.save(localizationFile);
 			colors.load(colorsFile);
 			colors.save(colorsFile);
+			loadBannedWords();
 			checkParts();
 		}
 		catch (FileNotFoundException e) {

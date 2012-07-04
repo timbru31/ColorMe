@@ -1,16 +1,21 @@
 package de.dustplanet.colorme;
 
 import java.io.IOException;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-
+// PEX Import
 import ru.tehkode.permissions.PermissionUser;
+import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
+import de.bananaco.bpermissions.api.ApiLayer;
+// bPermissions Import
+import de.bananaco.bpermissions.api.util.CalculableType;
+import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
+import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 
 /**
  * ColorMe for CraftBukkit/Bukkit
@@ -31,7 +36,9 @@ public class ColorMePlayerListener implements Listener {
 	public ColorMePlayerListener(ColorMe instance) {
 		plugin = instance;
 	}
+
 	private String[] pluginPart = {"colors", "prefix", "suffix"};
+	public static WorldsHolder groupManagerWorldsHolder;
 
 	// Loads the the values and set them to default one if not known
 	@EventHandler
@@ -58,46 +65,59 @@ public class ColorMePlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerChat(PlayerChatEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName().toLowerCase();
+		String name = player.getName().toLowerCase(), nameExact = player.getName();
 		String world = player.getWorld().getName().toLowerCase();
-		String prefix = null, suffix = null, globalSuffix = null, globalPrefix = null;
-
-
-
-		PermissionUser user = PermissionsEx.getUser(player);
-
-		// Returns player's groups in particular world
-		String[] groups = user.getGroupsNames(world);
-		player.sendMessage(groups);
-		// returns player prefix in specific world
-		String presfix = user.getPrefix(world);
-		player.sendMessage(presfix);
-
-		String temp = user.getOwnPrefix();
-		if (temp != null) player.sendMessage(temp);
+		String prefix = "", suffix = "", globalSuffix = "", globalPrefix = "", groupPrefix = "", groupSuffix = "";
+		// Group check!
+		if (ColorMe.groups) {
+			if (ColorMe.pex) {
+				PermissionUser user = PermissionsEx.getUser(player);
+				// Only first group
+				PermissionGroup group = user.getGroups(world)[0];
+				// Get the prefix from the pex config
+				groupPrefix = Actions.replaceThings(group.getPrefix(world));
+				// Get the suffix from the pex config
+				groupSuffix = Actions.replaceThings(group.getSuffix(world));
+			}
+			else if (ColorMe.bPermissions) {
+				// Only fist group
+				String group = ApiLayer.getGroups(world, CalculableType.USER, nameExact)[0];
+				groupPrefix = Actions.replaceThings(ApiLayer.getValue(player.getWorld().getName(), CalculableType.GROUP, group, "prefix"));
+				groupSuffix = Actions.replaceThings(ApiLayer.getValue(player.getWorld().getName(), CalculableType.GROUP, group, "suffix"));
+			}
+			else if (ColorMe.groupManager) {
+				// World data -> then groups (only first) & finally the suffix & prefix!
+				OverloadedWorldHolder groupManager = groupManagerWorldsHolder.getWorldData(world);
+				if (groupManager != null) {
+					String group = groupManager.getUser(nameExact).getGroupName();
+					groupPrefix = Actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("prefix"));
+					groupSuffix = Actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("suffix"));
+				}
+			}
+			else {
+				// Own system
+			}
+			if (!groupPrefix.equals("")) groupPrefix += " ";
+		}
 
 		CheckRoutine(player, name, world);
 		if (ColorMe.Prefixer) {
 			// Get world prefix if available
 			if (Actions.has(name, world, "prefix")) {
-				prefix = Actions.get(name, world, "prefix");
+				prefix = Actions.get(name, world, "prefix") + " ";
 			}
 			// Get default prefix
 			else if (Actions.has(name, "default", "prefix")) {
-				prefix = Actions.get(name, "default", "prefix");
+				prefix = Actions.get(name, "default", "prefix") + " ";
 			}
 			// Get the global prefix
 			else if (ColorMe.globalPrefix) {
-				prefix = Actions.getGlobal("prefix");
-			}
-			// If prefix is not null change the format
-			if (prefix != null) {
-				event.setFormat(prefix + ChatColor.WHITE + " " + event.getFormat());
+				prefix = Actions.getGlobal("prefix") + " ";
 			}
 			// Display global one, too?
 			if (ColorMe.globalPrefix && ColorMe.displayAlwaysGlobalPrefix) {
-				globalPrefix = Actions.getGlobal("prefix");
-				event.setFormat(globalPrefix + ChatColor.WHITE + " " + event.getFormat());
+				globalPrefix = Actions.getGlobal("prefix") + " ";
+				if (globalPrefix.equals(prefix)) globalPrefix = "";
 			}
 		}
 		if (ColorMe.Suffixer) {
@@ -113,37 +133,27 @@ public class ColorMePlayerListener implements Listener {
 			else if (ColorMe.globalSuffix) {
 				suffix = Actions.getGlobal("suffix");
 			}
-			// Search the bracket
-			if (event.getFormat().contains(">")) {
-				int i = event.getFormat().lastIndexOf(">") + 1;
-				int length = event.getFormat().length();
-				// Substring 1 until the bracket, substring 2 after the bracket
-				String sub1 = event.getFormat().substring(0, i);
-				String sub2 = event.getFormat().substring(i, length);
-				// Insert the suffix between ;)
-				if (ColorMe.globalSuffix && ColorMe.displayAlwaysGlobalSuffix) {
-					globalSuffix = Actions.getGlobal("suffix");
-					// Both & different
-					if (suffix != null && !suffix.equals(globalSuffix)) {
-						event.setFormat(sub1 + " " + globalSuffix + ChatColor.WHITE + " " + suffix + ChatColor.WHITE + ":" + sub2);
-					}
-					// Only global
-					else event.setFormat(sub1 + " " + globalSuffix + ChatColor.WHITE + ":" + sub2);
-				}
-				// Only normal suffix
-				else if (suffix != null) {
-					event.setFormat(sub1 + " " + suffix + ChatColor.WHITE + ":" + sub2);
-				}
+			// Display global one, too?
+			if (ColorMe.globalSuffix && ColorMe.displayAlwaysGlobalSuffix) {
+				globalSuffix = Actions.getGlobal("suffix");
+				if (globalSuffix.equals(suffix)) globalSuffix = "";
 			}
+			if (!globalSuffix.equals("")) globalSuffix += ChatColor.RESET + ": ";
+			else if (!suffix.equals("")) suffix += ChatColor.RESET + ": ";
+			else if (!groupSuffix.equals("")) groupSuffix += ChatColor.RESET + ": ";
+			if (!groupSuffix.equals("") && !suffix.equals("")) groupSuffix += " ";
+			if (!suffix.equals("") && !globalSuffix.equals("")) suffix += " ";
 		}
+		String format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "<%1$s> " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + "%2$s";
+		event.setFormat(format);
 		// Remove the chat brackets if wanted
 		if (!ColorMe.chatBrackets) {
-			String brackets = "%1$s %2$s";
+			String brackets = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + "%2$s";
 			event.setFormat(brackets);
 		}
 		// Color the message, too?
 		if (ColorMe.chatColors && player.hasPermission("colorme.chat"))	{
-				event.setMessage(Actions.replaceThings(event.getMessage()));
+			event.setMessage(Actions.replaceThings(event.getMessage()));
 		}
 	}
 

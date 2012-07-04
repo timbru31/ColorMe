@@ -118,7 +118,7 @@ permissions:
     colorme.self.underline:
         default: op
         description: Allows setting of own color
-    colorme.self.strikethroug:
+    colorme.self.strikethrough:
         default: op
         description: Allows setting of own color
     colorme.other:
