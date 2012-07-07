@@ -14,6 +14,7 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 import de.bananaco.bpermissions.api.ApiLayer;
 // bPermissions Import
 import de.bananaco.bpermissions.api.util.CalculableType;
+// GroupManager Import
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 
@@ -64,6 +65,7 @@ public class ColorMePlayerListener implements Listener {
 	// Loads the the values and set them to default one if not known
 	@EventHandler
 	public void onPlayerChat(PlayerChatEvent event) {
+		ColorMe.logDebug("\t---PlayerChatEvent Begin---");
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase(), nameExact = player.getName();
 		String world = player.getWorld().getName().toLowerCase();
@@ -138,23 +140,33 @@ public class ColorMePlayerListener implements Listener {
 				globalSuffix = Actions.getGlobal("suffix");
 				if (globalSuffix.equals(suffix)) globalSuffix = "";
 			}
+		}
+		// Remove the chat brackets if wanted
+		if (!ColorMe.chatBrackets) {
+			String format = "";
+			if (globalSuffix.equals("") && groupSuffix.equals("") && suffix.equals("")) {
+				format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s" + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + ": %2$s";
+			}
+			else {
+				format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + ": %2$s";
+			}
+			event.setFormat(format);
+		}
+		else {
 			if (!globalSuffix.equals("")) globalSuffix += ChatColor.RESET + ": ";
 			else if (!suffix.equals("")) suffix += ChatColor.RESET + ": ";
 			else if (!groupSuffix.equals("")) groupSuffix += ChatColor.RESET + ": ";
 			if (!groupSuffix.equals("") && !suffix.equals("")) groupSuffix += " ";
 			if (!suffix.equals("") && !globalSuffix.equals("")) suffix += " ";
-		}
-		String format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "<%1$s> " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + "%2$s";
-		event.setFormat(format);
-		// Remove the chat brackets if wanted
-		if (!ColorMe.chatBrackets) {
-			String brackets = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + "%2$s";
-			event.setFormat(brackets);
+			String format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "<%1$s> " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + "%2$s";
+			event.setFormat(format);
 		}
 		// Color the message, too?
 		if (ColorMe.chatColors && player.hasPermission("colorme.chat"))	{
 			event.setMessage(Actions.replaceThings(event.getMessage()));
 		}
+		ColorMe.logDebug("\t---PlayerChatEvent End---");
+		ColorMe.logDebug("");
 	}
 
 	// Check for the player and update the file is values are unknown
