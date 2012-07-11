@@ -4,6 +4,7 @@ import java.io.IOException;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -42,7 +43,7 @@ public class ColorMePlayerListener implements Listener {
 	public static WorldsHolder groupManagerWorldsHolder;
 
 	// Loads the the values and set them to default one if not known
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
@@ -63,7 +64,7 @@ public class ColorMePlayerListener implements Listener {
 
 
 	// Loads the the values and set them to default one if not known
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(PlayerChatEvent event) {
 		ColorMe.logDebug("\t---PlayerChatEvent Begin---");
 		Player player = event.getPlayer();
