@@ -19,6 +19,10 @@ commands:
         usage: /suffix help - to see the help
         aliases: [suffixme, suffixer]
         description: Gives the player name a suffix
+    group:
+        usage: /group help - to see the help
+        aliases: [groups]
+        description: Commands for the group system
 permissions:
     colorme.list:
         default: true

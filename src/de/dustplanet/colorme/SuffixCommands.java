@@ -30,7 +30,7 @@ public class SuffixCommands implements CommandExecutor {
 			}
 		}
 		// Stop here if suffixer is unwanted
-		if (ColorMe.config.getBoolean("Suffixer") == false) {
+		if (!ColorMe.Suffixer) {
 			message = ColorMe.localization.getString("part_disabled");
 			ColorMe.message(sender, null, message, null, null, null, null);
 			return true;
@@ -41,7 +41,7 @@ public class SuffixCommands implements CommandExecutor {
 			return true;
 		}
 		// Sets the global suffix
-		if (args.length > 1 && args[0].equalsIgnoreCase("global")) {
+		else if (args.length > 1 && args[0].equalsIgnoreCase("global")) {
 			globalSuffix = args[1];
 			if (sender.hasPermission("suffixer.global")) {
 				// If the prefixes are the same
@@ -81,7 +81,7 @@ public class SuffixCommands implements CommandExecutor {
 			}
 		}
 		// Removes a suffix
-		if (args.length > 1 && args[0].equalsIgnoreCase("remove")) {
+		else if (args.length > 1 && args[0].equalsIgnoreCase("remove")) {
 			world = "default";
 			// Removes the global suffix
 			if (args[1].equalsIgnoreCase("global")) {
@@ -161,7 +161,7 @@ public class SuffixCommands implements CommandExecutor {
 			}
 		}
 		// Gets a suffix
-		if (args.length > 1 && args[0].equalsIgnoreCase("get")) {
+		else if (args.length > 1 && args[0].equalsIgnoreCase("get")) {
 			world = "default";
 			// Get the global suffix if set
 			if (args[1].equalsIgnoreCase("global")) {
@@ -234,7 +234,7 @@ public class SuffixCommands implements CommandExecutor {
 			}
 		}
 		// Suffixing
-		if (args.length > 1) {
+		else if (args.length > 1) {
 			world = "default";
 			target = args[0].toLowerCase();
 			if (target.equalsIgnoreCase("me")) {

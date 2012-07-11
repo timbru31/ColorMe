@@ -61,6 +61,7 @@ public class ColorMe extends JavaPlugin {
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
 	private SuffixCommands suffixExecutor;
+	private GroupCommands groupExecutor;
 	public List<String> values = new ArrayList<String>();
 	public static List<String> bannedWords = new ArrayList<String>();
 
@@ -173,6 +174,10 @@ public class ColorMe extends JavaPlugin {
 		// Refer to SuffixCommands
 		suffixExecutor = new SuffixCommands(this);
 		getCommand("suffix").setExecutor(suffixExecutor);
+		
+		// Refer to GroupCommands
+		groupExecutor = new GroupCommands(this);
+		getCommand("group").setExecutor(groupExecutor);
 
 		// Message
 		PluginDescriptionFile pdfFile = this.getDescription();

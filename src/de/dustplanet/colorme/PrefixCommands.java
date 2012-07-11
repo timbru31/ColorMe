@@ -30,7 +30,7 @@ public class PrefixCommands implements CommandExecutor {
 			}
 		}
 		// Stop here if Prefixer is unwanted
-		if (ColorMe.config.getBoolean("Prefixer") == false) {
+		if (!ColorMe.Prefixer) {
 			message = ColorMe.localization.getString("part_disabled");
 			ColorMe.message(sender, null, message, null, null, null, null);
 			return true;
@@ -81,7 +81,7 @@ public class PrefixCommands implements CommandExecutor {
 			}
 		}
 		// Removes a prefix
-		if (args.length > 1 && args[0].equalsIgnoreCase("remove")) {
+		else if (args.length > 1 && args[0].equalsIgnoreCase("remove")) {
 			world = "default";
 			// Removes the global prefix
 			if (args[1].equalsIgnoreCase("global")) {
@@ -161,7 +161,7 @@ public class PrefixCommands implements CommandExecutor {
 			}
 		}
 		// Gets a prefix
-		if (args.length > 1 && args[0].equalsIgnoreCase("get")) {
+		else if (args.length > 1 && args[0].equalsIgnoreCase("get")) {
 			world = "default";
 			// Get the global prefix if set
 			if (args[1].equalsIgnoreCase("global")) {
@@ -234,7 +234,7 @@ public class PrefixCommands implements CommandExecutor {
 			}
 		}
 		// Prefixing
-		if (args.length > 1) {
+		else if (args.length > 1) {
 			world = "default";
 			target = args[0].toLowerCase();
 			if (target.equalsIgnoreCase("me")) {
