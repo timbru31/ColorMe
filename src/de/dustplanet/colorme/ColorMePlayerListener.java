@@ -11,8 +11,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
+//bPermissions Import
 import de.bananaco.bpermissions.api.ApiLayer;
-// bPermissions Import
 import de.bananaco.bpermissions.api.util.CalculableType;
 // GroupManager Import
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;

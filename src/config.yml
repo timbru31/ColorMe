@@ -8,7 +8,8 @@ Suffixer: true
 ColorMe:
   displayName: true
   tabList: false
-  playerTitle: true
+  playerTitle: false
+  playerTitleWithoutSpout: false
   signColors: true
   chatColors: true
 colors:

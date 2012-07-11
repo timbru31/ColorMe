@@ -2,9 +2,14 @@ package de.dustplanet.colorme;
 
 import java.io.IOException;
 
+import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.Packet20NamedEntitySpawn;
+import net.minecraft.server.Packet29DestroyEntity;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
@@ -208,11 +213,41 @@ public class Actions {
 	static void updateName(String name, String color) {
 		ColorMe.logDebug("Actions -> updateName");
 		ColorMe.logDebug("Asked to update the color of " + name + " to the color " + color);
-		Player player = Bukkit.getServer().getPlayerExact(name);
+		final Player player = Bukkit.getServer().getPlayerExact(name);
 		if (player != null) {
 			String displayName = player.getDisplayName();
 			String cleanDisplayName = ChatColor.stripColor(displayName);
 			String newName;
+			// Player title without Spout -> NOT RECOMMEND AND SUPPORTED
+			if (ColorMe.playerTitleWithoutSpout) {
+				if (color.equalsIgnoreCase("random")) {
+					newName = randomColor(cleanDisplayName);
+				}
+				else if (color.equalsIgnoreCase("rainbow")) {
+					newName = rainbowColor(cleanDisplayName);
+				}
+				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
+					newName = updateCustomColor(color, cleanDisplayName);
+				}
+				else newName = ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName;
+				// Shorten it, if too long
+				if (newName != null || !newName.equals("")) {
+					if (newName.length() > 16) {
+						newName = newName.substring(0, 12) + ChatColor.WHITE + "..";
+					}
+				}
+				else newName = cleanDisplayName;
+				EntityPlayer ePlayer = ((CraftPlayer) player).getHandle();
+				String oldName = player.getName();
+				ePlayer.name = newName;
+				for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+					if (p != player){
+						((CraftPlayer) p).getHandle().netServerHandler.sendPacket(new Packet29DestroyEntity(player.getEntityId()));
+						((CraftPlayer) p).getHandle().netServerHandler.sendPacket(new Packet20NamedEntitySpawn(ePlayer));
+					}
+				}
+				ePlayer.name = oldName;
+			}
 			// Name color
 			if (ColorMe.displayName) {
 				// Random
@@ -365,7 +400,7 @@ public class Actions {
 		}
 		return newName;
 	}
-	
+
 	// Make the custom colors!
 	static String updateCustomColor(String color, String text) {
 		ColorMe.logDebug("Actions -> updateCustomColor");

@@ -55,7 +55,7 @@ public class ColorMe extends JavaPlugin {
 	public Economy economy = null;
 	public static FileConfiguration config, players, localization, colors;
 	public static File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile, debugFile;
-	public static boolean tabList, playerTitle, displayName, debug, spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets, chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist;
+	public static boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets, chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist;
 	public static boolean groups, ownSystem, pex, bPermissions, groupManager;
 	public static int prefixLength, suffixLength;
 	private ColorMeCommands colorExecutor;
@@ -299,7 +299,7 @@ public class ColorMe extends JavaPlugin {
 				}
 				else {
 					Date dt = new Date();
-					// Festlegung des Formats:
+					// Standard date format
 					SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					String time = df.format(dt);
 					writer.write(time + " [ColorMe Debug] " + string);
@@ -382,7 +382,8 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("chatBrackets", true);
 		config.addDefault("ColorMe.displayName", true);
 		config.addDefault("ColorMe.tabList", false);
-		config.addDefault("ColorMe.playerTitle", true);
+		config.addDefault("ColorMe.playerTitle", false);
+		config.addDefault("ColorMe.playerTitleWithoutSpout", false);
 		config.addDefault("ColorMe.signColors", true);
 		config.addDefault("ColorMe.chatColors", true);
 		for (ChatColor value : ChatColor.values()) {
@@ -537,6 +538,7 @@ public class ColorMe extends JavaPlugin {
 		displayName = config.getBoolean("ColorMe.displayName");
 		tabList = config.getBoolean("ColorMe.tabList");
 		playerTitle = config.getBoolean("ColorMe.playerTitle");
+		playerTitleWithoutSpout = config.getBoolean("ColorMe.playerTitleWithoutSpout");
 		chatBrackets = config.getBoolean("chatBrackets");
 		signColors = config.getBoolean("ColorMe.signColors");
 		chatColors = config.getBoolean("ColorMe.chatColors");
@@ -557,6 +559,7 @@ public class ColorMe extends JavaPlugin {
 			logDebug("tabList is " + tabList);
 			logDebug("displayName is " + displayName);
 			logDebug("playerTitle is " + playerTitle);
+			logDebug("playerTitleWithoutSpout is " + playerTitleWithoutSpout);
 			logDebug("chatBrackets are " + chatBrackets);
 			logDebug("signColors are " + signColors);
 			logDebug("chatColors are " + chatColors);
@@ -578,9 +581,10 @@ public class ColorMe extends JavaPlugin {
 	private void checkStatsStuff() {
 		if (Prefixer) values.add("Prefixer");
 		if (Suffixer) values.add("Suffixer");
-		if (config.getBoolean("ColorMe.displayName")) values.add("ColorMe - displayName");
-		if (config.getBoolean("ColorMe.tabList")) values.add("ColorMe - tabList");
-		if (config.getBoolean("ColorMe.playerTitle")) values.add("ColorMe - playerTitle");
+		if (displayName) values.add("ColorMe - displayName");
+		if (tabList) values.add("ColorMe - tabList");
+		if (playerTitle) values.add("ColorMe - playerTitle");
+		if (playerTitleWithoutSpout) values.add("ColorMe - playerTitleWithoutSpout");
 		if (chatColors) values.add("ColorMe - chatColors");
 		if (signColors) values.add("ColorMe - signColors");
 		if (groups && ownSystem) values.add("Groups - ownSystem");
