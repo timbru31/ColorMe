@@ -56,7 +56,7 @@ public class ColorMe extends JavaPlugin {
 	public static FileConfiguration config, players, localization, colors;
 	public static File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile, debugFile;
 	public static boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets, chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist;
-	public static boolean groups, ownSystem, pex, bPermissions, groupManager;
+	public static boolean groups, ownSystem, pex, bPermissions, groupManager, softMode, otherChatPluginFound;
 	public static int prefixLength, suffixLength;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
@@ -175,9 +175,9 @@ public class ColorMe extends JavaPlugin {
 		suffixExecutor = new SuffixCommands(this);
 		getCommand("suffix").setExecutor(suffixExecutor);
 		
-		// Refer to GroupCommands
-		groupExecutor = new GroupCommands(this);
-		getCommand("group").setExecutor(groupExecutor);
+//		// Refer to GroupCommands
+//		groupExecutor = new GroupCommands(this);
+//		getCommand("group").setExecutor(groupExecutor);
 
 		// Message
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -249,6 +249,40 @@ public class ColorMe extends JavaPlugin {
 		else {
 			logDebug("Groups disabled");
 			this.getServer().getLogger().info("[ColorMe] Groups disabled.");
+		}
+		
+		// SoftMode
+		if (softMode) {
+			logDebug("SoftMode enabled");
+			this.getServer().getLogger().info("[ColorMe] SoftMode enabled. If other chat plugins are found, the chat won't be affected by ColorMe.");
+			Plugin chatManager = this.getServer().getPluginManager().getPlugin("ChatManager");
+			Plugin bChatManager = this.getServer().getPluginManager().getPlugin("bChatManager");
+			Plugin EssentialsChat = this.getServer().getPluginManager().getPlugin("EssentialsChat");
+			Plugin mChatSuite = this.getServer().getPluginManager().getPlugin("mChatSuite");
+			if (chatManager != null) {
+				otherChatPluginFound = true;
+				this.getServer().getLogger().info("[ColorMe] Found ChatManager. Will use it for chat!");
+				logDebug("Found ChatManager");
+			}
+			else if (bChatManager != null) {
+				otherChatPluginFound = true;
+				this.getServer().getLogger().info("[ColorMe] Found bChatManager. Will use it for chat!");
+				logDebug("Found bChatManager");
+			}
+			else if (EssentialsChat != null) {
+				otherChatPluginFound = true;
+				this.getServer().getLogger().info("[ColorMe] Found EssentialsChat. Will use it for chat!");
+				logDebug("Found EssentialsChat");
+			}
+			else if (mChatSuite != null) {
+				otherChatPluginFound = true;
+				this.getServer().getLogger().info("[ColorMe] Found mChatSuite. Will use it for chat!");
+				logDebug("Found mChatSuite");
+			}
+		}
+		else {
+			logDebug("SoftMode disabled");
+			this.getServer().getLogger().info("[ColorMe] SoftMode disabled. Trying to override other chat plugins.");
 		}
 
 		// Stats
@@ -409,6 +443,7 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("useWordBlacklist", true);
 		config.addDefault("groups.enable", true);
 		config.addDefault("groups.ownSystem", true);
+		config.addDefault("softMode", true);
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
@@ -558,6 +593,7 @@ public class ColorMe extends JavaPlugin {
 		blacklist = config.getBoolean("useWordBlacklist");
 		groups = config.getBoolean("groups.enable");
 		ownSystem = config.getBoolean("groups.ownSystem");
+		softMode = config.getBoolean("softMode");
 		if (debug) {
 			logDebug("Suffixer is " + Suffixer);
 			logDebug("Prefixer is " + Prefixer);

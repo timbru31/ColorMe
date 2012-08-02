@@ -1,6 +1,5 @@
 package de.dustplanet.colorme;
 
-import java.io.IOException;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,9 +7,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-// PEX Import
-import ru.tehkode.permissions.PermissionUser;
+//PEX Import
 import ru.tehkode.permissions.PermissionGroup;
+import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 //bPermissions Import
 import de.bananaco.bpermissions.api.ApiLayer;
@@ -59,13 +58,14 @@ public class ColorMePlayerListener implements Listener {
 			else if (color == ChatColor.values().length + 2) Actions.set(name, "random", world, pluginPart[0]);
 			else Actions.set(name, ChatColor.values()[color].name().toLowerCase(), world, pluginPart[0]);
 		}
-		CheckRoutine(player, name, world);
+		Actions.checkNames(name, world);
 	}
 
 
 	// Loads the the values and set them to default one if not known
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(PlayerChatEvent event) {
+		if (ColorMe.otherChatPluginFound) return;
 		ColorMe.logDebug("\t---PlayerChatEvent Begin---");
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase(), nameExact = player.getName();
@@ -103,7 +103,6 @@ public class ColorMePlayerListener implements Listener {
 			if (!groupPrefix.equals("")) groupPrefix += " ";
 		}
 
-		CheckRoutine(player, name, world);
 		if (ColorMe.Prefixer) {
 			// Get world prefix if available
 			if (Actions.has(name, world, "prefix")) {
@@ -168,43 +167,5 @@ public class ColorMePlayerListener implements Listener {
 		}
 		ColorMe.logDebug("\t---PlayerChatEvent End---");
 		ColorMe.logDebug("");
-	}
-
-	// Check for the player and update the file is values are unknown
-	private void CheckRoutine(Player player, String name, String world) {
-		// If the player isn't in the players.yml add him
-		if (!ColorMe.players.contains(name)) {
-			ColorMe.players.set(name + ".colors.default", "");
-			ColorMe.players.set(name + ".prefix.default", "");
-			ColorMe.players.set(name + ".suffix.default", "");
-			ColorMe.players.set(name + ".colors." + world, "");
-			ColorMe.players.set(name + ".prefix." + world, "");
-			ColorMe.players.set(name + ".suffix." + world, "");
-			try {
-				ColorMe.players.save(ColorMe.playersFile);
-			} catch (IOException e) {
-				plugin.getServer().getLogger().warning("Failed to save the players.yml! Please report this! IOException");
-			}
-		}
-		for (int i = 0; i <= 2; i++) {
-			String actualPart = pluginPart[i];
-			if (!ColorMe.players.contains(name + "." + actualPart + "." + world)) {
-				ColorMe.players.set(name + "." + actualPart + "." + world, "");
-				try {
-					ColorMe.players.save(ColorMe.playersFile);
-				} catch (IOException e) {
-					plugin.getServer().getLogger().warning("Failed to save the players.yml! Please report this! IOException");
-				}
-			}
-			if (!ColorMe.players.contains(name + "." + actualPart + "." + "default")) {
-				ColorMe.players.set(name + "." + actualPart + "." + "default", "");
-				try {
-					ColorMe.players.save(ColorMe.playersFile);
-				} catch (IOException e) {
-					plugin.getServer().getLogger().warning("Failed to save the players.yml! Please report this! IOException");
-				}
-			}
-		}
-		Actions.checkNames(name, world);
 	}
 }

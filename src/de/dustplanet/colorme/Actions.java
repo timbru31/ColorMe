@@ -278,7 +278,7 @@ public class Actions {
 				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
 					newName = updateCustomColor(color, cleanDisplayName);
 				}
-				else newName = ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName;
+				else newName = ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName + ChatColor.WHITE;
 				// Shorten it, if too long
 				if (newName != null || !newName.equals("")) {
 					if (newName.length() > 16) {
