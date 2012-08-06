@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 //PEX Import
 import ru.tehkode.permissions.PermissionGroup;
@@ -64,7 +64,7 @@ public class ColorMePlayerListener implements Listener {
 
 	// Loads the the values and set them to default one if not known
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerChat(PlayerChatEvent event) {
+	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if (ColorMe.otherChatPluginFound) return;
 		ColorMe.logDebug("\t---PlayerChatEvent Begin---");
 		Player player = event.getPlayer();
