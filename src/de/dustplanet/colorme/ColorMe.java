@@ -53,9 +53,10 @@ public class ColorMe extends JavaPlugin {
 	private final ColorMePlayerListener playerListener = new ColorMePlayerListener(this);
 	private final ColorMeBlockListener blockListener = new ColorMeBlockListener(this);
 	public Economy economy = null;
-	public static FileConfiguration config, players, localization, colors;
-	public static File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile, debugFile;
-	public static boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets, chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist;
+	public static FileConfiguration config, players, localization, colors, group;
+	public static File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile, debugFile, groupsFile;
+	public static boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets;
+	public static boolean chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist, tagAPI;
 	public static boolean groups, ownSystem, pex, bPermissions, groupManager, softMode, otherChatPluginFound;
 	public static int prefixLength, suffixLength;
 	private ColorMeCommands colorExecutor;
@@ -102,7 +103,7 @@ public class ColorMe extends JavaPlugin {
 
 		// Player colors config		
 		playersFile = new File(getDataFolder(), "players.yml");
-		// Copy if the config doesn't exist
+		// Copy if the players.yml doesn't exist
 		if (!playersFile.exists()) {
 			logDebug("players.yml didn't exist, creating one");
 			playersFile.getParentFile().mkdirs();
@@ -111,9 +112,9 @@ public class ColorMe extends JavaPlugin {
 		// Try to load
 		players = YamlConfiguration.loadConfiguration(playersFile);
 
-		// Custom colors config		
+		// Custom colors config
 		colorsFile = new File(getDataFolder(), "colors.yml");
-		// Copy if the config doesn't exist
+		// Copy if the custom colors doesn't exist
 		if (!colorsFile.exists()) {
 			logDebug("colors.yml didn't exist, creating one");
 			colorsFile.getParentFile().mkdirs();
@@ -133,6 +134,17 @@ public class ColorMe extends JavaPlugin {
 		localization = YamlConfiguration.loadConfiguration(localizationFile);
 		loadLocalization();
 
+		// Group file
+		groupsFile = new File(getDataFolder(), "groups.yml");
+		// Copy if the groups.yml doesn't exist
+		if (!groupsFile.exists()) {
+			logDebug("groups.yml didn't exist, creating one");
+			groupsFile.getParentFile().mkdirs();
+			copy(getResource("groups.yml"), groupsFile);
+		}
+		// Try to load
+		group = YamlConfiguration.loadConfiguration(groupsFile);
+		
 		if (config.getBoolean("useWordBlacklist")) {
 			// BannedWords file
 			bannedWordsFile = new File(getDataFolder(), "bannedWords.txt");
@@ -175,9 +187,9 @@ public class ColorMe extends JavaPlugin {
 		suffixExecutor = new SuffixCommands(this);
 		getCommand("suffix").setExecutor(suffixExecutor);
 		
-//		// Refer to GroupCommands
-//		groupExecutor = new GroupCommands(this);
-//		getCommand("group").setExecutor(groupExecutor);
+		// Refer to GroupCommands
+		groupExecutor = new GroupCommands(this);
+		getCommand("group").setExecutor(groupExecutor);
 
 		// Message
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -283,6 +295,19 @@ public class ColorMe extends JavaPlugin {
 		else {
 			logDebug("SoftMode disabled");
 			this.getServer().getLogger().info("[ColorMe] SoftMode disabled. Trying to override other chat plugins.");
+		}
+		
+		if (playerTitleWithoutSpout) {
+			Plugin tagAPIPlugin = this.getServer().getPluginManager().getPlugin("TagAPI");
+			if (tagAPIPlugin != null) {
+				tagAPI = true;
+				this.getServer().getLogger().info("[ColorMe] Found TagAPI, will use it for names above the head!");
+				logDebug("Found TagAPI");
+			}
+			else {
+				this.getServer().getLogger().info("[ColorMe] Didn't found TagAPI!");
+				logDebug("TagAPI not found");
+			}
 		}
 
 		// Stats

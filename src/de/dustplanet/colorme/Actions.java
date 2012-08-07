@@ -18,9 +18,41 @@ public class Actions {
 	public Actions(ColorMe instance) {
 		plugin = instance;
 	}
-
+	
+	// Create a group
+	public static void createGroup(String groupName) {
+		ColorMe.logDebug("Actions -> Asked to create the group " + groupName);
+		ColorMe.group.set(groupName + ".color.default", "");
+		ColorMe.group.set(groupName + ".prefix.default", "");
+		ColorMe.group.set(groupName + ".suffix.default", "");
+	}
+	
+	// Add a member to a group
+	public static void addMember(String groupName, String name) {
+		name = name.toLowerCase();
+		ColorMe.logDebug("Actions -> Add member " + name + " to the group " + groupName);
+		ColorMe.players.set(name + ".group", groupName);
+	}
+	
+	// Remove a player from a group
+	public static void removeMember(String groupName, String name) {
+		name = name.toLowerCase();
+	}
+	
+	// Check if a player has a color/prefix/suffix or not
+	public static boolean isMember(String groupName, String name) {
+		ColorMe.logDebug("Actions -> isMember");
+		ColorMe.logDebug("Asked if " + name + " is a member of the group " + groupName);
+		name = name.toLowerCase();
+		if (ColorMe.players.contains(name + ".group")) {
+			// If the string is the same -> return true
+			if (groupName.equalsIgnoreCase(ColorMe.players.getString(name + ".group"))) return true;
+		}
+		return false;
+	}
+	
 	// Checks if the player is itself
-	static boolean self(CommandSender sender, String name) {
+	public static boolean self(CommandSender sender, String name) {
 		ColorMe.logDebug("Actions -> self");
 		return (sender.equals(Bukkit.getServer().getPlayerExact(name))) ? true : false;
 	}

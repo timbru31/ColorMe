@@ -13,7 +13,7 @@ public class GroupCommands implements CommandExecutor {
 
 	// Commands for prefixing
 	public boolean onCommand (CommandSender sender, Command command, String commandLabel, String[] args) {
-		String message, globalPrefix, target, senderName, pluginPart = "groups", world = "default";
+		String message, globalColor, globalPrefix, target, senderName, pluginPart = "groups", world = "default";
 		// Reloads the configs
 		if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("groups.reload")) {
@@ -39,10 +39,9 @@ public class GroupCommands implements CommandExecutor {
 		}
 		// Create a group
 		if (args.length > 1 && args[0].equalsIgnoreCase("create")) {
-			if (sender.hasPermission("")) {
+			if (sender.hasPermission(/*TODO Permission*/"")) {
 				String groupName = args[1];
-				//Actions.createGroup(groupName);
-				//TODO Check ob es die gibt
+				Actions.createGroup(groupName);
 				return true;
 			}
 			else {
@@ -55,7 +54,7 @@ public class GroupCommands implements CommandExecutor {
 			if (sender.hasPermission("")) {
 				String groupName = args[1];
 				String name = args[2];
-				//Actions.addMember(groupName, name);
+				Actions.addMember(groupName, name);
 				//TODO Check ob es die gibt
 				//TODO Check ob Spieler bereits Memeber ist
 				return true;
@@ -70,7 +69,7 @@ public class GroupCommands implements CommandExecutor {
 			if (sender.hasPermission("")) {
 				String groupName = args[1];
 				String name = args[2];
-				//Actions.removeMember(groupName, name);
+				Actions.removeMember(groupName, name);
 				//TODO Check ob es die gibt
 				return true;
 			}
