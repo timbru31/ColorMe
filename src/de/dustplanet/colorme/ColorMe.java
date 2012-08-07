@@ -67,6 +67,17 @@ public class ColorMe extends JavaPlugin {
 	private GroupCommands groupExecutor;
 	public List<String> values = new ArrayList<String>();
 	public static List<String> bannedWords = new ArrayList<String>();
+	
+	/*
+	 * TODO
+	 * DONE --- Multi color possibility - second argument -> bold blue --> bold-blue -> split...
+	 * DONE --- Multi words prefix/suffix -> This_is_a_long_prefix -> replace _ with spaces
+	 * SoftMode -> .enabled & ownChatPlugin
+	 * DONE --- TagAPI permission
+	 * Groups...
+	 * Reduce how often checkNames is called
+	 * 
+	 */
 
 	// Shutdown
 	public void onDisable() {
@@ -189,9 +200,9 @@ public class ColorMe extends JavaPlugin {
 		suffixExecutor = new SuffixCommands(this);
 		getCommand("suffix").setExecutor(suffixExecutor);
 		
-		// Refer to GroupCommands
-		groupExecutor = new GroupCommands(this);
-		getCommand("group").setExecutor(groupExecutor);
+//		// Refer to GroupCommands
+//		groupExecutor = new GroupCommands(this);
+//		getCommand("group").setExecutor(groupExecutor);
 
 		// Message
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -292,6 +303,14 @@ public class ColorMe extends JavaPlugin {
 				otherChatPluginFound = true;
 				this.getServer().getLogger().info("[ColorMe] Found mChatSuite. Will use it for chat!");
 				logDebug("Found mChatSuite");
+			}
+			else {
+				Plugin customChatPlugin = this.getServer().getPluginManager().getPlugin(config.getString("softMode.ownChatPlugin"));
+				if (customChatPlugin != null) {
+					otherChatPluginFound = true;
+					this.getServer().getLogger().info("[ColorMe] Found " + customChatPlugin.getName() + ". Will use it for chat!");
+					logDebug("Found " + customChatPlugin.getName());
+				}
 			}
 		}
 		else {
@@ -463,6 +482,7 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("colors.random", true);
 		config.addDefault("colors.rainbow", true);
 		config.addDefault("colors.custom", true);
+		config.addDefault("colors.mixed", true);
 		config.addDefault("lengthLimit.Prefixer", 16);
 		config.addDefault("lengthLimit.Suffixer", 16);
 		config.addDefault("newColorOnJoin" , false);
@@ -471,7 +491,8 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("useWordBlacklist", true);
 		config.addDefault("groups.enable", true);
 		config.addDefault("groups.ownSystem", true);
-		config.addDefault("softMode", true);
+		config.addDefault("softMode.enabled", true);
+		config.addDefault("softMode.ownChatPlugin", "Herochat");
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
@@ -628,7 +649,7 @@ public class ColorMe extends JavaPlugin {
 		blacklist = config.getBoolean("useWordBlacklist");
 		groups = config.getBoolean("groups.enable");
 		ownSystem = config.getBoolean("groups.ownSystem");
-		softMode = config.getBoolean("softMode");
+		softMode = config.getBoolean("softMode.enabled");
 		if (debug) {
 			logDebug("Suffixer is " + Suffixer);
 			logDebug("Prefixer is " + Prefixer);

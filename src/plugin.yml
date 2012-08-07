@@ -1,6 +1,6 @@
 name: ColorMe
 main: de.dustplanet.colorme.ColorMe
-version: 3.5 dev7
+version: 3.5 dev9
 author: xGhOsTkiLLeRx
 authors: [Valrix]
 website: http://bit.ly/bukkitdevcolorme
@@ -53,6 +53,7 @@ permissions:
             colorme.self.underline: true
             colorme.self.strikethrough: true
             colorme.self.custom: true
+            colorme.self.mixed: true
     colorme.self.black:
         default: op
         description: Allows setting of own color
@@ -125,6 +126,9 @@ permissions:
     colorme.self.strikethrough:
         default: op
         description: Allows setting of own color
+    colorme.self.mixed:
+        default: op
+        description: Allows setting of own color
     colorme.other:
         default: op
         description: Allows setting of other player's color
@@ -146,6 +150,9 @@ permissions:
     colorme.sign:
         default: op
         description: Permission to color the chat
+    colorme.nametag:
+        default: op
+        description: Allows setting of own color above the head
     colorme.*:
         children:
             colorme.list: true
@@ -157,6 +164,7 @@ permissions:
             colorme.free: true
             colorme.chat: true
             colorme.sign: true
+            colorme.nametag: true
         description: Allows all commands for ColorMe
     prefixer.list:
         default: true

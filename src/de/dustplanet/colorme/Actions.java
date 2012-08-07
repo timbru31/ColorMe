@@ -14,7 +14,7 @@ public class Actions {
 	public Actions(ColorMe instance) {
 		plugin = instance;
 	}
-	
+
 	// Create a group
 	public static void createGroup(String groupName) {
 		ColorMe.logDebug("Actions -> Asked to create the group " + groupName);
@@ -22,19 +22,19 @@ public class Actions {
 		ColorMe.group.set(groupName + ".prefix.default", "");
 		ColorMe.group.set(groupName + ".suffix.default", "");
 	}
-	
+
 	// Add a member to a group
 	public static void addMember(String groupName, String name) {
 		name = name.toLowerCase();
 		ColorMe.logDebug("Actions -> Add member " + name + " to the group " + groupName);
 		ColorMe.players.set(name + ".group", groupName);
 	}
-	
+
 	// Remove a player from a group
 	public static void removeMember(String groupName, String name) {
 		name = name.toLowerCase();
 	}
-	
+
 	// Check if a player has a color/prefix/suffix or not
 	public static boolean isMember(String groupName, String name) {
 		ColorMe.logDebug("Actions -> isMember");
@@ -46,7 +46,7 @@ public class Actions {
 		}
 		return false;
 	}
-	
+
 	// Checks if the player is itself
 	public static boolean self(CommandSender sender, String name) {
 		ColorMe.logDebug("Actions -> self");
@@ -160,7 +160,7 @@ public class Actions {
 	}
 
 	// Set player's color/prefix/suffix
-	static boolean set(String name, String value, String world, String pluginPart) {
+	public static boolean set(String name, String value, String world, String pluginPart) {
 		ColorMe.logDebug("Actions -> set");
 		ColorMe.logDebug("Asked to set the things from " + name + " in the world " + world + " part " + pluginPart);
 		String actualValue = get(name, world, pluginPart);
@@ -201,7 +201,7 @@ public class Actions {
 	}
 
 	// Removes a color/prefix/suffix if exists, otherwise returns false
-	static boolean remove(String name, String world, String pluginPart) {
+	public static boolean remove(String name, String world, String pluginPart) {
 		ColorMe.logDebug("Actions -> remove");
 		ColorMe.logDebug("Asked to remove the things from " + name + " in the world " + world + " part " + pluginPart);
 		name = name.toLowerCase();
@@ -222,7 +222,7 @@ public class Actions {
 	}
 
 	// Removes a color/prefix/suffix if exists, otherwise returns false
-	static boolean removeGlobal(String pluginPart) {
+	public static boolean removeGlobal(String pluginPart) {
 		ColorMe.logDebug("Actions -> removeGlobal");
 		ColorMe.logDebug("Asked to remove the global part of " + pluginPart);
 		ColorMe.config.set("global_default." + pluginPart, "");
@@ -237,8 +237,7 @@ public class Actions {
 	}
 
 	// Update the displayName, tabName, title, prefix & suffix in a specific world (after setting, removing, onJoin and onChat)
-	@SuppressWarnings("null")
-	static void updateName(String name, String color) {
+	public static void updateName(String name, String color) {
 		ColorMe.logDebug("Actions -> updateName");
 		ColorMe.logDebug("Asked to update the color of " + name + " to the color " + color);
 		final Player player = Bukkit.getServer().getPlayerExact(name);
@@ -265,7 +264,12 @@ public class Actions {
 				}
 				// Normal
 				else {
-					player.setDisplayName(ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName + ChatColor.WHITE);
+					String [] colors = color.split("-");
+					String tempDispName = "";
+					for (String colorPart : colors) {
+						tempDispName += ChatColor.valueOf(colorPart.toUpperCase());
+					}
+					player.setDisplayName(tempDispName + cleanDisplayName + ChatColor.WHITE);
 				}
 			}
 			// Check for playerList
@@ -281,7 +285,7 @@ public class Actions {
 				}
 				else newName = ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName + ChatColor.WHITE;
 				// Shorten it, if too long
-				if (newName != null || !newName.equals("")) {
+				if (!newName.equals("") && newName != null) {
 					if (newName.length() > 16) {
 						newName = newName.substring(0, 12) + ChatColor.WHITE + "..";
 					}
@@ -289,7 +293,7 @@ public class Actions {
 				}
 			}
 			// Check for Spout
-			if (ColorMe.spoutEnabled && ColorMe.playerTitle) {
+			if (ColorMe.spoutEnabled && ColorMe.playerTitle && player.hasPermission("colorme.nametag")) {
 				SpoutPlayer spoutPlayer = (SpoutPlayer) player;
 				// Random color
 				if (color.equalsIgnoreCase("random")) {
@@ -306,14 +310,14 @@ public class Actions {
 				else spoutPlayer.setTitle(ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName);
 			}
 			// Check if TagAPI should be used -> above the head!
-			if (ColorMe.playerTitleWithoutSpout && ColorMe.tagAPI) {
+			if (ColorMe.playerTitleWithoutSpout && ColorMe.tagAPI && player.hasPermission("colorme.nametag")) {
 				if (!color.equalsIgnoreCase("rainbow") && !color.equalsIgnoreCase("random")) TagAPI.refreshPlayer(player);
 			}
 		}
 	}
 
 	// Restore the "clean", white name
-	static void restoreName(String name) {
+	public static void restoreName(String name) {
 		ColorMe.logDebug("Actions -> restoreName");
 		ColorMe.logDebug("Asked to restore the name " + name);
 		Player player = Bukkit.getServer().getPlayerExact(name);
@@ -331,19 +335,19 @@ public class Actions {
 				}
 				player.setPlayerListName(newName);
 			}
-			if (ColorMe.spoutEnabled && ColorMe.playerTitle) {
+			if (ColorMe.spoutEnabled && ColorMe.playerTitle && player.hasPermission("colorme.nametag")) {
 				SpoutPlayer spoutPlayer = (SpoutPlayer) player;
 				spoutPlayer.resetTitle();
 			}
 			// Check if TagAPI should be used -> above the head!
-			if (ColorMe.playerTitleWithoutSpout && ColorMe.tagAPI) {
+			if (ColorMe.playerTitleWithoutSpout && ColorMe.tagAPI && player.hasPermission("colorme.nametag")) {
 				TagAPI.refreshPlayer(player);
 			}
 		}
 	}
 
 	// The list of colors
-	static void listColors(CommandSender sender) {
+	public static void listColors(CommandSender sender) {
 		ColorMe.logDebug("Actions -> listColors");
 		String message = ColorMe.localization.getString("color_list");
 		ColorMe.message(sender, null, message, null, null, null, null);
@@ -373,7 +377,7 @@ public class Actions {
 	}
 
 	// Used to create a random effect
-	static String randomColor(String name) {
+	public static String randomColor(String name) {
 		ColorMe.logDebug("Actions -> randomColor");
 		ColorMe.logDebug("Asked to color the string " +name);
 		String newName = "";
@@ -389,7 +393,7 @@ public class Actions {
 	}
 
 	// Used to create a rainbow effect
-	static String rainbowColor(String name) {
+	public static String rainbowColor(String name) {
 		ColorMe.logDebug("Actions -> rainbowColor");
 		ColorMe.logDebug("Asked to color the string " +name);
 		// Had to store the rainbow manually. Why did Mojang store it so..., forget it
@@ -409,7 +413,7 @@ public class Actions {
 	}
 
 	// Make the custom colors!
-	static String updateCustomColor(String color, String text) {
+	public static String updateCustomColor(String color, String text) {
 		ColorMe.logDebug("Actions -> updateCustomColor");
 		ColorMe.logDebug("Asked to color the string " + text + " with the color " +color);
 		// Get color
@@ -435,7 +439,7 @@ public class Actions {
 	}
 
 	// Check if the color is possible
-	static boolean validColor(String color) {
+	public static boolean validColor(String color) {
 		ColorMe.logDebug("Actions -> validColor");
 		// if it's random or rainbow -> possible
 		if (color.equalsIgnoreCase("rainbow") || color.equalsIgnoreCase("random")) {
@@ -462,14 +466,14 @@ public class Actions {
 	}
 
 	// If the config value is disabled, return true
-	static boolean isDisabled(String color) {
+	public static boolean isDisabled(String color) {
 		ColorMe.logDebug("Actions -> isDisabled");
 		if (ColorMe.config.getBoolean("colors." + color.toLowerCase())) {
 			ColorMe.logDebug("Color " + color + " is enabled");
 			return false;
 		}
 		// Custom color? (Must contain something!!! NOT '' or null)
-		if ((ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true && ColorMe.config.getBoolean("colors.custom")) {
+		else if (ColorMe.colors.contains(color) && ColorMe.colors.getString(color).trim().length() > 1 && ColorMe.config.getBoolean("colors.custom")) {
 			ColorMe.logDebug("Color " + color + " is disabled");
 			return false;
 		}
@@ -478,7 +482,7 @@ public class Actions {
 	}
 
 	// Displays the specific help
-	static boolean help(CommandSender sender, String pluginPart) {
+	public static boolean help(CommandSender sender, String pluginPart) {
 		ColorMe.logDebug("Actions -> help");
 		for (int i = 1; i <= 9; i++) {
 			String message = ColorMe.localization.getString("help_" + pluginPart + "_" + Integer.toString(i));
@@ -488,7 +492,7 @@ public class Actions {
 	}
 
 	// Reloads the plugin
-	static void reload(CommandSender sender) {
+	public static void reload(CommandSender sender) {
 		ColorMe.logDebug("Actions -> reload");
 		ColorMe.loadConfigsAgain();	
 		String message = ColorMe.localization.getString("reload");
@@ -496,31 +500,43 @@ public class Actions {
 	}
 
 	// Update the name
-	static void checkNames(String name, String world) {
+	public static void checkNames(String name, String world) {
 		ColorMe.logDebug("Actions -> checkNames");
 		ColorMe.logDebug("Asked to check the color of the player " + name + " in the world " + world);
 		String color;
 		// Check for color and valid ones, else restore
 		if (Actions.has(name, world, "colors")) {
-			if (Actions.validColor(ColorMe.players.getString(name + ".colors." + world))) {
-				color = Actions.get(name, world, "colors");
-				Actions.updateName(name, color);
+			String[] colors = ColorMe.players.getString(name + ".colors." + world).split("-");
+			for (String colorPart : colors) {
+				if (!Actions.validColor(colorPart)) {
+					restoreName(name);
+					return;
+				}
 			}
-			else Actions.restoreName(name);
+			color = Actions.get(name, world, "colors");
+			Actions.updateName(name, color);
 		}
 		else if (Actions.has(name, "default", "colors")) {
-			if (Actions.validColor(ColorMe.players.getString(name + ".colors.default"))) {
-				color = Actions.get(name, "default", "colors");
-				Actions.updateName(name, color);
+			String[] colors = ColorMe.players.getString(name + ".colors.default").split("-");
+			for (String colorPart : colors) {
+				if (!Actions.validColor(colorPart)) {
+					restoreName(name);
+					return;
+				}
 			}
-			else Actions.restoreName(name);
+			color = Actions.get(name, "default", "colors");
+			Actions.updateName(name, color);
 		}
 		else if (ColorMe.globalColor) {
-			if (Actions.validColor(ColorMe.config.getString("global_default.color"))) {
-				color = Actions.getGlobal("color");
-				Actions.updateName(name, color);
+			String[] colors = ColorMe.config.getString("global_default.color").split("-");
+			for (String colorPart : colors) {
+				if (!Actions.validColor(colorPart)) {
+					restoreName(name);
+					return;
+				}
 			}
-			else Actions.restoreName(name);
+			color = Actions.getGlobal("color");
+			Actions.updateName(name, color);
 		}
 		else if (!Actions.has(name, world, "colors") || !Actions.has(name, "default", "colors") || !Actions.hasGlobal("color")) {
 			Actions.restoreName(name);

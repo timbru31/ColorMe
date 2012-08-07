@@ -28,7 +28,7 @@ public class ColorMeCommands implements CommandExecutor {
 
 	// Commands for coloring
 	public boolean onCommand (CommandSender sender, Command command, String commandLabel, String[] args) {
-		String pluginPart = "colors", message, target, color, senderName, world = "default", globalColor;
+		String pluginPart = "colors", message, target, color, senderName, world = "default", globalColor, colorArray;
 		// Returns the color list
 		if (args.length > 0 && args[0].equalsIgnoreCase("list")) {
 			if (sender.hasPermission("colorme.list") || sender.hasPermission("prefixer.list") || sender.hasPermission("suffixer.list")) {
@@ -210,8 +210,7 @@ public class ColorMeCommands implements CommandExecutor {
 			// Check for permission or self
 			if (sender.hasPermission("colorme.get") || Actions.self(sender, target)) {
 				// Trying to get a color from a color-less player
-				if (((!Actions.has(target, world, pluginPart) && ColorMe.players.contains(target)))
-						|| !ColorMe.players.contains(target)) {
+				if (((!Actions.has(target, world, pluginPart) && ColorMe.players.contains(target))) || !ColorMe.players.contains(target)) {
 					// Self
 					if (target.equalsIgnoreCase(senderName)) {
 						message = ColorMe.localization.getString("no_color_self");
@@ -260,36 +259,47 @@ public class ColorMeCommands implements CommandExecutor {
 			if (args.length > 2) {
 				world = args[2].toLowerCase();
 			}
-
-			// Unsupported colors
-			if (Actions.validColor(color) == false) {
-				message = ColorMe.localization.getString("invalid_color");
-				ColorMe.message(sender, null, message, color, null, null, null);
-				return true;
-			}
-
-			// If color is disabled
-			if (Actions.isDisabled(color) == true) {
-				message = ColorMe.localization.getString("disabled_color");
-				ColorMe.message(sender, null, message, color, null, null, null);
-				return true;
-			}
-
+			String[] colors = color.split("-");
 			// If the colors are the same
 			if (color.equalsIgnoreCase(Actions.get(target, world, pluginPart))) {
 				if (senderName.equalsIgnoreCase(target)) {
 					message = ColorMe.localization.getString("same_color_self");
 					ColorMe.message(sender, null, message, null, world, null, null);
 					return true;
-				}	
+				}
 				message = ColorMe.localization.getString("same_color_other");
 				ColorMe.message(sender, null, message, null, world, target, null);
 				return true;
 			}
-			
+			// Iterate through the different colors
+			for (String colorPart : colors) {
+				// Unsupported colors
+				if (Actions.validColor(colorPart) == false) {
+					message = ColorMe.localization.getString("invalid_color");
+					ColorMe.message(sender, null, message, colorPart, null, null, null);
+					return true;
+				}
+
+				// If color is disabled
+				if (Actions.isDisabled(colorPart) == true) {
+					message = ColorMe.localization.getString("disabled_color");
+					ColorMe.message(sender, null, message, colorPart, null, null, null);
+					return true;
+				}
+			}
+
 			// Check for name of the color
 			String colorName = color.toLowerCase();
 			if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) colorName = "custom";
+			if (color.contains("-")) {
+				colorName = "mixed";
+				// If color is disabled
+				if (Actions.isDisabled(colorName) == true) {
+					message = ColorMe.localization.getString("disabled_color");
+					ColorMe.message(sender, null, message, colorName, null, null, null);
+					return true;
+				}
+			}
 
 			// Self coloring
 			if (sender.hasPermission("colorme.self." + colorName) && Actions.self(sender, target)) {

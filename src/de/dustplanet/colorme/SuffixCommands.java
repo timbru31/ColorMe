@@ -42,10 +42,10 @@ public class SuffixCommands implements CommandExecutor {
 		}
 		// Sets the global suffix
 		else if (args.length > 1 && args[0].equalsIgnoreCase("global")) {
-			globalSuffix = args[1];
+			globalSuffix = args[1].replaceAll("_", " ");
 			if (sender.hasPermission("suffixer.global")) {
 				// If the prefixes are the same
-				if (globalSuffix.equalsIgnoreCase(Actions.getGlobal("suffix"))) {
+				if (Actions.replaceThings(globalSuffix).equalsIgnoreCase(Actions.getGlobal("suffix"))) {
 					message = ColorMe.localization.getString("same_suffix_global");
 					ColorMe.message(sender, null, message, null, null, null, null);
 					return true;
@@ -199,12 +199,11 @@ public class SuffixCommands implements CommandExecutor {
 			if (args.length > 2) {
 				world = args[2].toLowerCase();
 			}
-			Actions.get(target, world, pluginPart);
+			suffix = Actions.get(target, world, pluginPart);
 			// Check for permission or self
 			if (sender.hasPermission("suffixer.get") || Actions.self(sender, target)) {
 				// Trying to get a suffix from a suffix-less player
-				if (((!Actions.has(target, world, pluginPart) && ColorMe.players.contains(target)))
-						|| !ColorMe.players.contains(target)) {
+				if (((!Actions.has(target, world, pluginPart) && ColorMe.players.contains(target))) || !ColorMe.players.contains(target)) {
 					// Self
 					if (target.equalsIgnoreCase(senderName)) {
 						message = ColorMe.localization.getString("no_suffix_self");
@@ -246,14 +245,14 @@ public class SuffixCommands implements CommandExecutor {
 					return true;
 				}
 			}
-			suffix = args[1];
+			suffix = args[1].replaceAll("_", " ");
 			senderName = sender.getName().toLowerCase();
 			if (args.length > 2) {
 				world = args[2].toLowerCase();
 			}
 
 			// If the suffixes are the same
-			if (suffix.equalsIgnoreCase(Actions.get(target, world, pluginPart))) {
+			if (Actions.replaceThings(suffix).equalsIgnoreCase(Actions.get(target, world, pluginPart))) {
 				if (senderName.equalsIgnoreCase(target)) {
 					message = ColorMe.localization.getString("same_suffix_self");
 					ColorMe.message(sender, null, message, null, world, null, null);

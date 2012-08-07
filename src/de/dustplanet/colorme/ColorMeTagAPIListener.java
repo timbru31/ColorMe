@@ -27,33 +27,22 @@ public class ColorMeTagAPIListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onNameTag(final PlayerReceiveNameTagEvent event) {
-		plugin.getServer().getLogger().info("Fired");
-		String name = event.getNamedPlayer().getDisplayName();
-		if (name.endsWith("\u00A7f")) {
-			name = name.substring(0, (name.length() -2));
-		}
-		//		plugin.getServer().getLogger().info(name);
-		//		plugin.getServer().getLogger().info(name.length() + "");
-		//		if (name.length() > 16) {
-		//			plugin.getServer().getLogger().info("Long");
-		//			name = name.substring(0, 16);
-		//		}
-		//		plugin.getServer().getLogger().info(name);
-		//		if (name.endsWith("§"))  {
-		//			plugin.getServer().getLogger().info("true");
-		//			name= name.substring(0, name.lastIndexOf('§'));
-		//		}
-		//		plugin.getServer().getLogger().info(name);
-		if (Actions.has(name, event.getNamedPlayer().getWorld().getName(), "colors")) {
-			if (Actions.get(name, event.getNamedPlayer().getWorld().getName(), "colors").equalsIgnoreCase("rainbow")) return;
-			if (Actions.get(name, event.getNamedPlayer().getWorld().getName(), "colors").equalsIgnoreCase("random")) return;
-		}
-		else if (Actions.has(name, "default", "colors")) {
-			if (Actions.get(name, "default", "colors").equalsIgnoreCase("rainbow")) return;
-			if (Actions.get(name, "default", "colors").equalsIgnoreCase("random")) return;
-		}
-		if (name != "" && name != null) {
-			event.setTag(name);
+		if (event.getNamedPlayer().hasPermission("colorme.nametag")) {
+			String name = event.getNamedPlayer().getDisplayName();
+			if (name.endsWith("\u00A7f")) {
+				name = name.substring(0, (name.length() -2));
+			}
+			if (Actions.has(name, event.getNamedPlayer().getWorld().getName(), "colors")) {
+				if (Actions.get(name, event.getNamedPlayer().getWorld().getName(), "colors").equalsIgnoreCase("rainbow")) return;
+				if (Actions.get(name, event.getNamedPlayer().getWorld().getName(), "colors").equalsIgnoreCase("random")) return;
+			}
+			else if (Actions.has(name, "default", "colors")) {
+				if (Actions.get(name, "default", "colors").equalsIgnoreCase("rainbow")) return;
+				if (Actions.get(name, "default", "colors").equalsIgnoreCase("random")) return;
+			}
+			if (name != "" && name != null) {
+				event.setTag(name);
+			}
 		}
 	}
 }
