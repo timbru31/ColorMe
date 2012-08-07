@@ -2,16 +2,12 @@ package de.dustplanet.colorme;
 
 import java.io.IOException;
 
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.Packet20NamedEntitySpawn;
-import net.minecraft.server.Packet29DestroyEntity;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.getspout.spoutapi.player.SpoutPlayer;
+import org.kitteh.tag.TagAPI;
 
 public class Actions {
 	public static ColorMe plugin;
@@ -83,83 +79,83 @@ public class Actions {
 		ColorMe.logDebug("Actions -> replaceThings");
 		// While random is in there
 		String sub;
-		while (string.contains("&random")) {
+		while (string.contains("\u0026random")) {
 			// Without random
-			int i = string.indexOf("&random") + 7;
+			int i = string.indexOf("\u0026random") + 7;
 			int z = string.length();
 			sub = string.substring(i, z);
 			// Stop if other & or § is found
-			if (sub.contains("&")) {
-				sub = sub.substring(0, sub.indexOf("&"));
+			if (sub.contains("\u0026")) {
+				sub = sub.substring(0, sub.indexOf("\u0026"));
 			}
-			if (sub.contains("§")) {
-				sub = sub.substring(0, sub.indexOf("§"));
+			if (sub.contains("\u00A7")) {
+				sub = sub.substring(0, sub.indexOf("\u00A7"));
 			}
 			// Replace
 			string = string.replace(sub, randomColor(sub));
 			// Replace FIRST random
-			string = string.replaceFirst("&random", "");
+			string = string.replaceFirst("\u0026random", "");
 			sub = "";
 		}
 		// While random (short) is in there
-		while (string.contains("&ran")) {
+		while (string.contains("\u0026ran")) {
 			// Without random
-			int i = string.indexOf("&ran") + 4;
+			int i = string.indexOf("\u0026ran") + 4;
 			int z = string.length();
 			sub = string.substring(i, z);
 			// Stop if other & or § is found
-			if (sub.contains("&")) {
-				sub = sub.substring(0, sub.indexOf("&"));
+			if (sub.contains("\u0026")) {
+				sub = sub.substring(0, sub.indexOf("\u0026"));
 			}
-			if (sub.contains("§")) {
-				sub = sub.substring(0, sub.indexOf("§"));
+			if (sub.contains("\u00A7")) {
+				sub = sub.substring(0, sub.indexOf("\u00A7"));
 			}
 			// Replace
 			string = string.replace(sub, randomColor(sub));
 			// Replace FIRST random
-			string = string.replaceFirst("&ran", "");
+			string = string.replaceFirst("\u0026ran", "");
 			sub = "";
 		}
 		// While rainbow is in there
-		while (string.contains("&rainbow")) {
+		while (string.contains("\u0026rainbow")) {
 			// Without rainbow
-			int i = string.indexOf("&rainbow") + 8;
+			int i = string.indexOf("\u0026rainbow") + 8;
 			int z = string.length();
 			sub = string.substring(i, z);
 			// Stop if other & or § is found
-			if (sub.contains("&")) {
-				sub = sub.substring(0, sub.indexOf("&"));
+			if (sub.contains("\u0026")) {
+				sub = sub.substring(0, sub.indexOf("\u0026"));
 			}
-			if (sub.contains("§")) {
-				sub = sub.substring(0, sub.indexOf("§"));
+			if (sub.contains("\u00A7")) {
+				sub = sub.substring(0, sub.indexOf("\u00A7"));
 			}
 			// Replace
 			string = string.replace(sub, rainbowColor(sub));
 			// Replace FIRST rainbow
-			string = string.replaceFirst("&rainbow", "");
+			string = string.replaceFirst("\u0026rainbow", "");
 			sub = "";
 		}
 		// While rainbow (short) is in there
-		while (string.contains("&rai")) {
+		while (string.contains("\u0026rai")) {
 			// Without rainbow
-			int i = string.indexOf("&rai") + 4;
+			int i = string.indexOf("\u0026rai") + 4;
 			int z = string.length();
 			sub = string.substring(i, z);
 			// Stop if other & or § is found
-			if (sub.contains("&")) {
-				sub = sub.substring(0, sub.indexOf("&"));
+			if (sub.contains("\u0026")) {
+				sub = sub.substring(0, sub.indexOf("\u0026"));
 			}
-			if (sub.contains("§")) {
-				sub = sub.substring(0, sub.indexOf("§"));
+			if (sub.contains("\u00A7")) {
+				sub = sub.substring(0, sub.indexOf("\u00A7"));
 			}
 			// Replace
 			string = string.replace(sub, rainbowColor(sub));
 			// Replace FIRST rainbow
-			string = string.replaceFirst("&rai", "");
+			string = string.replaceFirst("\u0026rai", "");
 			sub = "";
 		}
 		// Normal color codes!
-		string = string.replaceAll("&((?i)[0-9a-fk-or])", "\u00A7$1");
+		string = string.replaceAll("\u0026((?i)[0-9a-fk-or])", "\u00A7$1");
 		return string;
 	}
 
@@ -249,37 +245,10 @@ public class Actions {
 		if (player != null) {
 			String displayName = player.getDisplayName();
 			String cleanDisplayName = ChatColor.stripColor(displayName);
+			player.setDisplayName(cleanDisplayName);
+			player.setPlayerListName(cleanDisplayName);
+			if (ColorMe.tagAPI && ColorMe.playerTitleWithoutSpout) TagAPI.refreshPlayer(player);
 			String newName;
-			// Player title without Spout -> NOT RECOMMEND AND SUPPORTED
-			if (ColorMe.playerTitleWithoutSpout) {
-				if (color.equalsIgnoreCase("random")) {
-					newName = randomColor(cleanDisplayName);
-				}
-				else if (color.equalsIgnoreCase("rainbow")) {
-					newName = rainbowColor(cleanDisplayName);
-				}
-				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
-					newName = updateCustomColor(color, cleanDisplayName);
-				}
-				else newName = ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName;
-				// Shorten it, if too long
-				if (newName != null || !newName.equals("")) {
-					if (newName.length() > 16) {
-						newName = newName.substring(0, 12) + ChatColor.WHITE + "..";
-					}
-				}
-				else newName = cleanDisplayName;
-				EntityPlayer ePlayer = ((CraftPlayer) player).getHandle();
-				String oldName = player.getName();
-				ePlayer.name = newName;
-				for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-					if (p != player){
-						((CraftPlayer) p).getHandle().netServerHandler.sendPacket(new Packet29DestroyEntity(player.getEntityId()));
-						((CraftPlayer) p).getHandle().netServerHandler.sendPacket(new Packet20NamedEntitySpawn(ePlayer));
-					}
-				}
-				ePlayer.name = oldName;
-			}
 			// Name color
 			if (ColorMe.displayName) {
 				// Random
@@ -336,6 +305,10 @@ public class Actions {
 				// Normal color
 				else spoutPlayer.setTitle(ChatColor.valueOf(color.toUpperCase()) + cleanDisplayName);
 			}
+			// Check if TagAPI should be used -> above the head!
+			if (ColorMe.playerTitleWithoutSpout && ColorMe.tagAPI) {
+				if (!color.equalsIgnoreCase("rainbow") && !color.equalsIgnoreCase("random")) TagAPI.refreshPlayer(player);
+			}
 		}
 	}
 
@@ -348,11 +321,9 @@ public class Actions {
 			ColorMe.logDebug("Player found and valid");
 			String displayName = player.getDisplayName();
 			String cleanDisplayName = ChatColor.stripColor(displayName);
-			boolean tabList = ColorMe.config.getBoolean("tabList");
-			boolean playerTitle = ColorMe.config.getBoolean("playerTitle");
 			// No name -> back to white
 			player.setDisplayName(ChatColor.WHITE + cleanDisplayName);
-			if (tabList == true) {
+			if (ColorMe.tabList) {
 				// If the TAB name is longer than 16 shorten it!
 				String newName = cleanDisplayName;
 				if (newName.length() > 16) {
@@ -360,9 +331,13 @@ public class Actions {
 				}
 				player.setPlayerListName(newName);
 			}
-			if (ColorMe.spoutEnabled && playerTitle) {
+			if (ColorMe.spoutEnabled && ColorMe.playerTitle) {
 				SpoutPlayer spoutPlayer = (SpoutPlayer) player;
 				spoutPlayer.resetTitle();
+			}
+			// Check if TagAPI should be used -> above the head!
+			if (ColorMe.playerTitleWithoutSpout && ColorMe.tagAPI) {
+				TagAPI.refreshPlayer(player);
 			}
 		}
 	}
@@ -384,16 +359,16 @@ public class Actions {
 			if (colorChar.equalsIgnoreCase("k")) continue;
 			// color the name of the color
 			if (ColorMe.config.getBoolean("colors." + color)) {
-				msg += ChatColor.valueOf(color.toUpperCase()) + color + " (&" + colorChar + ") " + ChatColor.WHITE;
+				msg += ChatColor.valueOf(color.toUpperCase()) + color + " (\u0026" + colorChar + ") " + ChatColor.WHITE;
 			}
 		}
-		if (ColorMe.config.getBoolean("colors.strikethrough")) msg += ChatColor.STRIKETHROUGH + "striketrough" + ChatColor.WHITE + " (&m) ";
-		if (ColorMe.config.getBoolean("colors.underline")) msg += ChatColor.UNDERLINE + "underline" + ChatColor.WHITE + " (&n) ";
-		if (ColorMe.config.getBoolean("colors.magic")) msg += "magic (" + ChatColor.MAGIC + "a" + ChatColor.WHITE + ", &k) ";
+		if (ColorMe.config.getBoolean("colors.strikethrough")) msg += ChatColor.STRIKETHROUGH + "striketrough" + ChatColor.WHITE + " (\u0026m) ";
+		if (ColorMe.config.getBoolean("colors.underline")) msg += ChatColor.UNDERLINE + "underline" + ChatColor.WHITE + " (\u0026n) ";
+		if (ColorMe.config.getBoolean("colors.magic")) msg += "magic (" + ChatColor.MAGIC + "a" + ChatColor.WHITE + ", \u0026k) ";
 		// Include custom colors
-		if (ColorMe.config.getBoolean("colors.random")) msg += randomColor("random (&random)" + " ");
-		if (ColorMe.config.getBoolean("colors.rainbow")) msg += rainbowColor("rainbow (&rainbow)") + " ";
-		if (ColorMe.config.getBoolean("colors.custom"))	msg += ColorMe.localization.getString("custom_colors_enabled").replaceAll("&((?i)[0-9a-fk-or])", "\u00A7$1");
+		if (ColorMe.config.getBoolean("colors.random")) msg += randomColor("random (\u0026random)" + " ");
+		if (ColorMe.config.getBoolean("colors.rainbow")) msg += rainbowColor("rainbow (\u0026rainbow)") + " ";
+		if (ColorMe.config.getBoolean("colors.custom"))	msg += ColorMe.localization.getString("custom_colors_enabled").replaceAll("\u0026((?i)[0-9a-fk-or])", "\u00A7$1");
 		sender.sendMessage(msg);
 	}
 
@@ -439,16 +414,16 @@ public class Actions {
 		ColorMe.logDebug("Asked to color the string " + text + " with the color " +color);
 		// Get color
 		String updatedText = "";
-		String colorChars = ColorMe.colors.getString(color).replaceAll("&((?i)[0-9a-fk-or])", "\u00A7$1");
+		String colorChars = ColorMe.colors.getString(color).replaceAll("\u0026((?i)[0-9a-fk-or])", "\u00A7$1");
 		// No § or &? Not valid; doesn't start with §? Not valid! Ending without a char? Not valid!
-		if (!colorChars.contains("§") || colorChars.contains("&") || !colorChars.startsWith("§") || colorChars.endsWith("§")) return text;
+		if (!colorChars.contains("\u00A7") || colorChars.contains("\u0026") || !colorChars.startsWith("\u00A7") || colorChars.endsWith("\u00A7")) return text;
 		// We use substrings
 		String sub = colorChars, sub2 = "";
 		for (int i = 0; i < text.length(); i++) {
 			// If substring is empty of values, reset
-			if (!sub.contains("§")) sub = colorChars;
+			if (!sub.contains("\u00A7")) sub = colorChars;
 			// Get the § extracted
-			if (sub.contains("§")) {
+			if (sub.contains("\u00A7")) {
 				sub2 = sub.substring(0, 2);
 			}
 			// Add the substring (color value) plus the char

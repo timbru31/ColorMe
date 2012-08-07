@@ -27,6 +27,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.kitteh.tag.TagAPI;
 // Economy
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
@@ -52,6 +53,7 @@ import org.anjocaido.groupmanager.GroupManager;
 public class ColorMe extends JavaPlugin {
 	private final ColorMePlayerListener playerListener = new ColorMePlayerListener(this);
 	private final ColorMeBlockListener blockListener = new ColorMeBlockListener(this);
+	private final ColorMeTagAPIListener tagAPIListener = new ColorMeTagAPIListener(this);
 	public Economy economy = null;
 	public static FileConfiguration config, players, localization, colors, group;
 	public static File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile, debugFile, groupsFile;
@@ -303,6 +305,7 @@ public class ColorMe extends JavaPlugin {
 				tagAPI = true;
 				this.getServer().getLogger().info("[ColorMe] Found TagAPI, will use it for names above the head!");
 				logDebug("Found TagAPI");
+				pm.registerEvents(tagAPIListener, this);
 			}
 			else {
 				this.getServer().getLogger().info("[ColorMe] Didn't found TagAPI!");
@@ -583,8 +586,15 @@ public class ColorMe extends JavaPlugin {
 			localization.save(localizationFile);
 			colors.load(colorsFile);
 			colors.save(colorsFile);
+			group.load(groupsFile);
+			group.save(groupsFile);
 			loadBannedWords();
 			checkParts();
+			if (ColorMe.tagAPI && ColorMe.playerTitleWithoutSpout) {
+			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+					TagAPI.refreshPlayer(p);
+				}
+			}
 			logDebug("Configs and files loaded again");
 		}
 		catch (FileNotFoundException e) {

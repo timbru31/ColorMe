@@ -228,4 +228,4 @@ permissions:
             suffixer.free: true
             suffixer.nofilter: true
         description: Allows all commands for Suffixer
-softdepend: [Vault, Spout]
+softdepend: [Vault, Spout, TagAPI]
