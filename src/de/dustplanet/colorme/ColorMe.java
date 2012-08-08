@@ -72,14 +72,14 @@ public class ColorMe extends JavaPlugin {
 	 * TODO
 	 * DONE --- Multi color possibility - second argument -> bold blue --> bold-blue -> split...
 	 * DONE --- Multi words prefix/suffix -> This_is_a_long_prefix -> replace _ with spaces
-	 * SoftMode -> .enabled & ownChatPlugin
+	 * DONE --- SoftMode -> .enabled & ownChatPlugin
 	 * DONE --- TagAPI permission
 	 * Groups...
 	 * Reduce how often checkNames is called
 	 * Check groupSufix not set? Maybe a format bug
 	 * Remove double code (doubled checks)
-	 * Change debug logger with name, part
-	 * Change the ways -> first check then remove
+	 * DONE --- Change debug logger with name, part
+	 * DONE --- Change the ways -> first check then remove
 	 * 
 	 */
 

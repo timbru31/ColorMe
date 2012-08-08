@@ -74,6 +74,49 @@ public class Actions {
 		}
 		return false;
 	}
+	
+	/*
+	 * 
+	 * Global value functions
+	 * 
+	 */
+	
+
+	// Get global default
+	public static String getGlobal(String pluginPart) {
+		ColorMe.logDebug("Actions -> getGlobal");
+		ColorMe.logDebug("Asked to get the global part " + pluginPart);
+		String string = ColorMe.config.getString("global_default." + pluginPart);
+		String updatedString = replaceThings(string);
+		return updatedString;
+	}
+	
+	// Check if the global default is not null
+	public static boolean hasGlobal(String pluginPart) {
+		ColorMe.logDebug("Actions -> hasGlobal");
+		ColorMe.logDebug("Asked if the global value is set. " + pluginPart);
+		return ColorMe.config.getString("global_default." + pluginPart).trim().length() > 1 ? true : false;
+	}
+
+	// Removes a color/prefix/suffix if exists, otherwise returns false
+	public static void removeGlobal(String pluginPart) {
+		ColorMe.logDebug("Actions -> removeGlobal");
+		ColorMe.logDebug("Asked to remove the global part of " + pluginPart);
+		ColorMe.config.set("global_default." + pluginPart, "");
+		try {
+			ColorMe.config.save(ColorMe.configFile);
+			ColorMe.logDebug("Removed global part");
+		} catch (IOException e) {
+			Bukkit.getServer().getLogger().warning("Failed to save the config.yml! Please report this! IOException");
+			ColorMe.logDebug("Unable to remove global part");
+		}
+	}
+	
+	/*
+	 * 
+	 * Player functions
+	 * 
+	 */
 
 	// Checks if the player is itself
 	public static boolean self(CommandSender sender, String name) {
@@ -84,7 +127,7 @@ public class Actions {
 	// Return the player's name color/prefix/suffix
 	public static String get(String name, String world, String pluginPart) {
 		ColorMe.logDebug("Actions -> get");
-		ColorMe.logDebug("Asked to get the things from " + name + " in the world " + world + " part " + pluginPart);
+		ColorMe.logDebug("Asked to get the things from " + name + " in the world " + world + ", part " + pluginPart);
 		// Player in the config? Yes -> get the config, no -> nothing
 		if (ColorMe.players.contains(name + "." + pluginPart + "." + world)) {
 			String string = ColorMe.players.getString(name + "." + pluginPart + "." + world);
@@ -93,16 +136,115 @@ public class Actions {
 		}
 		else return "";
 	}
-
-	// Get global default
-	public static String getGlobal(String pluginPart) {
-		ColorMe.logDebug("Actions -> getGlobal");
-		ColorMe.logDebug("Asked to get the global part " + pluginPart);
-		String string = ColorMe.config.getString("global_default." + pluginPart);
-		String updatedString = replaceThings(string);
-		return updatedString;
+	
+	// Set player's color/prefix/suffix
+	public static void set(String name, String value, String world, String pluginPart) {
+		ColorMe.logDebug("Actions -> set");
+		ColorMe.logDebug("Asked to set the things from " + name + " in the world " + world + ", part " + pluginPart);
+		// Write to the config and save and update the names
+		ColorMe.players.set(name + "." + pluginPart + "." + world, value);
+		try {
+			ColorMe.players.save(ColorMe.playersFile);
+			ColorMe.logDebug("Saved to the config");
+		} catch (IOException e) {
+			Bukkit.getServer().getLogger().warning("Failed to save the players.yml! Please report this! IOException");
+			ColorMe.logDebug("Failed to save");
+		}
+		checkNames(name, world);
 	}
 
+	// Check if a player has a color/prefix/suffix or not
+	public static boolean has(String name, String world, String pluginPart) {
+		ColorMe.logDebug("Actions -> has");
+		ColorMe.logDebug("Asked if " + name + " has got in the world " + world + ", part " + pluginPart);
+		name = name.toLowerCase();
+		if (ColorMe.players.contains(name + "." + pluginPart + "." + world)) {
+			// if longer than 1 it's a color, return true - otherwise (means '') return false
+			return (ColorMe.players.getString(name + "." + pluginPart + "." + world)).trim().length() > 1 ? true : false;
+		}
+		return false;
+	}
+
+	// Removes a color/prefix/suffix if exists, otherwise returns false
+	public static void remove(String name, String world, String pluginPart) {
+		ColorMe.logDebug("Actions -> remove");
+		ColorMe.logDebug("Asked to remove the things from " + name + " in the world " + world + ", part " + pluginPart);
+		name = name.toLowerCase();
+		// If the player has got a color
+		if (has(name, world, pluginPart)) {
+			ColorMe.players.set(name  + "." + pluginPart + "." + world, "");
+			try {
+				ColorMe.players.save(ColorMe.playersFile);
+			} catch (IOException e) {
+				Bukkit.getServer().getLogger().warning("Failed to save the players.yml! Please report this! IOException");
+			}
+			checkNames(name, world);
+			ColorMe.logDebug("Removed");
+		}
+	}
+	
+	/*
+	 * 
+	 * Replace function
+	 * Colors and whole String
+	 * 
+	 */
+
+	// Used to create a random effect
+	public static String randomColor(String name) {
+		ColorMe.logDebug("Actions -> randomColor");
+		ColorMe.logDebug("Asked to color the string " +name);
+		String newName = "";
+		// As long as the length of the name isn't reached
+		for (int i = 0; i < name.length(); i++) {
+			// Roll the dice between 0 and 16 ;)
+			int x = (int) (Math.random() * ChatColor.values().length);
+			char ch = name.charAt(i);
+			// Color the character
+			newName += ChatColor.values()[x] + Character.toString(ch);
+		}
+		return newName;
+	}
+
+	// Used to create a rainbow effect
+	public static String rainbowColor(String name) {
+		ColorMe.logDebug("Actions -> rainbowColor");
+		ColorMe.logDebug("Asked to color the string " +name);
+		// Had to store the rainbow manually. Why did Mojang store it so..., forget it
+		String newName = "";
+		String rainbow[] = {"DARK_RED", "RED", "GOLD", "YELLOW", "GREEN", "DARK_GREEN", "AQUA", "DARK_AQUA", "BLUE", "DARK_BLUE", "LIGHT_PURPLE", "DARK_PURPLE"};
+		// As long as the length of the name isn't reached
+		for (int i = 0, z= 0; i < name.length(); i++, z++) {
+			// Reset if z reaches 12
+			if (z == 12) z = 0;
+			char ch = name.charAt(i);
+			// Add to the new name the colored character
+			newName += ChatColor.valueOf(rainbow[z]) + Character.toString(ch);
+		}
+		return newName;
+	}
+
+	// Make the custom colors!
+	public static String updateCustomColor(String color, String text) {
+		ColorMe.logDebug("Actions -> updateCustomColor");
+		ColorMe.logDebug("Asked to color the string " + text + " with the color " +color);
+		// Get color
+		String updatedText = "";
+		String colorChars = ColorMe.colors.getString(color).replaceAll("\u0026((?i)[0-9a-fk-or])", "\u00A7$1");
+		// No § or &? Not valid; doesn't start with §? Not valid! Ending without a char? Not valid!
+		if (!colorChars.contains("\u00A7") || colorChars.contains("\u0026") || !colorChars.startsWith("\u00A7") || colorChars.endsWith("\u00A7")) return text;
+		// Split the color values
+		String colorValues[] = colorChars.split(",");
+		// For the text length
+		for (int i = 0, x = 0; i < text.length(); i++, x++) {
+			// No colors left? -> Start from 0
+			if (x == colorValues.length) x = 0;
+			updatedText += colorValues[x] + text.charAt(i);
+		}
+		return updatedText;
+	}
+	
+	// Replace all in a String
 	public static String replaceThings(String string) {
 		ColorMe.logDebug("Actions -> replaceThings");
 		// While random is in there
@@ -186,74 +328,70 @@ public class Actions {
 		string = string.replaceAll("\u0026((?i)[0-9a-fk-or])", "\u00A7$1");
 		return string;
 	}
+	
+	/*
+	 * 
+	 * Checking functions
+	 * 
+	 */
 
-	// Set player's color/prefix/suffix
-	public static void set(String name, String value, String world, String pluginPart) {
-		ColorMe.logDebug("Actions -> set");
-		ColorMe.logDebug("Asked to set the things from " + name + " in the world " + world + " part " + pluginPart);
-		// Write to the config and save and update the names
-		ColorMe.players.set(name + "." + pluginPart + "." + world, value);
-		try {
-			ColorMe.players.save(ColorMe.playersFile);
-			ColorMe.logDebug("Saved to the config");
-		} catch (IOException e) {
-			Bukkit.getServer().getLogger().warning("Failed to save the players.yml! Please report this! IOException");
-			ColorMe.logDebug("Failed to save");
-		}
-		checkNames(name, world);
-	}
-
-	// Check if a player has a color/prefix/suffix or not
-	public static boolean has(String name, String world, String pluginPart) {
-		ColorMe.logDebug("Actions -> has");
-		ColorMe.logDebug("Asked if " + name + " has got in the world " + world + " part " + pluginPart);
-		name = name.toLowerCase();
-		if (ColorMe.players.contains(name + "." + pluginPart + "." + world)) {
-			// if longer than 1 it's a color, return true - otherwise (means '') return false
-			return (ColorMe.players.getString(name + "." + pluginPart + "." + world)).trim().length() > 1 ? true : false;
-		}
-		return false;
-	}
-
-	// Check if the global default is not null
-	public static boolean hasGlobal(String pluginPart) {
-		ColorMe.logDebug("Actions -> hasGlobal");
-		ColorMe.logDebug("Asked if the global value is set. " + pluginPart);
-		return ColorMe.config.getString("global_default." + pluginPart).trim().length() > 1 ? true : false;
-	}
-
-	// Removes a color/prefix/suffix if exists, otherwise returns false
-	public static void remove(String name, String world, String pluginPart) {
-		ColorMe.logDebug("Actions -> remove");
-		ColorMe.logDebug("Asked to remove the things from " + name + " in the world " + world + " part " + pluginPart);
-		name = name.toLowerCase();
-		// If the player has got a color
-		if (has(name, world, pluginPart)) {
-			ColorMe.players.set(name  + "." + pluginPart + "." + world, "");
-			try {
-				ColorMe.players.save(ColorMe.playersFile);
-			} catch (IOException e) {
-				Bukkit.getServer().getLogger().warning("Failed to save the players.yml! Please report this! IOException");
+	// Check the whole names
+	public static void checkNames(String name, String world) {
+		ColorMe.logDebug("Actions -> checkNames");
+		ColorMe.logDebug("Asked to check the color of the player " + name + " in the world " + world);
+		String color;
+		// Check for color and valid ones, else restore
+		if (Actions.has(name, world, "colors")) {
+			String[] colors = ColorMe.players.getString(name + ".colors." + world).split("-");
+			for (String colorPart : colors) {
+				if (!Actions.validColor(colorPart)) {
+					restoreName(name);
+					return;
+				}
 			}
-			checkNames(name, world);
-			ColorMe.logDebug("Removed");
+			color = Actions.get(name, world, "colors");
+			Actions.updateName(name, color);
+		}
+		else if (Actions.has(name, "default", "colors")) {
+			String[] colors = ColorMe.players.getString(name + ".colors.default").split("-");
+			for (String colorPart : colors) {
+				if (!Actions.validColor(colorPart)) {
+					restoreName(name);
+					return;
+				}
+			}
+			color = Actions.get(name, "default", "colors");
+			Actions.updateName(name, color);
+		}
+		// Group TODO Add method to get color from group
+		else if (Actions.has(name, "default", "colors")) {
+			String[] colors = ColorMe.players.getString(name + ".colors.default").split("-");
+			for (String colorPart : colors) {
+				if (!Actions.validColor(colorPart)) {
+					restoreName(name);
+					return;
+				}
+			}
+			// Get groupColor
+			color = Actions.get(name, "default", "colors");
+			Actions.updateName(name, color);
+		}
+		else if (ColorMe.globalColor) {
+			String[] colors = ColorMe.config.getString("global_default.color").split("-");
+			for (String colorPart : colors) {
+				if (!Actions.validColor(colorPart)) {
+					restoreName(name);
+					return;
+				}
+			}
+			color = Actions.getGlobal("color");
+			Actions.updateName(name, color);
+		}
+		else if (!Actions.has(name, world, "colors") || !Actions.has(name, "default", "colors") || !Actions.hasGlobal("color")) {
+			Actions.restoreName(name);
 		}
 	}
-
-	// Removes a color/prefix/suffix if exists, otherwise returns false
-	public static void removeGlobal(String pluginPart) {
-		ColorMe.logDebug("Actions -> removeGlobal");
-		ColorMe.logDebug("Asked to remove the global part of " + pluginPart);
-		ColorMe.config.set("global_default." + pluginPart, "");
-		try {
-			ColorMe.config.save(ColorMe.configFile);
-			ColorMe.logDebug("Removed global part");
-		} catch (IOException e) {
-			Bukkit.getServer().getLogger().warning("Failed to save the config.yml! Please report this! IOException");
-			ColorMe.logDebug("Unable to remove global part");
-		}
-	}
-
+	
 	// Update the displayName, tabName, title, prefix & suffix in a specific world (after setting, removing, onJoin and onChat)
 	public static void updateName(String name, String color) {
 		ColorMe.logDebug("Actions -> updateName");
@@ -364,98 +502,6 @@ public class Actions {
 		}
 	}
 
-	// The list of colors
-	public static void listColors(CommandSender sender) {
-		ColorMe.logDebug("Actions -> listColors");
-		String message = ColorMe.localization.getString("color_list");
-		ColorMe.message(sender, null, message, null, null, null, null);
-		String msg = "";
-		// As long as all colors aren't reached, including magic manual
-		for (ChatColor value : ChatColor.values()) {
-			// get the name from the integer
-			String color = value.name().toLowerCase();
-			String colorChar = Character.toString(value.getChar());
-			if (colorChar.equalsIgnoreCase("r")) continue;
-			if (colorChar.equalsIgnoreCase("n")) continue;
-			if (colorChar.equalsIgnoreCase("m")) continue;
-			if (colorChar.equalsIgnoreCase("k")) continue;
-			// color the name of the color
-			if (ColorMe.config.getBoolean("colors." + color)) {
-				msg += ChatColor.valueOf(color.toUpperCase()) + color + " (\u0026" + colorChar + ") " + ChatColor.WHITE;
-			}
-		}
-		if (ColorMe.config.getBoolean("colors.strikethrough")) msg += ChatColor.STRIKETHROUGH + "striketrough" + ChatColor.WHITE + " (\u0026m) ";
-		if (ColorMe.config.getBoolean("colors.underline")) msg += ChatColor.UNDERLINE + "underline" + ChatColor.WHITE + " (\u0026n) ";
-		if (ColorMe.config.getBoolean("colors.magic")) msg += "magic (" + ChatColor.MAGIC + "a" + ChatColor.WHITE + ", \u0026k) ";
-		// Include custom colors
-		if (ColorMe.config.getBoolean("colors.random")) msg += randomColor("random (\u0026random)" + " ");
-		if (ColorMe.config.getBoolean("colors.rainbow")) msg += rainbowColor("rainbow (\u0026rainbow)") + " ";
-		if (ColorMe.config.getBoolean("colors.custom"))	msg += ColorMe.localization.getString("custom_colors_enabled").replaceAll("\u0026((?i)[0-9a-fk-or])", "\u00A7$1");
-		sender.sendMessage(msg);
-	}
-
-	// Used to create a random effect
-	public static String randomColor(String name) {
-		ColorMe.logDebug("Actions -> randomColor");
-		ColorMe.logDebug("Asked to color the string " +name);
-		String newName = "";
-		// As long as the length of the name isn't reached
-		for (int i = 0; i < name.length(); i++) {
-			// Roll the dice between 0 and 16 ;)
-			int x = (int) (Math.random()*ChatColor.values().length);
-			char ch = name.charAt(i);
-			// Color the character
-			newName += ChatColor.values()[x] + Character.toString(ch);
-		}
-		return newName;
-	}
-
-	// Used to create a rainbow effect
-	public static String rainbowColor(String name) {
-		ColorMe.logDebug("Actions -> rainbowColor");
-		ColorMe.logDebug("Asked to color the string " +name);
-		// Had to store the rainbow manually. Why did Mojang store it so..., forget it
-		String newName = "";
-		int z = 0;
-		String rainbow[] = {"DARK_RED", "RED", "GOLD", "YELLOW", "GREEN", "DARK_GREEN", "AQUA", "DARK_AQUA", "BLUE", "DARK_BLUE", "LIGHT_PURPLE", "DARK_PURPLE"};
-		// As long as the length of the name isn't reached
-		for (int i = 0; i < name.length(); i++) {
-			// Reset if z reaches 12
-			if (z == 12) z = 0;
-			char ch = name.charAt(i);
-			// Add to the new name the colored character
-			newName += ChatColor.valueOf(rainbow[z]) + Character.toString(ch);
-			z++;
-		}
-		return newName;
-	}
-
-	// Make the custom colors!
-	public static String updateCustomColor(String color, String text) {
-		ColorMe.logDebug("Actions -> updateCustomColor");
-		ColorMe.logDebug("Asked to color the string " + text + " with the color " +color);
-		// Get color
-		String updatedText = "";
-		String colorChars = ColorMe.colors.getString(color).replaceAll("\u0026((?i)[0-9a-fk-or])", "\u00A7$1");
-		// No § or &? Not valid; doesn't start with §? Not valid! Ending without a char? Not valid!
-		if (!colorChars.contains("\u00A7") || colorChars.contains("\u0026") || !colorChars.startsWith("\u00A7") || colorChars.endsWith("\u00A7")) return text;
-		// We use substrings
-		String sub = colorChars, sub2 = "";
-		for (int i = 0; i < text.length(); i++) {
-			// If substring is empty of values, reset
-			if (!sub.contains("\u00A7")) sub = colorChars;
-			// Get the § extracted
-			if (sub.contains("\u00A7")) {
-				sub2 = sub.substring(0, 2);
-			}
-			// Add the substring (color value) plus the char
-			updatedText += sub2 + text.charAt(i);
-			// Now replace the color value. (.replaceFirst -> otherwise double things would be removed, too!)
-			sub = sub.replaceFirst(sub2, "");
-		}
-		return updatedText;
-	}
-
 	// Check if the color is possible
 	public static boolean validColor(String color) {
 		ColorMe.logDebug("Actions -> validColor");
@@ -499,6 +545,12 @@ public class Actions {
 		return true;
 	}
 
+	/*
+	 * 
+	 * Misc funtions
+	 * 
+	 */
+
 	// Displays the specific help
 	public static void help(CommandSender sender, String pluginPart) {
 		ColorMe.logDebug("Actions -> help");
@@ -516,60 +568,34 @@ public class Actions {
 		ColorMe.message(sender, null, message, null, null, null, null);
 	}
 
-	// Update the name
-	public static void checkNames(String name, String world) {
-		ColorMe.logDebug("Actions -> checkNames");
-		ColorMe.logDebug("Asked to check the color of the player " + name + " in the world " + world);
-		String color;
-		// Check for color and valid ones, else restore
-		if (Actions.has(name, world, "colors")) {
-			String[] colors = ColorMe.players.getString(name + ".colors." + world).split("-");
-			for (String colorPart : colors) {
-				if (!Actions.validColor(colorPart)) {
-					restoreName(name);
-					return;
-				}
+
+	// The list of colors
+	public static void listColors(CommandSender sender) {
+		ColorMe.logDebug("Actions -> listColors");
+		String message = ColorMe.localization.getString("color_list");
+		ColorMe.message(sender, null, message, null, null, null, null);
+		String msg = "";
+		// As long as all colors aren't reached, including magic manual
+		for (ChatColor value : ChatColor.values()) {
+			// get the name from the integer
+			String color = value.name().toLowerCase();
+			String colorChar = Character.toString(value.getChar());
+			if (colorChar.equalsIgnoreCase("r")) continue;
+			if (colorChar.equalsIgnoreCase("n")) continue;
+			if (colorChar.equalsIgnoreCase("m")) continue;
+			if (colorChar.equalsIgnoreCase("k")) continue;
+			// color the name of the color
+			if (ColorMe.config.getBoolean("colors." + color)) {
+				msg += ChatColor.valueOf(color.toUpperCase()) + color + " (\u0026" + colorChar + ") " + ChatColor.WHITE;
 			}
-			color = Actions.get(name, world, "colors");
-			Actions.updateName(name, color);
 		}
-		else if (Actions.has(name, "default", "colors")) {
-			String[] colors = ColorMe.players.getString(name + ".colors.default").split("-");
-			for (String colorPart : colors) {
-				if (!Actions.validColor(colorPart)) {
-					restoreName(name);
-					return;
-				}
-			}
-			color = Actions.get(name, "default", "colors");
-			Actions.updateName(name, color);
-		}
-		// Group TODO Add method to get color from group
-		else if (Actions.has(name, "default", "colors")) {
-			String[] colors = ColorMe.players.getString(name + ".colors.default").split("-");
-			for (String colorPart : colors) {
-				if (!Actions.validColor(colorPart)) {
-					restoreName(name);
-					return;
-				}
-			}
-			// Get groupColor
-			color = Actions.get(name, "default", "colors");
-			Actions.updateName(name, color);
-		}
-		else if (ColorMe.globalColor) {
-			String[] colors = ColorMe.config.getString("global_default.color").split("-");
-			for (String colorPart : colors) {
-				if (!Actions.validColor(colorPart)) {
-					restoreName(name);
-					return;
-				}
-			}
-			color = Actions.getGlobal("color");
-			Actions.updateName(name, color);
-		}
-		else if (!Actions.has(name, world, "colors") || !Actions.has(name, "default", "colors") || !Actions.hasGlobal("color")) {
-			Actions.restoreName(name);
-		}
+		if (ColorMe.config.getBoolean("colors.strikethrough")) msg += ChatColor.STRIKETHROUGH + "striketrough" + ChatColor.WHITE + " (\u0026m) ";
+		if (ColorMe.config.getBoolean("colors.underline")) msg += ChatColor.UNDERLINE + "underline" + ChatColor.WHITE + " (\u0026n) ";
+		if (ColorMe.config.getBoolean("colors.magic")) msg += "magic (" + ChatColor.MAGIC + "a" + ChatColor.WHITE + ", \u0026k) ";
+		// Include custom colors
+		if (ColorMe.config.getBoolean("colors.random")) msg += randomColor("random (\u0026random)" + " ");
+		if (ColorMe.config.getBoolean("colors.rainbow")) msg += rainbowColor("rainbow (\u0026rainbow)") + " ";
+		if (ColorMe.config.getBoolean("colors.custom"))	msg += ColorMe.localization.getString("custom_colors_enabled").replaceAll("\u0026((?i)[0-9a-fk-or])", "\u00A7$1");
+		sender.sendMessage(msg);
 	}
 }
