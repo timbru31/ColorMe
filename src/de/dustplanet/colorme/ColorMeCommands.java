@@ -28,7 +28,7 @@ public class ColorMeCommands implements CommandExecutor {
 
 	// Commands for coloring
 	public boolean onCommand (CommandSender sender, Command command, String commandLabel, String[] args) {
-		String pluginPart = "colors", message, target, color, senderName, world = "default", globalColor, colorArray;
+		String pluginPart = "colors", message, target, color, senderName, world = "default", globalColor;
 		// Returns the color list
 		if (args.length > 0 && args[0].equalsIgnoreCase("list")) {
 			if (sender.hasPermission("colorme.list") || sender.hasPermission("prefixer.list") || sender.hasPermission("suffixer.list")) {

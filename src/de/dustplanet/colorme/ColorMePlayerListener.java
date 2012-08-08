@@ -100,7 +100,8 @@ public class ColorMePlayerListener implements Listener {
 			else {
 				// Own system
 			}
-			if (!groupPrefix.equals("")) groupPrefix += " ";
+			if (!groupPrefix.equalsIgnoreCase("")) groupPrefix += " ";
+			if (!groupSuffix.equalsIgnoreCase("")) groupSuffix += " ";
 		}
 
 		if (ColorMe.Prefixer) {

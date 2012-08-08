@@ -76,6 +76,10 @@ public class ColorMe extends JavaPlugin {
 	 * DONE --- TagAPI permission
 	 * Groups...
 	 * Reduce how often checkNames is called
+	 * Check groupSufix not set? Maybe a format bug
+	 * Remove double code (doubled checks)
+	 * Change debug logger with name, part
+	 * Change the ways -> first check then remove
 	 * 
 	 */
 

@@ -14,6 +14,27 @@ public class Actions {
 	public Actions(ColorMe instance) {
 		plugin = instance;
 	}
+	
+	/*
+	 * 
+	 * Group functions
+	 * 
+	 */
+	
+	// Sets a value for a group
+	public static void setGroup(String groupName, String value, String world, String groupPart) {
+		ColorMe.logDebug("Actions -> set");
+		ColorMe.logDebug("Asked to set the things from " + groupName + " in the world " + world + ", part " + groupPart);
+		// Write to the config and save and update the names
+		ColorMe.group.set(groupName + "." + groupPart + "." + world, value);
+		try {
+			ColorMe.group.save(ColorMe.groupsFile);
+			ColorMe.logDebug("Saved to the groupsFile");
+		} catch (IOException e) {
+			Bukkit.getServer().getLogger().warning("Failed to save the groups.yml! Please report this! IOException");
+			ColorMe.logDebug("Failed to save");
+		}
+	}
 
 	// Create a group
 	public static void createGroup(String groupName) {
@@ -21,6 +42,13 @@ public class Actions {
 		ColorMe.group.set(groupName + ".color.default", "");
 		ColorMe.group.set(groupName + ".prefix.default", "");
 		ColorMe.group.set(groupName + ".suffix.default", "");
+		try {
+			ColorMe.group.save(ColorMe.groupsFile);
+			ColorMe.logDebug("Saved to the groupsFile");
+		} catch (IOException e) {
+			Bukkit.getServer().getLogger().warning("Failed to save the groups.yml! Please report this! IOException");
+			ColorMe.logDebug("Failed to save");
+		}
 	}
 
 	// Add a member to a group
@@ -160,25 +188,19 @@ public class Actions {
 	}
 
 	// Set player's color/prefix/suffix
-	public static boolean set(String name, String value, String world, String pluginPart) {
+	public static void set(String name, String value, String world, String pluginPart) {
 		ColorMe.logDebug("Actions -> set");
 		ColorMe.logDebug("Asked to set the things from " + name + " in the world " + world + " part " + pluginPart);
-		String actualValue = get(name, world, pluginPart);
-		// If the colors are the same return false
-		if (actualValue.equalsIgnoreCase(value)) {
-			return false;
-		}
 		// Write to the config and save and update the names
 		ColorMe.players.set(name + "." + pluginPart + "." + world, value);
 		try {
 			ColorMe.players.save(ColorMe.playersFile);
 			ColorMe.logDebug("Saved to the config");
 		} catch (IOException e) {
-			Bukkit.getServer().getLogger().warning("Failed to save the player.yml! Please report this! IOException");
+			Bukkit.getServer().getLogger().warning("Failed to save the players.yml! Please report this! IOException");
 			ColorMe.logDebug("Failed to save");
 		}
 		checkNames(name, world);
-		return true;
 	}
 
 	// Check if a player has a color/prefix/suffix or not
@@ -201,7 +223,7 @@ public class Actions {
 	}
 
 	// Removes a color/prefix/suffix if exists, otherwise returns false
-	public static boolean remove(String name, String world, String pluginPart) {
+	public static void remove(String name, String world, String pluginPart) {
 		ColorMe.logDebug("Actions -> remove");
 		ColorMe.logDebug("Asked to remove the things from " + name + " in the world " + world + " part " + pluginPart);
 		name = name.toLowerCase();
@@ -215,14 +237,11 @@ public class Actions {
 			}
 			checkNames(name, world);
 			ColorMe.logDebug("Removed");
-			return true;
 		}
-		ColorMe.logDebug("Nothing to remove");
-		return false;
 	}
 
 	// Removes a color/prefix/suffix if exists, otherwise returns false
-	public static boolean removeGlobal(String pluginPart) {
+	public static void removeGlobal(String pluginPart) {
 		ColorMe.logDebug("Actions -> removeGlobal");
 		ColorMe.logDebug("Asked to remove the global part of " + pluginPart);
 		ColorMe.config.set("global_default." + pluginPart, "");
@@ -233,7 +252,6 @@ public class Actions {
 			Bukkit.getServer().getLogger().warning("Failed to save the config.yml! Please report this! IOException");
 			ColorMe.logDebug("Unable to remove global part");
 		}
-		return false;
 	}
 
 	// Update the displayName, tabName, title, prefix & suffix in a specific world (after setting, removing, onJoin and onChat)
@@ -474,7 +492,7 @@ public class Actions {
 		}
 		// Custom color? (Must contain something!!! NOT '' or null)
 		else if (ColorMe.colors.contains(color) && ColorMe.colors.getString(color).trim().length() > 1 && ColorMe.config.getBoolean("colors.custom")) {
-			ColorMe.logDebug("Color " + color + " is disabled");
+			ColorMe.logDebug("Color " + color + " is enabled");
 			return false;
 		}
 		ColorMe.logDebug("Color " + color + " is enabled");
@@ -482,13 +500,12 @@ public class Actions {
 	}
 
 	// Displays the specific help
-	public static boolean help(CommandSender sender, String pluginPart) {
+	public static void help(CommandSender sender, String pluginPart) {
 		ColorMe.logDebug("Actions -> help");
 		for (int i = 1; i <= 9; i++) {
 			String message = ColorMe.localization.getString("help_" + pluginPart + "_" + Integer.toString(i));
 			ColorMe.message(sender, null, message, null, null, null, null);
 		}
-		return true;
 	}
 
 	// Reloads the plugin
@@ -524,6 +541,19 @@ public class Actions {
 					return;
 				}
 			}
+			color = Actions.get(name, "default", "colors");
+			Actions.updateName(name, color);
+		}
+		// Group TODO Add method to get color from group
+		else if (Actions.has(name, "default", "colors")) {
+			String[] colors = ColorMe.players.getString(name + ".colors.default").split("-");
+			for (String colorPart : colors) {
+				if (!Actions.validColor(colorPart)) {
+					restoreName(name);
+					return;
+				}
+			}
+			// Get groupColor
 			color = Actions.get(name, "default", "colors");
 			Actions.updateName(name, color);
 		}
