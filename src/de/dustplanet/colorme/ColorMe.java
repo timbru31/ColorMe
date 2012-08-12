@@ -67,21 +67,6 @@ public class ColorMe extends JavaPlugin {
 	private GroupCommands groupExecutor;
 	public List<String> values = new ArrayList<String>();
 	public static List<String> bannedWords = new ArrayList<String>();
-	
-	/*
-	 * TODO
-	 * DONE --- Multi color possibility - second argument -> bold blue --> bold-blue -> split...
-	 * DONE --- Multi words prefix/suffix -> This_is_a_long_prefix -> replace _ with spaces
-	 * DONE --- SoftMode -> .enabled & ownChatPlugin
-	 * DONE --- TagAPI permission
-	 * Groups...
-	 * Reduce how often checkNames is called
-	 * Check groupSufix not set? Maybe a format bug
-	 * Remove double code (doubled checks)
-	 * DONE --- Change debug logger with name, part
-	 * DONE --- Change the ways -> first check then remove
-	 * 
-	 */
 
 	// Shutdown
 	public void onDisable() {
@@ -93,6 +78,8 @@ public class ColorMe extends JavaPlugin {
 		if (debug) {
 			logDebug("");
 			logDebug("\t-----END LOG-----");
+			logDebug("");
+			logDebug("");
 		}
 	}
 
@@ -507,7 +494,7 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("permission_denied", "&4You don't have the permission to do this!");
 		localization.addDefault("part_disabled", "&4Sorry, but this command and plugin part is disabled!");
 		localization.addDefault("only_ingame", "&4Sorry, this command can only be run from ingame!");
-		localization.addDefault("color_list", "Color list: (the & values are used for prefix/suffix!)");
+		localization.addDefault("color_list", "Color list: (the & values are used for prefix/suffix/chat & signs)!");
 		localization.addDefault("reload", "&2ColorMe version &4%version &2reloaded!");
 		localization.addDefault("charged", "&2You have been charged &4$%costs");
 		localization.addDefault("not_enough_money_1", "&4Sorry, you don't have enough money to do this.");
@@ -586,9 +573,36 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("help_suffix_7", "/suffixer me <suffix> [world] - Sets your own suffix");
 		localization.addDefault("help_suffix_8", "/suffixer <name> <suffix> [world] - Sets player's suffix");
 		localization.addDefault("help_suffix_9", "/suffixer global <suffix> - Sets the global suffix");
-		localization.addDefault("custom_colors_enabled", "&4Custom colors are enabled, too! Please ask your admin for them!");
 		localization.addDefault("too_long", "&4Sorry, this message is too long!");
 		localization.addDefault("bad_words", "&4Sorry,but '%s' is on the blacklist!");
+		localization.addDefault("help_group_1", "&2Welcome to the Groups (part of ColorMe) version &4%version &2help!");
+		localization.addDefault("help_group_2", "&4 <> = Required, [] = Optional");
+		localization.addDefault("help_group_3", "/group help - Shows the help");
+		localization.addDefault("help_group_4", "/color list - Shows list of colors");
+		localization.addDefault("help_group_5", "/group create <name> - Creates a group");
+		localization.addDefault("help_group_6", "/group delete <name> - Deletes a group");
+		localization.addDefault("help_group_7", "/group add <name> - Adds a member");
+		localization.addDefault("help_group_8", "/group remove <name> - Removes a member");
+		localization.addDefault("help_group_9", "/group members <groupName> - Lists all members");
+		localization.addDefault("help_group_10", "/group set <groupName> <part> <value> [world] - Sets a value of the group");
+		localization.addDefault("help_group_11", "/group get <groupName> <part> [world] - Gets a value of the group");
+		localization.addDefault("help_group_12", "/group list - Lists all groups");
+		localization.addDefault("no_groups", "&4There are no groups!");
+		localization.addDefault("no_members", "&4There are no members!");
+		localization.addDefault("memberlist", "&2Members of the group &e%groupName");
+		localization.addDefault("grouplist", "&2Currently enabled groups:");
+		localization.addDefault("group_not_existing", "&4The group &e%groupName &4doesn't exist!");
+		localization.addDefault("group_already_existing", "&4The group &e%groupName &4already exist!");
+		localization.addDefault("unrecognized_part", "&4The part &e%part &4is not known");
+		localization.addDefault("deleted_group", "&2Group &e%groupName &2deleted.");
+		localization.addDefault("created_group", "&2Group &e%groupName &2created.");
+		localization.addDefault("already_a_member", "&e%playerName &4is already a member of the group &e%groupName");
+		localization.addDefault("not_a_member", "&e%playerName &4is not a member of the group &e%groupName");
+		localization.addDefault("removed_member", "&2Removed &e%playerName &2from the group &e%groupName");
+		localization.addDefault("added_member", "&2Added &e%playerName &2to the group &e%groupName");
+		localization.addDefault("group_has_nothing", "&4The group &e%groupName &4doesn't have a value in the world &e%world");
+		localization.addDefault("group_get_value", "&2The group &e%groupName &2has got the value &e%value &2in the world &e%world");
+		localization.addDefault("group_set_value", "&2Set the value of the group &e%groupName &2to &e%value &2in the world &e%world");
 		localization.options().copyDefaults(true);
 		try {
 			localization.save(localizationFile);
@@ -714,6 +728,10 @@ public class ColorMe extends JavaPlugin {
 					.replaceAll("%suffix", value)
 					.replaceAll("%s", value)
 					.replaceAll("%player", target)
+					.replaceAll("%groupName", value)
+					.replaceAll("%playerName", world)
+					.replaceAll("%part", value)
+					.replaceAll("%value", target)
 					.replaceAll("%version", "3.5");
 			if (cost != null) {
 				message = message.replaceAll("%costs", Double.toString(cost));

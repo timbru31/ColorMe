@@ -44,6 +44,7 @@ public class ColorMePlayerListener implements Listener {
 	// Loads the the values and set them to default one if not known
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		ColorMe.logDebug("\t---PlayerJoinEvent Begin---");
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 		String world = player.getWorld().getName().toLowerCase();
@@ -59,17 +60,20 @@ public class ColorMePlayerListener implements Listener {
 			else Actions.set(name, ChatColor.values()[color].name().toLowerCase(), world, pluginPart[0]);
 		}
 		Actions.checkNames(name, world);
+		ColorMe.logDebug("\t---PlayerJoinEvent End---");
+		ColorMe.logDebug("");
 	}
 
 
 	// Loads the the values and set them to default one if not known
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		if (ColorMe.otherChatPluginFound) return;
 		ColorMe.logDebug("\t---PlayerChatEvent Begin---");
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase(), nameExact = player.getName();
 		String world = player.getWorld().getName().toLowerCase();
+		Actions.checkNames(name, world);
+		if (ColorMe.otherChatPluginFound) return;
 		String prefix = "", suffix = "", globalSuffix = "", globalPrefix = "", groupPrefix = "", groupSuffix = "";
 		// Group check!
 		if (ColorMe.groups) {

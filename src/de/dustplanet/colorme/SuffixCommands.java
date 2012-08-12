@@ -21,13 +21,12 @@ public class SuffixCommands implements CommandExecutor {
 		if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("suffixer.reload")) {
 				Actions.reload(sender);
-				return true;
 			}
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		// Stop here if suffixer is unwanted
 		if (!ColorMe.Suffixer) {
@@ -72,17 +71,15 @@ public class SuffixCommands implements CommandExecutor {
 				plugin.saveConfig();
 				message = ColorMe.localization.getString("changed_suffix_global");
 				ColorMe.message(sender, null, message, Actions.replaceThings(globalSuffix), null, null, null);
-				return true;
 			}
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		// Removes a suffix
 		else if (args.length > 1 && args[0].equalsIgnoreCase("remove")) {
-			world = "default";
 			// Removes the global suffix
 			if (args[1].equalsIgnoreCase("global")) {
 				if (sender.hasPermission("suffixer.global")) {
@@ -97,14 +94,13 @@ public class SuffixCommands implements CommandExecutor {
 					ColorMe.globalSuffix = false;
 					message = ColorMe.localization.getString("removed_suffix_global");
 					ColorMe.message(sender, null, message, null, null, null, null);
-					return true;
 				}
 				// Deny access
 				else {
 					message = ColorMe.localization.getString("permission_denied");
 					ColorMe.message(sender, null, message, null, null, null, null);
-					return true;
 				}
+				return true;
 			}
 			target = args[1].toLowerCase();
 			// Support for "me" -> this is the senderName!
@@ -118,9 +114,7 @@ public class SuffixCommands implements CommandExecutor {
 				}
 			}
 			senderName = sender.getName().toLowerCase();
-			if (args.length > 2) {
-				world = args[2].toLowerCase();
-			}
+			if (args.length > 2) world = args[2].toLowerCase();
 			// Check for permission or self
 			if (sender.hasPermission("suffixer.remove") || Actions.self(sender, target)) {
 				// Trying to remove a suffix from a suffix-less player
@@ -149,20 +143,17 @@ public class SuffixCommands implements CommandExecutor {
 				if (!target.equalsIgnoreCase(senderName)) {
 					message = ColorMe.localization.getString("removed_suffix_other");
 					ColorMe.message(sender, null, message, null, world, target, null);
-					return true;
 				}
-				return true;
 			}
 			// Deny access
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		// Gets a suffix
 		else if (args.length > 1 && args[0].equalsIgnoreCase("get")) {
-			world = "default";
 			// Get the global suffix if set
 			if (args[1].equalsIgnoreCase("global")) {
 				if (sender.hasPermission("suffixer.global")) {
@@ -175,14 +166,13 @@ public class SuffixCommands implements CommandExecutor {
 					suffix = Actions.getGlobal("suffix");
 					message = ColorMe.localization.getString("get_suffix_global");
 					ColorMe.message(sender, null, message, suffix, null, null, null);
-					return true;
 				}
 				// Deny access
 				else {
 					message = ColorMe.localization.getString("permission_denied");
 					ColorMe.message(sender, null, message, null, null, null, null);
-					return true;
 				}
+				return true;
 			}
 			// If a player name is there, too
 			target = args[1].toLowerCase();
@@ -196,9 +186,7 @@ public class SuffixCommands implements CommandExecutor {
 				}
 			}
 			senderName = sender.getName().toLowerCase();
-			if (args.length > 2) {
-				world = args[2].toLowerCase();
-			}
+			if (args.length > 2) world = args[2].toLowerCase();
 			suffix = Actions.get(target, world, pluginPart);
 			// Check for permission or self
 			if (sender.hasPermission("suffixer.get") || Actions.self(sender, target)) {
@@ -223,18 +211,16 @@ public class SuffixCommands implements CommandExecutor {
 				}
 				message = ColorMe.localization.getString("get_suffix_other");
 				ColorMe.message(sender, null, message, Actions.replaceThings(suffix), world, target, null);
-				return true;
 			}
 			// Deny access
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		// Suffixing
 		else if (args.length > 1) {
-			world = "default";
 			target = args[0].toLowerCase();
 			if (target.equalsIgnoreCase("me")) {
 				target = sender.getName().toLowerCase();
@@ -247,10 +233,7 @@ public class SuffixCommands implements CommandExecutor {
 			}
 			suffix = args[1].replaceAll("_", " ");
 			senderName = sender.getName().toLowerCase();
-			if (args.length > 2) {
-				world = args[2].toLowerCase();
-			}
-
+			if (args.length > 2) world = args[2].toLowerCase();
 			// If the suffixes are the same
 			if (Actions.replaceThings(suffix).equalsIgnoreCase(Actions.get(target, world, pluginPart))) {
 				if (senderName.equalsIgnoreCase(target)) {
@@ -262,7 +245,6 @@ public class SuffixCommands implements CommandExecutor {
 				ColorMe.message(sender, null, message, null, world, target, null);
 				return true;
 			}
-
 			// Self suffixing
 			if (sender.hasPermission("suffixer.self") && Actions.self(sender, target)) {
 				// If sender hasn't got the noFilter permission look if there are bad words in!
@@ -348,14 +330,13 @@ public class SuffixCommands implements CommandExecutor {
 				}
 				message = ColorMe.localization.getString("changed_suffix_other");
 				ColorMe.message(sender, null, message, Actions.replaceThings(suffix), world, target, null);
-				return true;
 			}
 			// Permission check failed
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		return false;
 	}

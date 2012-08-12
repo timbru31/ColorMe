@@ -31,27 +31,25 @@ public class ColorMeCommands implements CommandExecutor {
 		String pluginPart = "colors", message, target, color, senderName, world = "default", globalColor;
 		// Returns the color list
 		if (args.length > 0 && args[0].equalsIgnoreCase("list")) {
-			if (sender.hasPermission("colorme.list") || sender.hasPermission("prefixer.list") || sender.hasPermission("suffixer.list")) {
+			if (sender.hasPermission("colorme.list") || sender.hasPermission("prefixer.list") || sender.hasPermission("suffixer.list") || sender.hasPermission("groups.list")) {
 				Actions.listColors(sender);
-				return true;
 			}
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		// Reloads the configs
 		if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("colorme.reload")) {
 				Actions.reload(sender);
-				return true;
 			}
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		// Stop here if ColorMe is unwanted
 		if (ColorMe.config.getBoolean("ColorMe.displayName") == false && ColorMe.config.getBoolean("ColorMe.tabList") == false && ColorMe.config.getBoolean("ColorMe.playerTitle") == false) {
@@ -80,17 +78,15 @@ public class ColorMeCommands implements CommandExecutor {
 				plugin.saveConfig();
 				message = ColorMe.localization.getString("changed_color_global");
 				ColorMe.message(sender, null, message, globalColor, null, null, null);
-				return true;
 			}
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		// Removes a color
 		if (args.length > 1 && args[0].equalsIgnoreCase("remove")) {
-			world = "default";
 			// Removes the global color
 			if (args[1].equalsIgnoreCase("global")) {
 				if (sender.hasPermission("colorme.global")) {
@@ -105,14 +101,13 @@ public class ColorMeCommands implements CommandExecutor {
 					ColorMe.globalColor = false;
 					message = ColorMe.localization.getString("removed_color_global");
 					ColorMe.message(sender, null, message, null, null, null, null);
-					return true;
 				}
 				// Deny access
 				else {
 					message = ColorMe.localization.getString("permission_denied");
 					ColorMe.message(sender, null, message, null, null, null, null);
-					return true;
 				}
+				return true;
 			}
 			target = args[1].toLowerCase();
 			// Support for "me" -> this is the senderName!
@@ -126,14 +121,11 @@ public class ColorMeCommands implements CommandExecutor {
 				}
 			}
 			senderName = sender.getName().toLowerCase();
-			if (args.length > 2) {
-				world = args[2].toLowerCase();
-			}
+			if (args.length > 2) world = args[2].toLowerCase();
 			// Check for permission or self
 			if (sender.hasPermission("colorme.remove") || Actions.self(sender, target)) {
 				// Trying to remove a color from a color-less player
-				if (((!Actions.has(target, world, pluginPart) && ColorMe.players.contains(target + "." + pluginPart + "." + world)))
-						|| !ColorMe.players.contains(target)) {
+				if (((!Actions.has(target, world, pluginPart) && ColorMe.players.contains(target + "." + pluginPart + "." + world))) || !ColorMe.players.contains(target)) {
 					// Self
 					if (target.equalsIgnoreCase(senderName)) {
 						message = ColorMe.localization.getString("no_color_self");
@@ -157,20 +149,17 @@ public class ColorMeCommands implements CommandExecutor {
 				if (!target.equalsIgnoreCase(senderName)) {
 					message = ColorMe.localization.getString("removed_color_other");
 					ColorMe.message(sender, null, message, null, world, target, null);
-					return true;
 				}
-				return true;
 			}
 			// Deny access
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		// Gets a color
 		if (args.length > 1 && args[0].equalsIgnoreCase("get")) {
-			world = "default";
 			// Get the global color if set
 			if (args[1].equalsIgnoreCase("global")) {
 				if (sender.hasPermission("colorme.global")) {
@@ -183,14 +172,14 @@ public class ColorMeCommands implements CommandExecutor {
 					color = Actions.getGlobal("color");
 					message = ColorMe.localization.getString("get_color_global");
 					ColorMe.message(sender, null, message, color, null, null, null);
-					return true;
+
 				}
 				// Deny access
 				else {
 					message = ColorMe.localization.getString("permission_denied");
 					ColorMe.message(sender, null, message, null, null, null, null);
-					return true;
 				}
+				return true;
 			}
 			// If a player name is there, too			
 			target = args[1].toLowerCase();
@@ -204,9 +193,7 @@ public class ColorMeCommands implements CommandExecutor {
 				}
 			}
 			senderName = sender.getName().toLowerCase();
-			if (args.length > 2) {
-				world = args[2].toLowerCase();
-			}
+			if (args.length > 2) world = args[2].toLowerCase();
 			// Check for permission or self
 			if (sender.hasPermission("colorme.get") || Actions.self(sender, target)) {
 				// Trying to get a color from a color-less player
@@ -231,18 +218,16 @@ public class ColorMeCommands implements CommandExecutor {
 				}
 				message = ColorMe.localization.getString("get_color_other");
 				ColorMe.message(sender, null, message, color, world, target, null);
-				return true;
 			}
 			// Deny access
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		// Coloring
 		if (args.length > 1) {
-			world = "default";
 			target = args[0].toLowerCase();
 			if (target.equalsIgnoreCase("me")) {
 				target = sender.getName().toLowerCase();
@@ -256,9 +241,7 @@ public class ColorMeCommands implements CommandExecutor {
 			// Is a world explicit named? Also lower case
 			color = args[1].toLowerCase();
 			senderName = sender.getName().toLowerCase();
-			if (args.length > 2) {
-				world = args[2].toLowerCase();
-			}
+			if (args.length > 2) world = args[2].toLowerCase();
 			String[] colors = color.split("-");
 			// If the colors are the same
 			if (color.equalsIgnoreCase(Actions.get(target, world, pluginPart))) {
@@ -274,27 +257,26 @@ public class ColorMeCommands implements CommandExecutor {
 			// Iterate through the different colors
 			for (String colorPart : colors) {
 				// Unsupported colors
-				if (Actions.validColor(colorPart) == false) {
+				if (!Actions.validColor(colorPart)) {
 					message = ColorMe.localization.getString("invalid_color");
 					ColorMe.message(sender, null, message, colorPart, null, null, null);
 					return true;
 				}
 
 				// If color is disabled
-				if (Actions.isDisabled(colorPart) == true) {
+				if (Actions.isDisabled(colorPart)) {
 					message = ColorMe.localization.getString("disabled_color");
 					ColorMe.message(sender, null, message, colorPart, null, null, null);
 					return true;
 				}
 			}
-
 			// Check for name of the color
 			String colorName = color.toLowerCase();
 			if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) colorName = "custom";
 			if (color.contains("-")) {
 				colorName = "mixed";
 				// If color is disabled
-				if (Actions.isDisabled(colorName) == true) {
+				if (Actions.isDisabled(colorName)) {
 					message = ColorMe.localization.getString("disabled_color");
 					ColorMe.message(sender, null, message, colorName, null, null, null);
 					return true;
@@ -358,14 +340,13 @@ public class ColorMeCommands implements CommandExecutor {
 				}
 				message = ColorMe.localization.getString("changed_color_other");
 				ColorMe.message(sender, null, message, color, world, target, null);
-				return true;
 			}
 			// Permission check failed
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		return false;
 	}

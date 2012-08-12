@@ -21,13 +21,12 @@ public class PrefixCommands implements CommandExecutor {
 		if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("prefixer.reload")) {
 				Actions.reload(sender);
-				return true;
 			}
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		// Stop here if Prefixer is unwanted
 		if (!ColorMe.Prefixer) {
@@ -72,17 +71,15 @@ public class PrefixCommands implements CommandExecutor {
 				plugin.saveConfig();
 				message = ColorMe.localization.getString("changed_prefix_global");
 				ColorMe.message(sender, null, message, Actions.replaceThings(globalPrefix), null, null, null);
-				return true;
 			}
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		// Removes a prefix
 		else if (args.length > 1 && args[0].equalsIgnoreCase("remove")) {
-			world = "default";
 			// Removes the global prefix
 			if (args[1].equalsIgnoreCase("global")) {
 				if (sender.hasPermission("prefixer.global")) {
@@ -97,14 +94,13 @@ public class PrefixCommands implements CommandExecutor {
 					ColorMe.globalPrefix = false;
 					message = ColorMe.localization.getString("removed_prefix_global");
 					ColorMe.message(sender, null, message, null, null, null, null);
-					return true;
 				}
 				// Deny access
 				else {
 					message = ColorMe.localization.getString("permission_denied");
 					ColorMe.message(sender, null, message, null, null, null, null);
-					return true;
 				}
+				return true;
 			}
 			target = args[1].toLowerCase();
 			// Support for "me" -> this is the senderName!
@@ -118,14 +114,11 @@ public class PrefixCommands implements CommandExecutor {
 				}
 			}
 			senderName = sender.getName().toLowerCase();
-			if (args.length > 2) {
-				world = args[2].toLowerCase();
-			}
+			if (args.length > 2) world = args[2].toLowerCase();
 			// Check for permission or self
 			if (sender.hasPermission("prefixer.remove") || Actions.self(sender, target)) {
 				// Trying to remove a prefix from a prefix-less player
-				if (((!Actions.has(target, world, pluginPart) && ColorMe.players.contains(target + "." + pluginPart + "." + world)))
-						|| !ColorMe.players.contains(target)) {
+				if (((!Actions.has(target, world, pluginPart) && ColorMe.players.contains(target + "." + pluginPart + "." + world))) || !ColorMe.players.contains(target)) {
 					// Self
 					if (target.equalsIgnoreCase(senderName)) {
 						message = ColorMe.localization.getString("no_prefix_self");
@@ -149,20 +142,17 @@ public class PrefixCommands implements CommandExecutor {
 				if (!target.equalsIgnoreCase(senderName)) {
 					message = ColorMe.localization.getString("removed_prefix_other");
 					ColorMe.message(sender, null, message, null, world, target, null);
-					return true;
 				}
-				return true;
 			}
 			// Deny access
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		// Gets a prefix
 		else if (args.length > 1 && args[0].equalsIgnoreCase("get")) {
-			world = "default";
 			// Get the global prefix if set
 			if (args[1].equalsIgnoreCase("global")) {
 				if (sender.hasPermission("prefixer.global")) {
@@ -175,14 +165,13 @@ public class PrefixCommands implements CommandExecutor {
 					prefix = Actions.getGlobal("prefix");
 					message = ColorMe.localization.getString("get_prefix_global");
 					ColorMe.message(sender, null, message, Actions.replaceThings(prefix), null, null, null);
-					return true;
 				}
 				// Deny access
 				else {
 					message = ColorMe.localization.getString("permission_denied");
 					ColorMe.message(sender, null, message, null, null, null, null);
-					return true;
 				}
+				return true;
 			}
 			// If a player name is there, too
 			target = args[1].toLowerCase();
@@ -196,9 +185,7 @@ public class PrefixCommands implements CommandExecutor {
 				}
 			}
 			senderName = sender.getName().toLowerCase();
-			if (args.length > 2) {
-				world = args[2].toLowerCase();
-			}
+			if (args.length > 2) world = args[2].toLowerCase();
 			prefix = Actions.get(target, world, pluginPart);
 			// Check for permission or self
 			if (sender.hasPermission("prefixer.get") || Actions.self(sender, target)) {
@@ -223,18 +210,16 @@ public class PrefixCommands implements CommandExecutor {
 				}
 				message = ColorMe.localization.getString("get_prefix_other");
 				ColorMe.message(sender, null, message, Actions.replaceThings(prefix), world, target, null);
-				return true;
 			}
 			// Deny access
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		// Prefixing
 		else if (args.length > 1) {
-			world = "default";
 			target = args[0].toLowerCase();
 			if (target.equalsIgnoreCase("me")) {
 				target = sender.getName().toLowerCase();
@@ -247,10 +232,7 @@ public class PrefixCommands implements CommandExecutor {
 			}
 			prefix = args[1].replaceAll("_", " ");
 			senderName = sender.getName().toLowerCase();
-			if (args.length > 2) {
-				world = args[2].toLowerCase();
-			}
-
+			if (args.length > 2) world = args[2].toLowerCase();
 			// If the prefixes are the same
 			if (Actions.replaceThings(prefix).equalsIgnoreCase(Actions.get(target, world, pluginPart))) {
 				if (senderName.equalsIgnoreCase(target)) {
@@ -262,7 +244,6 @@ public class PrefixCommands implements CommandExecutor {
 				ColorMe.message(sender, null, message, null, world, target, null);
 				return true;
 			}
-
 			// Self prefixing
 			if (sender.hasPermission("prefixer.self") && Actions.self(sender, target)) {
 				// If sender hasn't got the noFilter permission look if there are bad words in!
@@ -348,14 +329,13 @@ public class PrefixCommands implements CommandExecutor {
 				}
 				message = ColorMe.localization.getString("changed_prefix_other");
 				ColorMe.message(sender, null, message, Actions.replaceThings(prefix), world, target, null);
-				return true;
 			}
 			// Permission check failed
 			else {
 				message = ColorMe.localization.getString("permission_denied");
 				ColorMe.message(sender, null, message, null, null, null, null);
-				return true;
 			}
+			return true;
 		}
 		return false;
 	}

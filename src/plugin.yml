@@ -153,6 +153,9 @@ permissions:
     colorme.nametag:
         default: op
         description: Allows setting of own color above the head
+    colorme.reload:
+        default: op
+        description: Allows reloading
     colorme.*:
         children:
             colorme.list: true
@@ -165,6 +168,7 @@ permissions:
             colorme.chat: true
             colorme.sign: true
             colorme.nametag: true
+            colorme.reload: true
         description: Allows all commands for ColorMe
     prefixer.list:
         default: true
@@ -190,6 +194,9 @@ permissions:
     prefixer.nofilter:
         default: op
         description: No filter for prefixing
+    prefixer.reload:
+        default: op
+        description: Allows reloading
     prefixer.*:
         children:
             prefixer.list: true
@@ -200,6 +207,7 @@ permissions:
             prefixer.global: true
             prefixer.free: true
             prefixer.nofilter: true
+            prefixer.reload: true
         description: Allows all commands for Prefixer
     suffixer.list:
         default: true
@@ -225,6 +233,9 @@ permissions:
     suffixer.nofilter:
         default: op
         description: No filter for suffixing
+    suffixer.reload:
+        default: op
+        description: Allows reloading
     suffixer.*:
         children:
             suffixer.list: true
@@ -235,5 +246,49 @@ permissions:
             suffixer.global: true
             suffixer.free: true
             suffixer.nofilter: true
+            suffixer.reload: true
+        description: Allows all commands for Suffixer
+    groups.list:
+        default: true
+        description: Allows player to see list of color codes
+    groups.create:
+        default: op
+        description: Allows creating a group
+    groups.delete:
+        default: op
+        description: Allows deleting a group
+    groups.addmember:
+        default: op
+        description: Allows to add members
+    groups.removemember:
+        default: op
+        description: Allows removal of members
+    groups.grouplist:
+        default: op
+        description: Allows view of groups
+    groups.members:
+        default: op
+        description: Allows view of the members
+    groups.set:
+        default: op
+        description: Sets a value
+    groups.get:
+        default: op
+        description: Gets a value
+    groups.reload:
+        default: op
+        description: Allows reloading
+    groups.*:
+        children:
+            groups.list: true
+            groups.create: true
+            groups.delete: true
+            groups.removemember: true
+            groups.get: true
+            groups.set: true
+            groups.addmember: true
+            groups.grouplist: true
+            groups.members: true
+            groups.reload: true
         description: Allows all commands for Suffixer
 softdepend: [Vault, Spout, TagAPI]
