@@ -97,8 +97,14 @@ public class ColorMePlayerListener implements Listener {
 					groupSuffix = Actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("suffix"));
 				}
 			}
-			else {
-				// Own system
+			else if (ColorMe.ownSystem) {
+				if (Actions.playerHasGroup(name)) {
+					String group = Actions.playerGetGroup(name);
+					if (Actions.hasGroup(group, world, "prefix")) groupPrefix = Actions.getGroup(group, world, "prefix");
+					if (Actions.hasGroup(group, "default", "prefix")) groupPrefix = Actions.getGroup(group, "default", "prefix");
+					if (Actions.hasGroup(group, world, "suffix")) groupSuffix = Actions.getGroup(group, world, "suffix");
+					if (Actions.hasGroup(group, "default", "suffix")) groupSuffix = Actions.getGroup(group, "default", "suffix");
+				}
 			}
 			if (!groupPrefix.equalsIgnoreCase("")) groupPrefix += " ";
 			if (!groupSuffix.equalsIgnoreCase("")) groupSuffix += " ";
