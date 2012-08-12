@@ -290,5 +290,5 @@ permissions:
             groups.grouplist: true
             groups.members: true
             groups.reload: true
-        description: Allows all commands for Suffixer
+        description: Allows all commands for Groups
 softdepend: [Vault, Spout, TagAPI]

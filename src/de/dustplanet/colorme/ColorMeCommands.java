@@ -52,7 +52,7 @@ public class ColorMeCommands implements CommandExecutor {
 			return true;
 		}
 		// Stop here if ColorMe is unwanted
-		if (ColorMe.config.getBoolean("ColorMe.displayName") == false && ColorMe.config.getBoolean("ColorMe.tabList") == false && ColorMe.config.getBoolean("ColorMe.playerTitle") == false) {
+		if (!ColorMe.displayName && !ColorMe.tabList && !ColorMe.playerTitle && !ColorMe.playerTitleWithoutSpout) {
 			message = ColorMe.localization.getString("part_disabled");
 			ColorMe.message(sender, null, message, null, null, null, null);
 			return true;
