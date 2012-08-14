@@ -537,9 +537,9 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("changed_prefix_self", "&eYour &2prefix has been changed to &f%prefix &2in the world &e%world");
 		localization.addDefault("changed_prefix_other", "&2Changed &e%player&2's prefix to &f%prefix &2in the world &e%world");
 		localization.addDefault("changed_prefix_global", "&2The global prefix has been changed to &f%prefix");
-		localization.addDefault("get_prefix_self", "&eYou &2have got the prefix %prefix &2in the world &e%world");
-		localization.addDefault("get_prefix_other", "&e%player &2has got the prefix %prefix %2in the world &e%world");
-		localization.addDefault("get_prefix_global", "&2The global prefix is %prefix");
+		localization.addDefault("get_prefix_self", "&eYou &2have got the prefix &f%prefix &2in the world &e%world");
+		localization.addDefault("get_prefix_other", "&e%player &2has got the prefix &f%prefix &2in the world &e%world");
+		localization.addDefault("get_prefix_global", "&2The global prefix is &f%prefix");
 		localization.addDefault("help_prefix_1", "&2Welcome to the Prefixer (part of ColorMe) version &4%version &2help!");
 		localization.addDefault("help_prefix_2", "&4 <> = Required, [] = Optional");
 		localization.addDefault("help_prefix_3", "/prefixer help - Shows the help");
@@ -561,9 +561,9 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("changed_suffix_self", "&eYour &2suffix has been changed to &f%suffix &2in the world &e%world");
 		localization.addDefault("changed_suffix_other", "&2Changed &e%player&2's suffix to &f%suffix &2in the world &e%world");
 		localization.addDefault("changed_suffix_global", "&2The global suffix has been changed to &f%suffix");
-		localization.addDefault("get_suffix_self", "&eYou &2have got the suffix %suffix &2in the world &e%world");
-		localization.addDefault("get_suffix_other", "&e%player &2has got the suffix %suffix %2in the world &e%world");
-		localization.addDefault("get_suffix_global", "&2The global suffix is &e%suffix");
+		localization.addDefault("get_suffix_self", "&eYou &2have got the suffix &f%suffix &2in the world &e%world");
+		localization.addDefault("get_suffix_other", "&e%player &2has got the suffix &f%suffix %2in the world &e%world");
+		localization.addDefault("get_suffix_global", "&2The global suffix is &f%suffix");
 		localization.addDefault("help_suffix_1", "&2Welcome to the Suffixer (part of ColorMe) version &4%version &2help!");
 		localization.addDefault("help_suffix_2", "&4 <> = Required, [] = Optional");
 		localization.addDefault("help_suffix_3", "/suffixer help - Shows the help");
@@ -721,7 +721,6 @@ public class ColorMe extends JavaPlugin {
 	public static void message(CommandSender sender, Player player, String message, String value, String world, String target, Double cost) {
 		if (message != null) {
 			message = message
-					.replaceAll("&((?i)[0-9a-fk-or])", "\u00A7$1")
 					.replaceAll("%world", world)
 					.replaceAll("%color", value)
 					.replaceAll("%prefix", value)
@@ -733,6 +732,7 @@ public class ColorMe extends JavaPlugin {
 					.replaceAll("%part", value)
 					.replaceAll("%value", target)
 					.replaceAll("%version", "3.5");
+			message = ChatColor.translateAlternateColorCodes('\u0026', message);
 			if (cost != null) {
 				message = message.replaceAll("%costs", Double.toString(cost));
 			}

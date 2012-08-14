@@ -312,7 +312,7 @@ public class Actions {
 		ColorMe.logDebug("Asked to color the string " + text + " with the color " + color);
 		// Get color
 		String updatedText = "";
-		String colorChars = ColorMe.colors.getString(color).replaceAll("\u0026((?i)[0-9a-fk-or])", "\u00A7$1");
+		String colorChars = ChatColor.translateAlternateColorCodes('\u0026', ColorMe.colors.getString(color));
 		// No § or &? Not valid; doesn't start with §? Not valid! Ending without a char? Not valid!
 		if (!colorChars.contains("\u00A7") || colorChars.contains("\u0026") || !colorChars.startsWith("\u00A7") || colorChars.endsWith("\u00A7")) return text;
 		// Split the color values
@@ -329,6 +329,7 @@ public class Actions {
 	// Replace all in a String
 	public static String replaceThings(String string) {
 		ColorMe.logDebug("Actions -> replaceThings");
+		if (string == null) return "";
 		// While random is in there
 		String sub;
 		while (string.contains("\u0026random")) {
@@ -407,7 +408,7 @@ public class Actions {
 			sub = "";
 		}
 		// Normal color codes!
-		string = string.replaceAll("\u0026((?i)[0-9a-fk-or])", "\u00A7$1");
+		string = ChatColor.translateAlternateColorCodes('\u0026', string);
 		return string;
 	}
 
