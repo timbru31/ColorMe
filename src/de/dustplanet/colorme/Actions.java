@@ -338,12 +338,8 @@ public class Actions {
 			int z = string.length();
 			sub = string.substring(i, z);
 			// Stop if other & or § is found
-			if (sub.contains("\u0026")) {
-				sub = sub.substring(0, sub.indexOf("\u0026"));
-			}
-			if (sub.contains("\u00A7")) {
-				sub = sub.substring(0, sub.indexOf("\u00A7"));
-			}
+			if (sub.contains("\u0026")) sub = sub.substring(0, sub.indexOf("\u0026"));
+			if (sub.contains("\u00A7")) sub = sub.substring(0, sub.indexOf("\u00A7"));
 			// Replace
 			string = string.replace(sub, randomColor(sub));
 			// Replace FIRST random
@@ -357,12 +353,8 @@ public class Actions {
 			int z = string.length();
 			sub = string.substring(i, z);
 			// Stop if other & or § is found
-			if (sub.contains("\u0026")) {
-				sub = sub.substring(0, sub.indexOf("\u0026"));
-			}
-			if (sub.contains("\u00A7")) {
-				sub = sub.substring(0, sub.indexOf("\u00A7"));
-			}
+			if (sub.contains("\u0026")) sub = sub.substring(0, sub.indexOf("\u0026"));
+			if (sub.contains("\u00A7")) sub = sub.substring(0, sub.indexOf("\u00A7"));
 			// Replace
 			string = string.replace(sub, randomColor(sub));
 			// Replace FIRST random
@@ -376,12 +368,8 @@ public class Actions {
 			int z = string.length();
 			sub = string.substring(i, z);
 			// Stop if other & or § is found
-			if (sub.contains("\u0026")) {
-				sub = sub.substring(0, sub.indexOf("\u0026"));
-			}
-			if (sub.contains("\u00A7")) {
-				sub = sub.substring(0, sub.indexOf("\u00A7"));
-			}
+			if (sub.contains("\u0026")) sub = sub.substring(0, sub.indexOf("\u0026"));
+			if (sub.contains("\u00A7")) sub = sub.substring(0, sub.indexOf("\u00A7"));
 			// Replace
 			string = string.replace(sub, rainbowColor(sub));
 			// Replace FIRST rainbow
@@ -395,12 +383,8 @@ public class Actions {
 			int z = string.length();
 			sub = string.substring(i, z);
 			// Stop if other & or § is found
-			if (sub.contains("\u0026")) {
-				sub = sub.substring(0, sub.indexOf("\u0026"));
-			}
-			if (sub.contains("\u00A7")) {
-				sub = sub.substring(0, sub.indexOf("\u00A7"));
-			}
+			if (sub.contains("\u0026")) sub = sub.substring(0, sub.indexOf("\u0026"));
+			if (sub.contains("\u00A7")) sub = sub.substring(0, sub.indexOf("\u00A7"));
 			// Replace
 			string = string.replace(sub, rainbowColor(sub));
 			// Replace FIRST rainbow
@@ -427,33 +411,23 @@ public class Actions {
 		String color = null;
 		// Check for color and valid ones, else restore
 		// Check player specific world
-		if (has(name, world, "colors")) {
-			color = get(name, world, "colors");
-		}
+		if (has(name, world, "colors")) color = get(name, world, "colors");
 		// Check player default
-		else if (has(name, "default", "colors")) {
-			color = Actions.get(name, "default", "colors");
-		}
+		else if (has(name, "default", "colors")) color = Actions.get(name, "default", "colors");
 		// If groups enabled
 		else if (ColorMe.groups && ColorMe.ownSystem) {
 			// If group available
 			if (playerHasGroup(name)) {
 				String group = playerGetGroup(name);
 				// Group specific world
-				if (hasGroup(group, world, "colors")) {
-					color = Actions.getGroup(group, world, "colors");
-				}
+				if (hasGroup(group, world, "colors")) color = Actions.getGroup(group, world, "colors");
 				// Group default
-				else if (hasGroup(group, "default", "colors")) {
-					color = Actions.getGroup(group, "default", "colors");
-				}
+				else if (hasGroup(group, "default", "colors")) color = Actions.getGroup(group, "default", "colors");
 			}
 		}
 		// Then check if still nothing found and globalColor
 		if (ColorMe.globalColor && color == null) {
-			if (hasGlobal("color")) {
-				color = getGlobal("color");
-			}
+			if (hasGlobal("color"))	color = getGlobal("color");
 		}
 		// Restore if nothing found...
 		if (color == null) {
@@ -481,52 +455,39 @@ public class Actions {
 		if (player != null) {
 			String displayName = player.getDisplayName();
 			String cleanDisplayName = ChatColor.stripColor(displayName);
+			String newDisplayName = cleanDisplayName;
 			player.setDisplayName(cleanDisplayName);
 			player.setPlayerListName(cleanDisplayName);
 			if (ColorMe.tagAPI && ColorMe.playerTitleWithoutSpout) TagAPI.refreshPlayer(player);
-			String newName;
+			String newName = cleanDisplayName;
+			String [] colors = color.split("-");
 			// Name color
 			if (ColorMe.displayName) {
-				// Random
-				if (color.equalsIgnoreCase("random")) {
-					player.setDisplayName(randomColor(cleanDisplayName) + ChatColor.WHITE);
-				}
-				// Rainbow
-				else if (color.equalsIgnoreCase("rainbow")) {
-					player.setDisplayName(rainbowColor(cleanDisplayName) + ChatColor.WHITE);
-				}
-				// Custom colors
-				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
-					player.setDisplayName(updateCustomColor(color, cleanDisplayName) + ChatColor.WHITE);
-				}
-				// Normal
-				else {
-					String [] colors = color.split("-");
-					String tempDispName = "";
-					for (String colorPart : colors) {
-						tempDispName += ChatColor.valueOf(colorPart.toUpperCase());
+				for (String colorPart : colors) {
+					// Random
+					if (colorPart.equalsIgnoreCase("random")) newDisplayName = randomColor(cleanDisplayName);
+					// Rainbow
+					else if (colorPart.equalsIgnoreCase("rainbow")) newDisplayName = rainbowColor(cleanDisplayName);
+					// Custom colors
+					else if (ColorMe.colors.contains(colorPart) && (ColorMe.colors.getString(colorPart).trim().length() > 1 ? true : false) == true) {
+						newDisplayName = updateCustomColor(colorPart, cleanDisplayName);
 					}
-					player.setDisplayName(tempDispName + cleanDisplayName + ChatColor.WHITE);
+					else newDisplayName = ChatColor.valueOf(colorPart.toUpperCase()) + newDisplayName;
 				}
+				player.setDisplayName(newDisplayName + ChatColor.WHITE);
 			}
 			// Check for playerList
 			if (ColorMe.tabList) {
-				if (color.equalsIgnoreCase("random")) {
-					newName = randomColor(cleanDisplayName);
-				}
-				else if (color.equalsIgnoreCase("rainbow")) {
-					newName = rainbowColor(cleanDisplayName);
-				}
-				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
-					newName = updateCustomColor(color, cleanDisplayName);
-				}
-				else {
-					String [] colors = color.split("-");
-					String tempDispName = "";
-					for (String colorPart : colors) {
-						tempDispName += ChatColor.valueOf(colorPart.toUpperCase());
+				for (String colorPart : colors) {
+					// Random
+					if (colorPart.equalsIgnoreCase("random")) newName = randomColor(cleanDisplayName);
+					// Rainbow
+					else if (colorPart.equalsIgnoreCase("rainbow")) newName = rainbowColor(cleanDisplayName);
+					// Custom colors
+					else if (ColorMe.colors.contains(colorPart) && (ColorMe.colors.getString(colorPart).trim().length() > 1 ? true : false) == true) {
+						newName = updateCustomColor(colorPart, cleanDisplayName);
 					}
-					newName = tempDispName + cleanDisplayName + ChatColor.WHITE;
+					else newName = ChatColor.valueOf(colorPart.toUpperCase()) + newName;
 				}
 				// Shorten it, if too long
 				if (!newName.equals("") && newName != null) {
@@ -539,26 +500,18 @@ public class Actions {
 			// Check for Spout
 			if (ColorMe.spoutEnabled && ColorMe.playerTitle && player.hasPermission("colorme.nametag")) {
 				SpoutPlayer spoutPlayer = (SpoutPlayer) player;
-				// Random color
-				if (color.equalsIgnoreCase("random")) {
-					spoutPlayer.setTitle(randomColor(cleanDisplayName));
-				}
-				// Rainbow
-				else if (color.equalsIgnoreCase("rainbow")) {
-					spoutPlayer.setTitle(rainbowColor(cleanDisplayName));
-				}
-				else if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
-					spoutPlayer.setTitle(updateCustomColor(color, cleanDisplayName));
-				}
-				// Normal color
-				else {
-					String [] colors = color.split("-");
-					String tempDispName = "";
-					for (String colorPart : colors) {
-						tempDispName += ChatColor.valueOf(colorPart.toUpperCase());
+				for (String colorPart : colors) {
+					// Random
+					if (colorPart.equalsIgnoreCase("random")) newDisplayName = randomColor(cleanDisplayName);
+					// Rainbow
+					else if (colorPart.equalsIgnoreCase("rainbow")) newDisplayName = rainbowColor(cleanDisplayName);
+					// Custom colors
+					else if (ColorMe.colors.contains(colorPart) && (ColorMe.colors.getString(colorPart).trim().length() > 1 ? true : false) == true) {
+						newDisplayName = updateCustomColor(colorPart, cleanDisplayName);
 					}
-					spoutPlayer.setTitle(tempDispName + cleanDisplayName);
+					else newDisplayName = ChatColor.valueOf(colorPart.toUpperCase()) + newDisplayName;
 				}
+				spoutPlayer.setTitle(newDisplayName);
 			}
 			// Check if TagAPI should be used -> above the head!
 			if (ColorMe.playerTitleWithoutSpout && ColorMe.tagAPI && player.hasPermission("colorme.nametag")) {
@@ -640,6 +593,16 @@ public class Actions {
 		ColorMe.logDebug("Color " + color + " is enabled");
 		return true;
 	}
+	
+	// Checks if the given color is a standard vanilla one
+	public static boolean isStandard(String color) {
+		ColorMe.logDebug("Actions -> isStandard");
+		color = color.toUpperCase();
+		for (ChatColor chatColor: ChatColor.values()) {
+			if (chatColor.name().equalsIgnoreCase(color)) return true;
+		}
+		return false;
+	}
 
 	/*
 	 * 
@@ -694,9 +657,7 @@ public class Actions {
 		if (ColorMe.config.getBoolean("colors.rainbow")) msg += rainbowColor("rainbow (\u0026rainbow)") + " ";
 		if (ColorMe.config.getBoolean("colors.custom"))	{
 			msg += ChatColor.RESET;
-			for (String color : ColorMe.colors.getKeys(false)) {
-				msg += color + " ";
-			}
+			for (String color : ColorMe.colors.getKeys(false)) msg += color + " ";
 		}
 		if (ColorMe.config.getBoolean("colors.mixed")) msg += ChatColor.RESET + "" + ChatColor.DARK_RED + "\nMixed colors are enabled. Example: blue-bold";
 		sender.sendMessage(msg);
