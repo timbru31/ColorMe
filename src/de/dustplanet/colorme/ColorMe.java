@@ -31,8 +31,6 @@ import org.kitteh.tag.TagAPI;
 // Economy
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
-// GroupManager
-import org.anjocaido.groupmanager.GroupManager;
 
 
 /**
@@ -51,22 +49,23 @@ import org.anjocaido.groupmanager.GroupManager;
  */
 
 public class ColorMe extends JavaPlugin {
-	private final ColorMePlayerListener playerListener = new ColorMePlayerListener(this);
-	private final ColorMeBlockListener blockListener = new ColorMeBlockListener(this);
-	private final ColorMeTagAPIListener tagAPIListener = new ColorMeTagAPIListener(this);
+	private Actions actions;
+	private ColorMePlayerListener playerListener;
+	private ColorMeBlockListener blockListener;
+	private ColorMeTagAPIListener tagAPIListener;
 	public Economy economy = null;
-	public static FileConfiguration config, players, localization, colors, group;
-	public static File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile, debugFile, groupsFile;
-	public static boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets;
-	public static boolean chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist, tagAPI;
-	public static boolean groups, ownSystem, pex, bPermissions, groupManager, softMode, otherChatPluginFound;
-	public static int prefixLength, suffixLength;
+	public FileConfiguration config, players, localization, colors, group;
+	public File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile, debugFile, groupsFile;
+	public boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets;
+	public boolean chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist, tagAPI;
+	public boolean groups, ownSystem, pex, bPermissions, groupManager, softMode, otherChatPluginFound;
+	public int prefixLength, suffixLength;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
 	private SuffixCommands suffixExecutor;
 	private GroupCommands groupExecutor;
 	public List<String> values = new ArrayList<String>();
-	public static List<String> bannedWords = new ArrayList<String>();
+	public List<String> bannedWords = new ArrayList<String>();
 
 	// Shutdown
 	public void onDisable() {
@@ -85,6 +84,10 @@ public class ColorMe extends JavaPlugin {
 
 	// Start
 	public void onEnable() {
+		actions = new Actions(this);
+		playerListener = new ColorMePlayerListener(this, actions);
+		blockListener = new ColorMeBlockListener(this, actions);
+		tagAPIListener = new ColorMeTagAPIListener(this, actions);
 		// Events
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(playerListener, this);
@@ -180,19 +183,19 @@ public class ColorMe extends JavaPlugin {
 		}
 
 		// Refer to ColorMeCommands
-		colorExecutor = new ColorMeCommands(this);
+		colorExecutor = new ColorMeCommands(this, actions);
 		getCommand("color").setExecutor(colorExecutor);
 
 		// Refer to PrefixCommands
-		prefixExecutor = new PrefixCommands(this);
+		prefixExecutor = new PrefixCommands(this, actions);
 		getCommand("prefix").setExecutor(prefixExecutor);
 
 		// Refer to SuffixCommands
-		suffixExecutor = new SuffixCommands(this);
+		suffixExecutor = new SuffixCommands(this, actions);
 		getCommand("suffix").setExecutor(suffixExecutor);
 		
 		// Refer to GroupCommands
-		groupExecutor = new GroupCommands(this);
+		groupExecutor = new GroupCommands(this, actions);
 		getCommand("group").setExecutor(groupExecutor);
 
 		// Message
@@ -249,7 +252,7 @@ public class ColorMe extends JavaPlugin {
 			else if (groupManagerPlugin != null) {
 				groupManager = true;
 				this.getServer().getLogger().info("[ColorMe] Found GroupManager. Will use it for groups!");
-				ColorMePlayerListener.groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
+				//ColorMePlayerListener.groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
 				logDebug("Hooked into GroupManager for groups");
 			}
 			else {
@@ -367,7 +370,7 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Log into the debug file
-	public static void logDebug(String string) {
+	public void logDebug(String string) {
 		if (debug) {
 			try {
 				PrintWriter writer = new PrintWriter(new FileWriter(debugFile, true), true);
@@ -390,7 +393,7 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Check if debug is enabled and if a file needs to be created
-	private static void checkDebug() {
+	private void checkDebug() {
 		if (debug) {
 			debugFile = new File(Bukkit.getServer().getPluginManager().getPlugin("ColorMe").getDataFolder(), "debug.log");
 			if (!debugFile.exists()) {
@@ -431,7 +434,7 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Load the banned words
-	private static void loadBannedWords() throws IOException{
+	private void loadBannedWords() throws IOException{
 		BufferedReader reader = new BufferedReader(new FileReader(bannedWordsFile));
 		String line;
 		while ((line = reader.readLine()) != null) {
@@ -614,7 +617,7 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Reloads the config via command /colorme reload, /prefixer reload or /suffixer reload
-	public static void loadConfigsAgain() {
+	public void loadConfigsAgain() {
 		try {
 			config.load(configFile);
 			config.save(configFile);
@@ -629,7 +632,7 @@ public class ColorMe extends JavaPlugin {
 			group.save(groupsFile);
 			loadBannedWords();
 			checkParts();
-			if (ColorMe.tagAPI && ColorMe.playerTitleWithoutSpout) {
+			if (tagAPI && playerTitleWithoutSpout) {
 			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 					TagAPI.refreshPlayer(p);
 				}
@@ -646,7 +649,7 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Maybe something changed on the fly
-	private static void checkParts() {
+	private void checkParts() {
 		Suffixer = config.getBoolean("Suffixer");
 		Prefixer = config.getBoolean("Prefixer");
 		displayName = config.getBoolean("ColorMe.displayName");
@@ -718,7 +721,7 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Message sender
-	public static void message(CommandSender sender, Player player, String message, String value, String world, String target, Double cost) {
+	public void message(CommandSender sender, Player player, String message, String value, String world, String target, Double cost) {
 		if (message != null) {
 			message = message
 					.replaceAll("%world", world)
@@ -726,9 +729,9 @@ public class ColorMe extends JavaPlugin {
 					.replaceAll("%prefix", value)
 					.replaceAll("%suffix", value)
 					.replaceAll("%s", value)
+					.replaceAll("%playerName", world)
 					.replaceAll("%player", target)
 					.replaceAll("%groupName", value)
-					.replaceAll("%playerName", world)
 					.replaceAll("%part", value)
 					.replaceAll("%value", target)
 					.replaceAll("%version", "3.5");

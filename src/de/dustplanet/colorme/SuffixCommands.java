@@ -8,10 +8,11 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 public class SuffixCommands implements CommandExecutor {
-
-	public ColorMe plugin;
-	public SuffixCommands(ColorMe instance) {
+	private Actions actions;
+	private ColorMe plugin;
+	public SuffixCommands(ColorMe instance, Actions actionsInstance) {
 		plugin = instance;
+		actions = actionsInstance;
 	}
 
 	// Commands for suffixing
@@ -20,23 +21,23 @@ public class SuffixCommands implements CommandExecutor {
 		// Reloads the configs
 		if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("suffixer.reload")) {
-				Actions.reload(sender);
+				actions.reload(sender);
 			}
 			else {
-				message = ColorMe.localization.getString("permission_denied");
-				ColorMe.message(sender, null, message, null, null, null, null);
+				message = plugin.localization.getString("permission_denied");
+				plugin.message(sender, null, message, null, null, null, null);
 			}
 			return true;
 		}
 		// Stop here if suffixer is unwanted
-		if (!ColorMe.Suffixer) {
-			message = ColorMe.localization.getString("part_disabled");
-			ColorMe.message(sender, null, message, null, null, null, null);
+		if (!plugin.Suffixer) {
+			message = plugin.localization.getString("part_disabled");
+			plugin.message(sender, null, message, null, null, null, null);
 			return true;
 		}
 		// Displays the help
 		if (args.length > 0 && args[0].equalsIgnoreCase("help")) {
-			Actions.help(sender, "suffix");
+			actions.help(sender, "suffix");
 			return true;
 		}
 		// Sets the global suffix
@@ -44,37 +45,37 @@ public class SuffixCommands implements CommandExecutor {
 			globalSuffix = args[1].replaceAll("_", " ");
 			if (sender.hasPermission("suffixer.global")) {
 				// If the prefixes are the same
-				if (Actions.replaceThings(globalSuffix).equalsIgnoreCase(Actions.getGlobal("suffix"))) {
-					message = ColorMe.localization.getString("same_suffix_global");
-					ColorMe.message(sender, null, message, null, null, null, null);
+				if (actions.replaceThings(globalSuffix).equalsIgnoreCase(actions.getGlobal("suffix"))) {
+					message = plugin.localization.getString("same_suffix_global");
+					plugin.message(sender, null, message, null, null, null, null);
 					return true;
 				}
 				// If sender hasn't got the noFilter permission look if there are bad words in!
-				if (ColorMe.blacklist && !sender.hasPermission("suffixer.nofilter")) {
-					for (String s : ColorMe.bannedWords) {
+				if (plugin.blacklist && !sender.hasPermission("suffixer.nofilter")) {
+					for (String s : plugin.bannedWords) {
 						if (globalSuffix.contains(s)) {
 							// Message, bad words in etc.
-							message = ColorMe.localization.getString("bad_words");
-							ColorMe.message(sender, null, message, s, null, null, null);
+							message = plugin.localization.getString("bad_words");
+							plugin.message(sender, null, message, s, null, null, null);
 							return true;
 						}
 					}
 				}
 				// Check if the message is too long
-				if (ChatColor.stripColor(Actions.replaceThings(globalSuffix)).length() > ColorMe.suffixLength) {
-					message = ColorMe.localization.getString("too_long");
-					ColorMe.message(sender, null, message, null, null, null, null);
+				if (ChatColor.stripColor(actions.replaceThings(globalSuffix)).length() > plugin.suffixLength) {
+					message = plugin.localization.getString("too_long");
+					plugin.message(sender, null, message, null, null, null, null);
 					return true;
 				}
-				ColorMe.config.set("global_default.suffix", globalSuffix);
-				ColorMe.globalSuffix = true;
+				plugin.config.set("global_default.suffix", globalSuffix);
+				plugin.globalSuffix = true;
 				plugin.saveConfig();
-				message = ColorMe.localization.getString("changed_suffix_global");
-				ColorMe.message(sender, null, message, Actions.replaceThings(globalSuffix), null, null, null);
+				message = plugin.localization.getString("changed_suffix_global");
+				plugin.message(sender, null, message, actions.replaceThings(globalSuffix), null, null, null);
 			}
 			else {
-				message = ColorMe.localization.getString("permission_denied");
-				ColorMe.message(sender, null, message, null, null, null, null);
+				message = plugin.localization.getString("permission_denied");
+				plugin.message(sender, null, message, null, null, null, null);
 			}
 			return true;
 		}
@@ -84,21 +85,21 @@ public class SuffixCommands implements CommandExecutor {
 			if (args[1].equalsIgnoreCase("global")) {
 				if (sender.hasPermission("suffixer.global")) {
 					// Trying to remove an empty global suffix
-					if (!Actions.hasGlobal("suffix")) {
-						message = ColorMe.localization.getString("no_suffix_global");
-						ColorMe.message(sender, null, message, null, null, null, null);
+					if (!actions.hasGlobal("suffix")) {
+						message = plugin.localization.getString("no_suffix_global");
+						plugin.message(sender, null, message, null, null, null, null);
 						return true;
 					}
 					// Remove global suffix
-					Actions.removeGlobal("suffix");
-					ColorMe.globalSuffix = false;
-					message = ColorMe.localization.getString("removed_suffix_global");
-					ColorMe.message(sender, null, message, null, null, null, null);
+					actions.removeGlobal("suffix");
+					plugin.globalSuffix = false;
+					message = plugin.localization.getString("removed_suffix_global");
+					plugin.message(sender, null, message, null, null, null, null);
 				}
 				// Deny access
 				else {
-					message = ColorMe.localization.getString("permission_denied");
-					ColorMe.message(sender, null, message, null, null, null, null);
+					message = plugin.localization.getString("permission_denied");
+					plugin.message(sender, null, message, null, null, null, null);
 				}
 				return true;
 			}
@@ -108,47 +109,47 @@ public class SuffixCommands implements CommandExecutor {
 				target = sender.getName().toLowerCase();
 				// Tell console only ingame command
 				if (sender instanceof ConsoleCommandSender) {
-					message = ColorMe.localization.getString("only_ingame");
-					ColorMe.message(sender, null, message, null, null, null, null);
+					message = plugin.localization.getString("only_ingame");
+					plugin.message(sender, null, message, null, null, null, null);
 					return true;
 				}
 			}
 			senderName = sender.getName().toLowerCase();
 			if (args.length > 2) world = args[2].toLowerCase();
 			// Check for permission or self
-			if (sender.hasPermission("suffixer.remove") || Actions.self(sender, target)) {
+			if (sender.hasPermission("suffixer.remove") || actions.self(sender, target)) {
 				// Trying to remove a suffix from a suffix-less player
-				if (((!Actions.has(target, world, pluginPart) && ColorMe.players.contains(target + "." + pluginPart + "." + world)))
-						|| !ColorMe.players.contains(target)) {
+				if (((!actions.has(target, world, pluginPart) && plugin.players.contains(target + "." + pluginPart + "." + world)))
+						|| !plugin.players.contains(target)) {
 					// Self
 					if (target.equalsIgnoreCase(senderName)) {
-						message = ColorMe.localization.getString("no_suffix_self");
-						ColorMe.message(sender, null, message, null, world, null, null);
+						message = plugin.localization.getString("no_suffix_self");
+						plugin.message(sender, null, message, null, world, null, null);
 						return true;
 					}
 					// Other
-					message = ColorMe.localization.getString("no_suffix_other");
-					ColorMe.message(sender, null, message, null, world, target, null);
+					message = plugin.localization.getString("no_suffix_other");
+					plugin.message(sender, null, message, null, world, target, null);
 					return true;
 				}
 				// Remove suffix
-				Actions.remove(target, world, pluginPart);
+				actions.remove(target, world, pluginPart);
 				if (plugin.getServer().getPlayerExact(target) != null) {
 					// Notify player is online
 					Player player = plugin.getServer().getPlayerExact(target);
-					message = ColorMe.localization.getString("removed_suffix_self");
-					ColorMe.message(null, player, message, null, world, null, null);
+					message = plugin.localization.getString("removed_suffix_self");
+					plugin.message(null, player, message, null, world, null, null);
 				}
 				// If player is offline just notify the sender
 				if (!target.equalsIgnoreCase(senderName)) {
-					message = ColorMe.localization.getString("removed_suffix_other");
-					ColorMe.message(sender, null, message, null, world, target, null);
+					message = plugin.localization.getString("removed_suffix_other");
+					plugin.message(sender, null, message, null, world, target, null);
 				}
 			}
 			// Deny access
 			else {
-				message = ColorMe.localization.getString("permission_denied");
-				ColorMe.message(sender, null, message, null, null, null, null);
+				message = plugin.localization.getString("permission_denied");
+				plugin.message(sender, null, message, null, null, null, null);
 			}
 			return true;
 		}
@@ -158,19 +159,19 @@ public class SuffixCommands implements CommandExecutor {
 			if (args[1].equalsIgnoreCase("global")) {
 				if (sender.hasPermission("suffixer.global")) {
 					// Trying to get an empty global suffix
-					if (!Actions.hasGlobal("suffix")) {
-						message = ColorMe.localization.getString("no_suffix_global");
-						ColorMe.message(sender, null, message, null, null, null, null);
+					if (!actions.hasGlobal("suffix")) {
+						message = plugin.localization.getString("no_suffix_global");
+						plugin.message(sender, null, message, null, null, null, null);
 						return true;
 					}
-					suffix = Actions.getGlobal("suffix");
-					message = ColorMe.localization.getString("get_suffix_global");
-					ColorMe.message(sender, null, message, suffix, null, null, null);
+					suffix = actions.getGlobal("suffix");
+					message = plugin.localization.getString("get_suffix_global");
+					plugin.message(sender, null, message, suffix, null, null, null);
 				}
 				// Deny access
 				else {
-					message = ColorMe.localization.getString("permission_denied");
-					ColorMe.message(sender, null, message, null, null, null, null);
+					message = plugin.localization.getString("permission_denied");
+					plugin.message(sender, null, message, null, null, null, null);
 				}
 				return true;
 			}
@@ -180,42 +181,42 @@ public class SuffixCommands implements CommandExecutor {
 				target = sender.getName().toLowerCase();
 				// Tell console only ingame command
 				if (sender instanceof ConsoleCommandSender) {
-					message = ColorMe.localization.getString("only_ingame");
-					ColorMe.message(sender, null, message, null, null, null, null);
+					message = plugin.localization.getString("only_ingame");
+					plugin.message(sender, null, message, null, null, null, null);
 					return true;
 				}
 			}
 			senderName = sender.getName().toLowerCase();
 			if (args.length > 2) world = args[2].toLowerCase();
-			suffix = Actions.get(target, world, pluginPart);
+			suffix = actions.get(target, world, pluginPart);
 			// Check for permission or self
-			if (sender.hasPermission("suffixer.get") || Actions.self(sender, target)) {
+			if (sender.hasPermission("suffixer.get") || actions.self(sender, target)) {
 				// Trying to get a suffix from a suffix-less player
-				if (((!Actions.has(target, world, pluginPart) && ColorMe.players.contains(target))) || !ColorMe.players.contains(target)) {
+				if (((!actions.has(target, world, pluginPart) && plugin.players.contains(target))) || !plugin.players.contains(target)) {
 					// Self
 					if (target.equalsIgnoreCase(senderName)) {
-						message = ColorMe.localization.getString("no_suffix_self");
-						ColorMe.message(sender, null, message, null, world, null, null);
+						message = plugin.localization.getString("no_suffix_self");
+						plugin.message(sender, null, message, null, world, null, null);
 						return true;
 					}
 					// Other
-					message = ColorMe.localization.getString("no_suffix_other");
-					ColorMe.message(sender, null, message, null, world, target, null);
+					message = plugin.localization.getString("no_suffix_other");
+					plugin.message(sender, null, message, null, world, target, null);
 					return true;
 				}
 				// Gets suffix
 				if (target.equalsIgnoreCase(senderName)) {
-					message = ColorMe.localization.getString("get_suffix_self");
-					ColorMe.message(sender, null, message, Actions.replaceThings(suffix), world, null, null);
+					message = plugin.localization.getString("get_suffix_self");
+					plugin.message(sender, null, message, actions.replaceThings(suffix), world, null, null);
 					return true;
 				}
-				message = ColorMe.localization.getString("get_suffix_other");
-				ColorMe.message(sender, null, message, Actions.replaceThings(suffix), world, target, null);
+				message = plugin.localization.getString("get_suffix_other");
+				plugin.message(sender, null, message, actions.replaceThings(suffix), world, target, null);
 			}
 			// Deny access
 			else {
-				message = ColorMe.localization.getString("permission_denied");
-				ColorMe.message(sender, null, message, null, null, null, null);
+				message = plugin.localization.getString("permission_denied");
+				plugin.message(sender, null, message, null, null, null, null);
 			}
 			return true;
 		}
@@ -226,8 +227,8 @@ public class SuffixCommands implements CommandExecutor {
 				target = sender.getName().toLowerCase();
 				// Tell console only ingame command
 				if (sender instanceof ConsoleCommandSender) {
-					message = ColorMe.localization.getString("only_ingame");
-					ColorMe.message(sender, null, message, null, null, null, null);
+					message = plugin.localization.getString("only_ingame");
+					plugin.message(sender, null, message, null, null, null, null);
 					return true;
 				}
 			}
@@ -235,41 +236,41 @@ public class SuffixCommands implements CommandExecutor {
 			senderName = sender.getName().toLowerCase();
 			if (args.length > 2) world = args[2].toLowerCase();
 			// If the suffixes are the same
-			if (Actions.replaceThings(suffix).equalsIgnoreCase(Actions.get(target, world, pluginPart))) {
+			if (actions.replaceThings(suffix).equalsIgnoreCase(actions.get(target, world, pluginPart))) {
 				if (senderName.equalsIgnoreCase(target)) {
-					message = ColorMe.localization.getString("same_suffix_self");
-					ColorMe.message(sender, null, message, null, world, null, null);
+					message = plugin.localization.getString("same_suffix_self");
+					plugin.message(sender, null, message, null, world, null, null);
 					return true;
 				}	
-				message = ColorMe.localization.getString("same_suffix_other");
-				ColorMe.message(sender, null, message, null, world, target, null);
+				message = plugin.localization.getString("same_suffix_other");
+				plugin.message(sender, null, message, null, world, target, null);
 				return true;
 			}
 			// Self suffixing
-			if (sender.hasPermission("suffixer.self") && Actions.self(sender, target)) {
+			if (sender.hasPermission("suffixer.self") && actions.self(sender, target)) {
 				// If sender hasn't got the noFilter permission look if there are bad words in!
-				if (ColorMe.blacklist && !sender.hasPermission("suffixer.nofilter")) {
-					for (String s : ColorMe.bannedWords) {
+				if (plugin.blacklist && !sender.hasPermission("suffixer.nofilter")) {
+					for (String s : plugin.bannedWords) {
 						if (suffix.contains(s)) {
 							// Message, bad words in etc.
-							message = ColorMe.localization.getString("bad_words");
-							ColorMe.message(sender, null, message, s, null, null, null);
+							message = plugin.localization.getString("bad_words");
+							plugin.message(sender, null, message, s, null, null, null);
 							return true;
 						}
 					}
 				}
 				// Check if the message is too long
-				if (ChatColor.stripColor(Actions.replaceThings(suffix)).length() > ColorMe.suffixLength) {
-					message = ColorMe.localization.getString("too_long");
-					ColorMe.message(sender, null, message, null, null, null, null);
+				if (ChatColor.stripColor(actions.replaceThings(suffix)).length() > plugin.suffixLength) {
+					message = plugin.localization.getString("too_long");
+					plugin.message(sender, null, message, null, null, null, null);
 					return true;
 				}
 				// Without economy or costs are null
-				Double cost = ColorMe.config.getDouble("costs.suffix");
+				Double cost = plugin.config.getDouble("costs.suffix");
 				if (plugin.economy == null || cost == 0) {
-					Actions.set(senderName, suffix, world, pluginPart);
-					message = ColorMe.localization.getString("changed_suffix_self");
-					ColorMe.message(sender, null, message, Actions.replaceThings(suffix), world, null, null);
+					actions.set(senderName, suffix, world, pluginPart);
+					message = plugin.localization.getString("changed_suffix_self");
+					plugin.message(sender, null, message, actions.replaceThings(suffix), world, null, null);
 					return true;
 				}
 				// With economy
@@ -281,60 +282,60 @@ public class SuffixCommands implements CommandExecutor {
 							// Enough money?
 							if (plugin.economy.getBalance(senderName) < cost) {
 								// Tell and return
-								message = ColorMe.localization.getString("not_enough_money_1");
-								ColorMe.message(sender, null, message, null, null, null, null);
-								message = ColorMe.localization.getString("not_enough_money_2");
-								ColorMe.message(sender, null, message, null, null, null, cost);
+								message = plugin.localization.getString("not_enough_money_1");
+								plugin.message(sender, null, message, null, null, null, null);
+								message = plugin.localization.getString("not_enough_money_2");
+								plugin.message(sender, null, message, null, null, null, cost);
 								return true;
 							}
 							else {
 								plugin.economy.withdrawPlayer(senderName, cost);
-								message = ColorMe.localization.getString("charged");
-								ColorMe.message(sender, null, message, null, null, null, cost);
+								message = plugin.localization.getString("charged");
+								plugin.message(sender, null, message, null, null, null, cost);
 							}
 						}
 						// Set suffix and notify sender
-						Actions.set(senderName, suffix, world, pluginPart);
-						message = ColorMe.localization.getString("changed_suffix_self");
-						ColorMe.message(sender, null, message, Actions.replaceThings(suffix), world, null, null);
+						actions.set(senderName, suffix, world, pluginPart);
+						message = plugin.localization.getString("changed_suffix_self");
+						plugin.message(sender, null, message, actions.replaceThings(suffix), world, null, null);
 						return true;
 					}
 				}
 			}
 			// Suffixing other
-			else if (sender.hasPermission("suffixer.other") && !Actions.self(sender, target)) {
+			else if (sender.hasPermission("suffixer.other") && !actions.self(sender, target)) {
 				// If sender hasn't got the noFilter permission look if there are bad words in!
-				if (ColorMe.blacklist && !sender.hasPermission("suffixer.nofilter")) {
-					for (String s : ColorMe.bannedWords) {
+				if (plugin.blacklist && !sender.hasPermission("suffixer.nofilter")) {
+					for (String s : plugin.bannedWords) {
 						if (suffix.contains(s)) {
 							// Message, bad words in etc.
-							message = ColorMe.localization.getString("bad_words");
-							ColorMe.message(sender, null, message, s, null, null, null);
+							message = plugin.localization.getString("bad_words");
+							plugin.message(sender, null, message, s, null, null, null);
 							return true;
 						}
 					}
 				}
 				// Check if the message is too long
-				if (ChatColor.stripColor(Actions.replaceThings(suffix)).length() > ColorMe.suffixLength) {
-					message = ColorMe.localization.getString("too_long");
-					ColorMe.message(sender, null, message, null, null, null, null);
+				if (ChatColor.stripColor(actions.replaceThings(suffix)).length() > plugin.suffixLength) {
+					message = plugin.localization.getString("too_long");
+					plugin.message(sender, null, message, null, null, null, null);
 					return true;
 				}
 				// Set the new suffix
-				Actions.set(target, suffix, world, pluginPart);
+				actions.set(target, suffix, world, pluginPart);
 				if (plugin.getServer().getPlayerExact(target) != null) {
 					// Tell the affected player
 					Player player = plugin.getServer().getPlayerExact(target);
-					message = ColorMe.localization.getString("changed_suffix_self");
-					ColorMe.message(null, player, message, Actions.replaceThings(suffix), world, null, null);
+					message = plugin.localization.getString("changed_suffix_self");
+					plugin.message(null, player, message, actions.replaceThings(suffix), world, null, null);
 				}
-				message = ColorMe.localization.getString("changed_suffix_other");
-				ColorMe.message(sender, null, message, Actions.replaceThings(suffix), world, target, null);
+				message = plugin.localization.getString("changed_suffix_other");
+				plugin.message(sender, null, message, actions.replaceThings(suffix), world, target, null);
 			}
 			// Permission check failed
 			else {
-				message = ColorMe.localization.getString("permission_denied");
-				ColorMe.message(sender, null, message, null, null, null, null);
+				message = plugin.localization.getString("permission_denied");
+				plugin.message(sender, null, message, null, null, null, null);
 			}
 			return true;
 		}

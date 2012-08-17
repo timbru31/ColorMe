@@ -3,8 +3,6 @@ package de.dustplanet.colorme;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,7 +11,7 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 import org.kitteh.tag.TagAPI;
 
 public class Actions {
-	public static ColorMe plugin;
+	public ColorMe plugin;
 	public Actions(ColorMe instance) {
 		plugin = instance;
 	}
@@ -25,121 +23,119 @@ public class Actions {
 	 */
 
 	// Return the group's name color/prefix/suffix
-	public static String getGroup(String groupName, String world, String groupPart) {
-		ColorMe.logDebug("Actions -> get");
-		ColorMe.logDebug("Asked to get the " + groupPart + " from " + groupName + " in the world " + world);
+	public String getGroup(String groupName, String world, String groupPart) {
+		plugin.logDebug("Actions -> get");
+		plugin.logDebug("Asked to get the " + groupPart + " from " + groupName + " in the world " + world);
 		// Group in the config? Yes -> get the config, no -> nothing
 		groupName = groupName.toLowerCase();
 		world = world.toLowerCase();
 		groupPart = groupPart.toLowerCase();
-		String string = ColorMe.group.getString(groupName + "." + groupPart + "." + world);
-		String updatedString = replaceThings(string);
-		return updatedString;
+		return replaceThings(plugin.group.getString(groupName + "." + groupPart + "." + world));
 	}
 
 	// Check if a group has a color/prefix/suffix or not
-	public static boolean hasGroup(String groupName, String world, String groupPart) {
-		ColorMe.logDebug("Actions -> hasGroup");
-		ColorMe.logDebug("Asked if " + groupName + " has got a " + groupPart + " in the world " + world);
+	public boolean hasGroup(String groupName, String world, String groupPart) {
+		plugin.logDebug("Actions -> hasGroup");
+		plugin.logDebug("Asked if " + groupName + " has got a " + groupPart + " in the world " + world);
 		groupName = groupName.toLowerCase();
 		world = world.toLowerCase();
 		groupPart = groupPart.toLowerCase();
-		if (ColorMe.group.contains(groupName + "." + groupPart + "." + world)) {
+		if (plugin.group.contains(groupName + "." + groupPart + "." + world)) {
 			// if longer than 1 it's valid, return true - otherwise (means '') return false
-			return (ColorMe.group.getString(groupName + "." + groupPart + "." + world)).trim().length() >= 1 ? true : false;
+			return !plugin.group.getString(groupName + "." + groupPart + "." + world).isEmpty();
 		}
 		return false;
 	}
 
 	// Checks if a group exists
-	public static boolean existsGroup(String groupName) {
-		ColorMe.logDebug("Actions -> existsGroup");
-		ColorMe.logDebug("Asked if " + groupName + " exists");
+	public boolean existsGroup(String groupName) {
+		plugin.logDebug("Actions -> existsGroup");
+		plugin.logDebug("Asked if " + groupName + " exists");
 		groupName = groupName.toLowerCase();
-		if (ColorMe.group.contains(groupName)) return true;
+		if (plugin.group.contains(groupName)) return true;
 		return false;
 	}
 
 	// Deletes a group
-	public static void deleteGroup(String groupName) {
-		ColorMe.logDebug("Actions -> deleteGroup");
-		ColorMe.logDebug("Asked to delete the group " + groupName);
+	public void deleteGroup(String groupName) {
+		plugin.logDebug("Actions -> deleteGroup");
+		plugin.logDebug("Asked to delete the group " + groupName);
 		groupName = groupName.toLowerCase();
-		List<String> members = ColorMe.group.getStringList(groupName + ".members");
+		List<String> members = plugin.group.getStringList(groupName + ".members");
 		for (String member : members) {
-			ColorMe.players.set(member + ".group", "");
+			plugin.players.set(member + ".group", "");
 		}
-		save(ColorMe.playersFile, ColorMe.players);
-		ColorMe.group.set(groupName, null);
-		save(ColorMe.groupsFile, ColorMe.group);
+		saveFile(plugin.playersFile, plugin.players);
+		plugin.group.set(groupName, null);
+		saveFile(plugin.groupsFile, plugin.group);
 	}
 	// Lists the members
-	public static List<String> listMembers(String groupName) {
-		ColorMe.logDebug("Actions -> listMembers");
-		ColorMe.logDebug("Asked to list the members of " + groupName);
+	public List<String> listMembers(String groupName) {
+		plugin.logDebug("Actions -> listMembers");
+		plugin.logDebug("Asked to list the members of " + groupName);
 		groupName = groupName.toLowerCase();
-		List<String> members = ColorMe.group.getStringList(groupName + ".members");
+		List<String> members = plugin.group.getStringList(groupName + ".members");
 		return members;
 	}
 
 	// Sets a value for a group
-	public static void setGroup(String groupName, String value, String world, String groupPart) {
-		ColorMe.logDebug("Actions -> set");
-		ColorMe.logDebug("Asked to set the " + groupPart + " of " + groupName + " in the world " + world);
+	public void setGroup(String groupName, String value, String world, String groupPart) {
+		plugin.logDebug("Actions -> set");
+		plugin.logDebug("Asked to set the " + groupPart + " of " + groupName + " in the world " + world);
 		groupName = groupName.toLowerCase();
 		world = world.toLowerCase();
 		groupPart = groupPart.toLowerCase();
 		// Write to the config and save and update the names
-		ColorMe.group.set(groupName + "." + groupPart + "." + world, value);
-		save(ColorMe.groupsFile, ColorMe.group);
+		plugin.group.set(groupName + "." + groupPart + "." + world, value);
+		saveFile(plugin.groupsFile, plugin.group);
 	}
 
 	// Create a group
-	public static void createGroup(String groupName) {
-		ColorMe.logDebug("Actions -> Asked to create the group " + groupName);
+	public void createGroup(String groupName) {
+		plugin.logDebug("Actions -> Asked to create the group " + groupName);
 		groupName = groupName.toLowerCase();
-		ColorMe.group.set(groupName + ".colors.default", "");
-		ColorMe.group.set(groupName + ".prefix.default", "");
-		ColorMe.group.set(groupName + ".suffix.default", "");
-		ColorMe.group.set(groupName + ".members", "");
-		save(ColorMe.groupsFile, ColorMe.group);
+		plugin.group.set(groupName + ".colors.default", "");
+		plugin.group.set(groupName + ".prefix.default", "");
+		plugin.group.set(groupName + ".suffix.default", "");
+		plugin.group.set(groupName + ".members", "");
+		saveFile(plugin.groupsFile, plugin.group);
 	}
 
 	// Add a member to a group
-	public static void addMember(String groupName, String name) {
-		ColorMe.logDebug("Actions -> Add member " + name + " to the group " + groupName);
+	public void addMember(String groupName, String name) {
+		plugin.logDebug("Actions -> Add member " + name + " to the group " + groupName);
 		name = name.toLowerCase();
 		groupName = groupName.toLowerCase();
-		ColorMe.players.set(name + ".group", groupName);
-		save(ColorMe.playersFile, ColorMe.players);
-		List<String> members = ColorMe.group.getStringList(groupName + ".members");
+		plugin.players.set(name + ".group", groupName);
+		saveFile(plugin.playersFile, plugin.players);
+		List<String> members = plugin.group.getStringList(groupName + ".members");
 		members.add(name);
-		ColorMe.group.set(groupName + ".members", members);
-		save(ColorMe.groupsFile, ColorMe.group);
+		plugin.group.set(groupName + ".members", members);
+		saveFile(plugin.groupsFile, plugin.group);
 	}
 
 	// Remove a player from a group
-	public static void removeMember(String groupName, String name) {
-		ColorMe.logDebug("Actions -> Remove member " + name + " from the group " + groupName);
-		ColorMe.players.set(name + ".group", "");
+	public void removeMember(String groupName, String name) {
+		plugin.logDebug("Actions -> Remove member " + name + " from the group " + groupName);
+		plugin.players.set(name + ".group", "");
 		name = name.toLowerCase();
 		groupName = groupName.toLowerCase();
-		save(ColorMe.playersFile, ColorMe.players);
-		List<String> members = ColorMe.group.getStringList(groupName + ".members");
+		saveFile(plugin.playersFile, plugin.players);
+		List<String> members = plugin.group.getStringList(groupName + ".members");
 		members.remove(name);
-		ColorMe.group.set(groupName + ".members", members);
-		save(ColorMe.groupsFile, ColorMe.group);
+		plugin.group.set(groupName + ".members", members);
+		saveFile(plugin.groupsFile, plugin.group);
 	}
 
 	// Check if a player has a color/prefix/suffix or not
-	public static boolean isMember(String groupName, String name) {
-		ColorMe.logDebug("Actions -> isMember");
-		ColorMe.logDebug("Asked if " + name + " is a member of the group " + groupName);
+	public boolean isMember(String groupName, String name) {
+		plugin.logDebug("Actions -> isMember");
+		plugin.logDebug("Asked if " + name + " is a member of the group " + groupName);
 		name = name.toLowerCase();
 		groupName = groupName.toLowerCase();
-		if (ColorMe.players.contains(name + ".group")) {
+		if (plugin.players.contains(name + ".group")) {
 			// If the string is the same -> return true
-			if (groupName.equalsIgnoreCase(ColorMe.players.getString(name + ".group"))) return true;
+			if (groupName.equalsIgnoreCase(plugin.players.getString(name + ".group"))) return true;
 		}
 		return false;
 	}
@@ -152,30 +148,30 @@ public class Actions {
 
 
 	// Get global default
-	public static String getGlobal(String pluginPart) {
-		ColorMe.logDebug("Actions -> getGlobal");
-		ColorMe.logDebug("Asked to get the global " + pluginPart);
+	public String getGlobal(String pluginPart) {
+		plugin.logDebug("Actions -> getGlobal");
+		plugin.logDebug("Asked to get the global " + pluginPart);
 		pluginPart = pluginPart.toLowerCase();
-		String string = ColorMe.config.getString("global_default." + pluginPart);
+		String string = plugin.config.getString("global_default." + pluginPart);
 		String updatedString = replaceThings(string);
 		return updatedString;
 	}
 
 	// Check if the global default is not null
-	public static boolean hasGlobal(String pluginPart) {
-		ColorMe.logDebug("Actions -> hasGlobal");
-		ColorMe.logDebug("Asked if the global value of " + pluginPart + " is set");
+	public boolean hasGlobal(String pluginPart) {
+		plugin.logDebug("Actions -> hasGlobal");
+		plugin.logDebug("Asked if the global value of " + pluginPart + " is set");
 		pluginPart = pluginPart.toLowerCase();
-		return ColorMe.config.getString("global_default." + pluginPart).trim().length() >= 1 ? true : false;
+		return !plugin.config.getString("global_default." + pluginPart).isEmpty();
 	}
 
 	// Removes a color/prefix/suffix if exists, otherwise returns false
-	public static void removeGlobal(String pluginPart) {
-		ColorMe.logDebug("Actions -> removeGlobal");
-		ColorMe.logDebug("Asked to remove the global part of " + pluginPart);
+	public void removeGlobal(String pluginPart) {
+		plugin.logDebug("Actions -> removeGlobal");
+		plugin.logDebug("Asked to remove the global part of " + pluginPart);
 		pluginPart = pluginPart.toLowerCase();
-		ColorMe.config.set("global_default." + pluginPart, "");
-		save(ColorMe.configFile, ColorMe.config);
+		plugin.config.set("global_default." + pluginPart, "");
+		saveFile(plugin.configFile, plugin.config);
 	}
 
 	/*
@@ -185,83 +181,81 @@ public class Actions {
 	 */
 
 	// Check if the player has got a group
-	public static boolean playerHasGroup(String name) {
-		ColorMe.logDebug("Actions -> playerHasGroup");
-		ColorMe.logDebug("Asked if " + name + " has got a group");
+	public boolean playerHasGroup(String name) {
+		plugin.logDebug("Actions -> playerHasGroup");
+		plugin.logDebug("Asked if " + name + " has got a group");
 		name = name.toLowerCase();
-		if (ColorMe.players.contains(name + ".group")) {
+		if (plugin.players.contains(name + ".group")) {
 			// if longer than 1 it's valid, return true - otherwise (means '') return false
-			return (ColorMe.players.getString(name + ".group")).trim().length() >= 1 ? true : false;
+			return !plugin.players.getString(name + ".group").isEmpty();
 		}
 		return false;
 	}
 
 	// Get the group of a player
-	public static String playerGetGroup(String name) {
-		ColorMe.logDebug("Actions -> playerGetGroup");
-		ColorMe.logDebug("Asked for the group of " + name);
+	public String playerGetGroup(String name) {
+		plugin.logDebug("Actions -> playerGetGroup");
+		plugin.logDebug("Asked for the group of " + name);
 		name = name.toLowerCase();
-		return (ColorMe.players.getString(name + ".group"));
+		return (plugin.players.getString(name + ".group"));
 	}
 
 	// Checks if the player is itself
-	public static boolean self(CommandSender sender, String name) {
-		ColorMe.logDebug("Actions -> self");
-		return (sender.equals(Bukkit.getServer().getPlayerExact(name))) ? true : false;
+	public boolean self(CommandSender sender, String name) {
+		plugin.logDebug("Actions -> self");
+		return sender.equals(plugin.getServer().getPlayerExact(name));
 	}
 
 	// Return the player's name color/prefix/suffix
-	public static String get(String name, String world, String pluginPart) {
-		ColorMe.logDebug("Actions -> get");
-		ColorMe.logDebug("Asked to get the " + pluginPart + " from " + name + " in the world " + world);
+	public String get(String name, String world, String pluginPart) {
+		plugin.logDebug("Actions -> get");
+		plugin.logDebug("Asked to get the " + pluginPart + " from " + name + " in the world " + world);
 		// Player in the config? Yes -> get the config, no -> nothing
 		name = name.toLowerCase();
 		world = world.toLowerCase();
 		pluginPart = pluginPart.toLowerCase();
-		String string = ColorMe.players.getString(name + "." + pluginPart + "." + world);
-		String updatedString = replaceThings(string);
-		return updatedString;
+		return replaceThings(plugin.players.getString(name + "." + pluginPart + "." + world));
 	}
 
 	// Set player's color/prefix/suffix
-	public static void set(String name, String value, String world, String pluginPart) {
-		ColorMe.logDebug("Actions -> set");
-		ColorMe.logDebug("Asked to set the " + pluginPart + " from " + name + " in the world " + world);
+	public void set(String name, String value, String world, String pluginPart) {
+		plugin.logDebug("Actions -> set");
+		plugin.logDebug("Asked to set the " + pluginPart + " from " + name + " in the world " + world);
 		name = name.toLowerCase();
 		world = world.toLowerCase();
 		pluginPart = pluginPart.toLowerCase();
 		// Write to the config and save and update the names
-		ColorMe.players.set(name + "." + pluginPart + "." + world, value);
-		save(ColorMe.playersFile, ColorMe.players);
+		plugin.players.set(name + "." + pluginPart + "." + world, value);
+		saveFile(plugin.playersFile, plugin.players);
 	}
 
 	// Check if a player has a color/prefix/suffix or not
-	public static boolean has(String name, String world, String pluginPart) {
-		ColorMe.logDebug("Actions -> has");
-		ColorMe.logDebug("Asked if " + name + " has got a " + pluginPart + " in the world " + world);
+	public boolean has(String name, String world, String pluginPart) {
+		plugin.logDebug("Actions -> has");
+		plugin.logDebug("Asked if " + name + " has got a " + pluginPart + " in the world " + world);
 		name = name.toLowerCase();
 		world = world.toLowerCase();
 		pluginPart = pluginPart.toLowerCase();
-		if (ColorMe.players.contains(name + "." + pluginPart + "." + world)) {
+		if (plugin.players.contains(name + "." + pluginPart + "." + world)) {
 			// if longer than 1 it's valid, return true - otherwise (means '') return false
-			return (ColorMe.players.getString(name + "." + pluginPart + "." + world)).trim().length() >= 1 ? true : false;
+			return !plugin.players.getString(name + "." + pluginPart + "." + world).isEmpty();
 		}
 		return false;
 	}
 
 	// Removes a color/prefix/suffix if exists, otherwise returns false
-	public static void remove(String name, String world, String pluginPart) {
-		ColorMe.logDebug("Actions -> remove");
-		ColorMe.logDebug("Asked to remove the " + pluginPart + " from " + name + " in the world " + world);
+	public void remove(String name, String world, String pluginPart) {
+		plugin.logDebug("Actions -> remove");
+		plugin.logDebug("Asked to remove the " + pluginPart + " from " + name + " in the world " + world);
 		name = name.toLowerCase();
 		world = world.toLowerCase();
 		pluginPart = pluginPart.toLowerCase();
 		// If the player has got a color
 		if (has(name, world, pluginPart)) {
-			ColorMe.players.set(name  + "." + pluginPart + "." + world, "");
-			save(ColorMe.playersFile, ColorMe.players);
+			plugin.players.set(name  + "." + pluginPart + "." + world, "");
+			saveFile(plugin.playersFile, plugin.players);
 			checkNames(name, world);
-			ColorMe.logDebug("Removed");
+			plugin.logDebug("Removed");
 		}
 	}
 
@@ -273,9 +267,9 @@ public class Actions {
 	 */
 
 	// Used to create a random effect
-	public static String randomColor(String name) {
-		ColorMe.logDebug("Actions -> randomColor");
-		ColorMe.logDebug("Asked to color the string " + name);
+	public String randomColor(String name) {
+		plugin.logDebug("Actions -> randomColor");
+		plugin.logDebug("Asked to color the string " + name);
 		String newName = "";
 		// As long as the length of the name isn't reached
 		for (int i = 0; i < name.length(); i++) {
@@ -289,9 +283,9 @@ public class Actions {
 	}
 
 	// Used to create a rainbow effect
-	public static String rainbowColor(String name) {
-		ColorMe.logDebug("Actions -> rainbowColor");
-		ColorMe.logDebug("Asked to color the string " + name);
+	public String rainbowColor(String name) {
+		plugin.logDebug("Actions -> rainbowColor");
+		plugin.logDebug("Asked to color the string " + name);
 		// Had to store the rainbow manually. Why did Mojang store it so..., forget it
 		String newName = "";
 		String rainbow[] = {"DARK_RED", "RED", "GOLD", "YELLOW", "GREEN", "DARK_GREEN", "AQUA", "DARK_AQUA", "BLUE", "DARK_BLUE", "LIGHT_PURPLE", "DARK_PURPLE"};
@@ -307,12 +301,12 @@ public class Actions {
 	}
 
 	// Make the custom colors!
-	public static String updateCustomColor(String color, String text) {
-		ColorMe.logDebug("Actions -> updateCustomColor");
-		ColorMe.logDebug("Asked to color the string " + text + " with the color " + color);
+	public String updateCustomColor(String color, String text) {
+		plugin.logDebug("Actions -> updateCustomColor");
+		plugin.logDebug("Asked to color the string " + text + " with the color " + color);
 		// Get color
 		String updatedText = "";
-		String colorChars = ChatColor.translateAlternateColorCodes('\u0026', ColorMe.colors.getString(color));
+		String colorChars = ChatColor.translateAlternateColorCodes('\u0026', plugin.colors.getString(color));
 		// No § or &? Not valid; doesn't start with §? Not valid! Ending without a char? Not valid!
 		if (!colorChars.contains("\u00A7") || colorChars.contains("\u0026") || !colorChars.startsWith("\u00A7") || colorChars.endsWith("\u00A7")) return text;
 		// Split the color values
@@ -327,8 +321,8 @@ public class Actions {
 	}
 
 	// Replace all in a String
-	public static String replaceThings(String string) {
-		ColorMe.logDebug("Actions -> replaceThings");
+	public String replaceThings(String string) {
+		plugin.logDebug("Actions -> replaceThings");
 		if (string == null) return "";
 		// While random is in there
 		String sub;
@@ -403,9 +397,9 @@ public class Actions {
 	 */
 
 	// Check the whole names
-	public static void checkNames(String name, String world) {
-		ColorMe.logDebug("Actions -> checkNames");
-		ColorMe.logDebug("Asked to check the color of the player " + name + " in the world " + world);
+	public void checkNames(String name, String world) {
+		plugin.logDebug("Actions -> checkNames");
+		plugin.logDebug("Asked to check the color of the player " + name + " in the world " + world);
 		name = name.toLowerCase();
 		world = world.toLowerCase();
 		String color = null;
@@ -413,22 +407,20 @@ public class Actions {
 		// Check player specific world
 		if (has(name, world, "colors")) color = get(name, world, "colors");
 		// Check player default
-		else if (has(name, "default", "colors")) color = Actions.get(name, "default", "colors");
+		else if (has(name, "default", "colors")) color = get(name, "default", "colors");
 		// If groups enabled
-		else if (ColorMe.groups && ColorMe.ownSystem) {
+		else if (plugin.groups && plugin.ownSystem) {
 			// If group available
 			if (playerHasGroup(name)) {
 				String group = playerGetGroup(name);
 				// Group specific world
-				if (hasGroup(group, world, "colors")) color = Actions.getGroup(group, world, "colors");
+				if (hasGroup(group, world, "colors")) color = getGroup(group, world, "colors");
 				// Group default
-				else if (hasGroup(group, "default", "colors")) color = Actions.getGroup(group, "default", "colors");
+				else if (hasGroup(group, "default", "colors")) color = getGroup(group, "default", "colors");
 			}
 		}
 		// Then check if still nothing found and globalColor
-		if (ColorMe.globalColor && color == null) {
-			if (hasGlobal("color"))	color = getGlobal("color");
-		}
+		if (plugin.globalColor && color == null && hasGlobal("color")) color = getGlobal("color");
 		// Restore if nothing found...
 		if (color == null) {
 			restoreName(name);
@@ -447,29 +439,29 @@ public class Actions {
 	}
 
 	// Update the displayName, tabName, title, prefix & suffix in a specific world (after setting, removing, onJoin and onChat)
-	public static void updateName(String name, String color) {
-		ColorMe.logDebug("Actions -> updateName");
-		ColorMe.logDebug("Asked to update the color of " + name + " to the color " + color);
+	public void updateName(String name, String color) {
+		plugin.logDebug("Actions -> updateName");
+		plugin.logDebug("Asked to update the color of " + name + " to the color " + color);
 		name = name.toLowerCase();
-		final Player player = Bukkit.getServer().getPlayerExact(name);
+		final Player player = plugin.getServer().getPlayerExact(name);
 		if (player != null) {
 			String displayName = player.getDisplayName();
 			String cleanDisplayName = ChatColor.stripColor(displayName);
 			String newDisplayName = cleanDisplayName;
 			player.setDisplayName(cleanDisplayName);
 			player.setPlayerListName(cleanDisplayName);
-			if (ColorMe.tagAPI && ColorMe.playerTitleWithoutSpout) TagAPI.refreshPlayer(player);
+			if (plugin.tagAPI && plugin.playerTitleWithoutSpout) TagAPI.refreshPlayer(player);
 			String newName = cleanDisplayName;
 			String [] colors = color.split("-");
 			// Name color
-			if (ColorMe.displayName) {
+			if (plugin.displayName) {
 				for (String colorPart : colors) {
 					// Random
 					if (colorPart.equalsIgnoreCase("random")) newDisplayName = randomColor(cleanDisplayName);
 					// Rainbow
 					else if (colorPart.equalsIgnoreCase("rainbow")) newDisplayName = rainbowColor(cleanDisplayName);
 					// Custom colors
-					else if (ColorMe.colors.contains(colorPart) && (ColorMe.colors.getString(colorPart).trim().length() > 1 ? true : false) == true) {
+					else if (plugin.colors.contains(colorPart) && (plugin.colors.getString(colorPart).trim().length() > 1 ? true : false) == true) {
 						newDisplayName = updateCustomColor(colorPart, cleanDisplayName);
 					}
 					else newDisplayName = ChatColor.valueOf(colorPart.toUpperCase()) + newDisplayName;
@@ -477,14 +469,14 @@ public class Actions {
 				player.setDisplayName(newDisplayName + ChatColor.WHITE);
 			}
 			// Check for playerList
-			if (ColorMe.tabList) {
+			if (plugin.tabList) {
 				for (String colorPart : colors) {
 					// Random
 					if (colorPart.equalsIgnoreCase("random")) newName = randomColor(cleanDisplayName);
 					// Rainbow
 					else if (colorPart.equalsIgnoreCase("rainbow")) newName = rainbowColor(cleanDisplayName);
 					// Custom colors
-					else if (ColorMe.colors.contains(colorPart) && (ColorMe.colors.getString(colorPart).trim().length() > 1 ? true : false) == true) {
+					else if (plugin.colors.contains(colorPart) && !plugin.colors.getString(colorPart).isEmpty()) {
 						newName = updateCustomColor(colorPart, cleanDisplayName);
 					}
 					else newName = ChatColor.valueOf(colorPart.toUpperCase()) + newName;
@@ -498,7 +490,7 @@ public class Actions {
 				}
 			}
 			// Check for Spout
-			if (ColorMe.spoutEnabled && ColorMe.playerTitle && player.hasPermission("colorme.nametag")) {
+			if (plugin.spoutEnabled && plugin.playerTitle && player.hasPermission("plugin.nametag")) {
 				SpoutPlayer spoutPlayer = (SpoutPlayer) player;
 				for (String colorPart : colors) {
 					// Random
@@ -506,7 +498,7 @@ public class Actions {
 					// Rainbow
 					else if (colorPart.equalsIgnoreCase("rainbow")) newDisplayName = rainbowColor(cleanDisplayName);
 					// Custom colors
-					else if (ColorMe.colors.contains(colorPart) && (ColorMe.colors.getString(colorPart).trim().length() > 1 ? true : false) == true) {
+					else if (plugin.colors.contains(colorPart) && !plugin.colors.getString(colorPart).isEmpty()) {
 						newDisplayName = updateCustomColor(colorPart, cleanDisplayName);
 					}
 					else newDisplayName = ChatColor.valueOf(colorPart.toUpperCase()) + newDisplayName;
@@ -514,25 +506,25 @@ public class Actions {
 				spoutPlayer.setTitle(newDisplayName);
 			}
 			// Check if TagAPI should be used -> above the head!
-			if (ColorMe.playerTitleWithoutSpout && ColorMe.tagAPI && player.hasPermission("colorme.nametag")) {
+			if (plugin.playerTitleWithoutSpout && plugin.tagAPI && player.hasPermission("plugin.nametag")) {
 				if (!color.equalsIgnoreCase("rainbow") && !color.equalsIgnoreCase("random")) TagAPI.refreshPlayer(player);
 			}
 		}
 	}
 
 	// Restore the "clean", white name
-	public static void restoreName(String name) {
-		ColorMe.logDebug("Actions -> restoreName");
-		ColorMe.logDebug("Asked to restore the name " + name);
+	public void restoreName(String name) {
+		plugin.logDebug("Actions -> restoreName");
+		plugin.logDebug("Asked to restore the name " + name);
 		name = name.toLowerCase();
-		Player player = Bukkit.getServer().getPlayerExact(name);
+		Player player = plugin.getServer().getPlayerExact(name);
 		if (player != null) {
-			ColorMe.logDebug("Player found and valid");
+			plugin.logDebug("Player found and valid");
 			String displayName = player.getDisplayName();
 			String cleanDisplayName = ChatColor.stripColor(displayName);
 			// No name -> back to white
 			player.setDisplayName(ChatColor.WHITE + cleanDisplayName);
-			if (ColorMe.tabList) {
+			if (plugin.tabList) {
 				// If the TAB name is longer than 16 shorten it!
 				String newName = cleanDisplayName;
 				if (newName.length() > 16) {
@@ -540,28 +532,28 @@ public class Actions {
 				}
 				player.setPlayerListName(newName);
 			}
-			if (ColorMe.spoutEnabled && ColorMe.playerTitle && player.hasPermission("colorme.nametag")) {
+			if (plugin.spoutEnabled && plugin.playerTitle && player.hasPermission("plugin.nametag")) {
 				SpoutPlayer spoutPlayer = (SpoutPlayer) player;
 				spoutPlayer.resetTitle();
 			}
 			// Check if TagAPI should be used -> above the head!
-			if (ColorMe.playerTitleWithoutSpout && ColorMe.tagAPI && player.hasPermission("colorme.nametag")) {
+			if (plugin.playerTitleWithoutSpout && plugin.tagAPI && player.hasPermission("plugin.nametag")) {
 				TagAPI.refreshPlayer(player);
 			}
 		}
 	}
 
 	// Check if the color is possible
-	public static boolean validColor(String color) {
-		ColorMe.logDebug("Actions -> validColor");
+	public boolean validColor(String color) {
+		plugin.logDebug("Actions -> validColor");
 		// if it's random or rainbow -> possible
 		if (color.equalsIgnoreCase("rainbow") || color.equalsIgnoreCase("random")) {
-			ColorMe.logDebug("Color " + color + " is valid");
+			plugin.logDebug("Color " + color + " is valid");
 			return true;
 		}
 		// Custom color? (Must contain something!!! NOT '' or null)
-		if (ColorMe.colors.contains(color) && (ColorMe.colors.getString(color).trim().length() > 1 ? true : false) == true) {
-			ColorMe.logDebug("Color " + color + " is valid");
+		if (plugin.colors.contains(color) && !plugin.colors.getString(color).isEmpty()) {
+			plugin.logDebug("Color " + color + " is valid");
 			return true;
 		}
 		// Second place, cause random and rainbow aren't possible normally ;)
@@ -569,34 +561,34 @@ public class Actions {
 			for (ChatColor value : ChatColor.values()) {
 				// Check if the color is one of the 17
 				if (color.equalsIgnoreCase(value.name().toLowerCase())) {
-					ColorMe.logDebug("Color " + color + " is valid");
+					plugin.logDebug("Color " + color + " is valid");
 					return true;
 				}
 			}
-			ColorMe.logDebug("Color " + color + " is invalid");
+			plugin.logDebug("Color " + color + " is invalid");
 			return false;
 		}
 	}
 
 	// If the config value is disabled, return true
-	public static boolean isDisabled(String color) {
-		ColorMe.logDebug("Actions -> isDisabled");
-		if (ColorMe.config.getBoolean("colors." + color.toLowerCase())) {
-			ColorMe.logDebug("Color " + color + " is enabled");
+	public boolean isDisabled(String color) {
+		plugin.logDebug("Actions -> isDisabled");
+		if (plugin.config.getBoolean("colors." + color.toLowerCase())) {
+			plugin.logDebug("Color " + color + " is enabled");
 			return false;
 		}
 		// Custom color? (Must contain something!!! NOT '' or null)
-		else if (ColorMe.colors.contains(color) && ColorMe.colors.getString(color).trim().length() > 1 && ColorMe.config.getBoolean("colors.custom")) {
-			ColorMe.logDebug("Color " + color + " is enabled");
+		else if (plugin.colors.contains(color) && plugin.colors.getString(color).trim().length() > 1 && plugin.config.getBoolean("colors.custom")) {
+			plugin.logDebug("Color " + color + " is enabled");
 			return false;
 		}
-		ColorMe.logDebug("Color " + color + " is enabled");
+		plugin.logDebug("Color " + color + " is enabled");
 		return true;
 	}
 	
 	// Checks if the given color is a standard vanilla one
-	public static boolean isStandard(String color) {
-		ColorMe.logDebug("Actions -> isStandard");
+	public boolean isStandard(String color) {
+		plugin.logDebug("Actions -> isStandard");
 		color = color.toUpperCase();
 		for (ChatColor chatColor: ChatColor.values()) {
 			if (chatColor.name().equalsIgnoreCase(color)) return true;
@@ -611,29 +603,29 @@ public class Actions {
 	 */
 
 	// Displays the specific help
-	public static void help(CommandSender sender, String pluginPart) {
-		ColorMe.logDebug("Actions -> help");
+	public void help(CommandSender sender, String pluginPart) {
+		plugin.logDebug("Actions -> help");
 		int z = 9;
 		if (pluginPart.equals("group")) z = 12;
 		for (int i = 1; i <= z; i++) {
-			String message = ColorMe.localization.getString("help_" + pluginPart + "_" + Integer.toString(i));
-			ColorMe.message(sender, null, message, null, null, null, null);
+			String message = plugin.localization.getString("help_" + pluginPart + "_" + Integer.toString(i));
+			plugin.message(sender, null, message, null, null, null, null);
 		}
 	}
 
 	// Reloads the plugin
-	public static void reload(CommandSender sender) {
-		ColorMe.logDebug("Actions -> reload");
-		ColorMe.loadConfigsAgain();	
-		String message = ColorMe.localization.getString("reload");
-		ColorMe.message(sender, null, message, null, null, null, null);
+	public void reload(CommandSender sender) {
+		plugin.logDebug("Actions -> reload");
+		plugin.loadConfigsAgain();	
+		String message = plugin.localization.getString("reload");
+		plugin.message(sender, null, message, null, null, null, null);
 	}
 
 	// The list of colors
-	public static void listColors(CommandSender sender) {
-		ColorMe.logDebug("Actions -> listColors");
-		String message = ColorMe.localization.getString("color_list");
-		ColorMe.message(sender, null, message, null, null, null, null);
+	public void listColors(CommandSender sender) {
+		plugin.logDebug("Actions -> listColors");
+		String message = plugin.localization.getString("color_list");
+		plugin.message(sender, null, message, null, null, null, null);
 		String msg = "";
 		// As long as all colors aren't reached, including magic manual
 		for (ChatColor value : ChatColor.values()) {
@@ -645,32 +637,32 @@ public class Actions {
 			if (colorChar.equalsIgnoreCase("m")) continue;
 			if (colorChar.equalsIgnoreCase("k")) continue;
 			// color the name of the color
-			if (ColorMe.config.getBoolean("colors." + color)) {
+			if (plugin.config.getBoolean("colors." + color)) {
 				msg += ChatColor.valueOf(color.toUpperCase()) + color + " (\u0026" + colorChar + ") " + ChatColor.WHITE;
 			}
 		}
-		if (ColorMe.config.getBoolean("colors.strikethrough")) msg += ChatColor.STRIKETHROUGH + "striketrough" + ChatColor.WHITE + " (\u0026m) ";
-		if (ColorMe.config.getBoolean("colors.underline")) msg += ChatColor.UNDERLINE + "underline" + ChatColor.WHITE + " (\u0026n) ";
-		if (ColorMe.config.getBoolean("colors.magic")) msg += "magic (" + ChatColor.MAGIC + "a" + ChatColor.WHITE + ", \u0026k) ";
+		if (plugin.config.getBoolean("colors.strikethrough")) msg += ChatColor.STRIKETHROUGH + "striketrough" + ChatColor.WHITE + " (\u0026m) ";
+		if (plugin.config.getBoolean("colors.underline")) msg += ChatColor.UNDERLINE + "underline" + ChatColor.WHITE + " (\u0026n) ";
+		if (plugin.config.getBoolean("colors.magic")) msg += "magic (" + ChatColor.MAGIC + "a" + ChatColor.WHITE + ", \u0026k) ";
 		// Include custom colors
-		if (ColorMe.config.getBoolean("colors.random")) msg += randomColor("random (\u0026random)" + " ");
-		if (ColorMe.config.getBoolean("colors.rainbow")) msg += rainbowColor("rainbow (\u0026rainbow)") + " ";
-		if (ColorMe.config.getBoolean("colors.custom"))	{
+		if (plugin.config.getBoolean("colors.random")) msg += randomColor("random (\u0026random)" + " ");
+		if (plugin.config.getBoolean("colors.rainbow")) msg += rainbowColor("rainbow (\u0026rainbow)") + " ";
+		if (plugin.config.getBoolean("colors.custom"))	{
 			msg += ChatColor.RESET;
-			for (String color : ColorMe.colors.getKeys(false)) msg += color + " ";
+			for (String color : plugin.colors.getKeys(false)) msg += color + " ";
 		}
-		if (ColorMe.config.getBoolean("colors.mixed")) msg += ChatColor.RESET + "" + ChatColor.DARK_RED + "\nMixed colors are enabled. Example: blue-bold";
+		if (plugin.config.getBoolean("colors.mixed")) msg += ChatColor.RESET + "" + ChatColor.DARK_RED + "\nMixed colors are enabled. Example: blue-bold";
 		sender.sendMessage(msg);
 	}
 
 	// Saves a file
-	private static void save(File file, FileConfiguration config) {
+	private void saveFile(File file, FileConfiguration config) {
 		try {
 			config.save(file);
-			ColorMe.logDebug("Saved to the " + file);
+			plugin.logDebug("Saved to the " + file);
 		} catch (IOException e) {
-			Bukkit.getServer().getLogger().warning("Failed to save the " + file + "! Please report this! IOException");
-			ColorMe.logDebug("Failed to save");
+			plugin.getServer().getLogger().warning("Failed to save the " + file + "! Please report this! IOException");
+			plugin.logDebug("Failed to save");
 		}
 	}
 }

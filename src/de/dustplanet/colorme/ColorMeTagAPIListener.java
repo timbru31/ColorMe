@@ -20,10 +20,11 @@ import org.kitteh.tag.PlayerReceiveNameTagEvent;
  */
 
 public class ColorMeTagAPIListener implements Listener {
-
-	public ColorMe plugin;
-	public ColorMeTagAPIListener(ColorMe instance) {
+	private ColorMe plugin;
+	private Actions actions;
+	public ColorMeTagAPIListener(ColorMe instance, Actions actionsInstance) {
 		plugin = instance;
+		actions = actionsInstance;
 	}
 
 	@EventHandler(ignoreCancelled = true)
@@ -33,28 +34,28 @@ public class ColorMeTagAPIListener implements Listener {
 			String world = event.getNamedPlayer().getWorld().getName();
 			// Fallback
 			String color = "WHITE";
-			if (Actions.has(name, world, "colors"))	color = Actions.get(name, world, "colors");
+			if (actions.has(name, world, "colors"))	color = actions.get(name, world, "colors");
 			// Check player default
-			else if (Actions.has(name, "default", "colors")) color = Actions.get(name, "default", "colors");
+			else if (actions.has(name, "default", "colors")) color = actions.get(name, "default", "colors");
 			// If groups enabled
-			else if (ColorMe.groups && ColorMe.ownSystem) {
+			else if (plugin.groups && plugin.ownSystem) {
 				// If group available
-				if (Actions.playerHasGroup(name)) {
-					String group = Actions.playerGetGroup(name);
+				if (actions.playerHasGroup(name)) {
+					String group = actions.playerGetGroup(name);
 					// Group specific world
-					if (Actions.hasGroup(group, world, "colors")) color = Actions.getGroup(group, world, "colors");
+					if (actions.hasGroup(group, world, "colors")) color = actions.getGroup(group, world, "colors");
 					// Group default
-					else if (Actions.hasGroup(group, "default", "colors")) color = Actions.getGroup(group, "default", "colors");
+					else if (actions.hasGroup(group, "default", "colors")) color = actions.getGroup(group, "default", "colors");
 				}
 			}
 			// Then check if still nothing found and globalColor
-			if (ColorMe.globalColor && color == null) {
-				if (Actions.hasGlobal("color")) color = Actions.getGlobal("color");
+			if (plugin.globalColor && color == null) {
+				if (actions.hasGlobal("color")) color = actions.getGlobal("color");
 			}
 			// Check if valid
 			String[] colors = color.split("-");
 			color = colors[0].toUpperCase();
-			if (!Actions.isStandard(color)) return;
+			if (!actions.isStandard(color)) return;
 			name = ChatColor.valueOf(color.toUpperCase()) + name;
 			if (name.endsWith("\u00A7f")) name = name.substring(0, (name.length() -2));
 			if (name != "" && name != null) event.setTag(name);

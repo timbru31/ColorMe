@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.Plugin;
 //PEX Import
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionUser;
@@ -14,6 +15,7 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 //bPermissions Import
 import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.util.CalculableType;
+import org.anjocaido.groupmanager.GroupManager;
 // GroupManager Import
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
@@ -33,127 +35,133 @@ import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
  */
 
 public class ColorMePlayerListener implements Listener {
-	public ColorMe plugin;
-	public ColorMePlayerListener(ColorMe instance) {
+	private ColorMe plugin;
+	private Actions actions;
+	public ColorMePlayerListener(ColorMe instance, Actions actionsInstance) {
 		plugin = instance;
+		if (plugin.groupManager) {
+			Plugin groupManagerPlugin = plugin.getServer().getPluginManager().getPlugin("GroupManager");
+			groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
+		}
+		actions = actionsInstance;
 	}
 
 	private String[] pluginPart = {"colors", "prefix", "suffix"};
-	public static WorldsHolder groupManagerWorldsHolder;
+	private WorldsHolder groupManagerWorldsHolder;
 
 	// Loads the the values and set them to default one if not known
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		ColorMe.logDebug("\t---PlayerJoinEvent Begin---");
+		plugin.logDebug("\t---PlayerJoinEvent Begin---");
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 		String world = player.getWorld().getName().toLowerCase();
 		// New color onJoin?
-		if (ColorMe.newColorOnJoin) {
+		if (plugin.newColorOnJoin) {
 			// Normal colors + rainbow & random
 			int color = (int) (Math.random()*(ChatColor.values().length + 2));
 			// 22 == Reset -> bad
 			while (color == 22) color = (int) (Math.random()*(ChatColor.values().length + 2));
 			// Set it.
-			if (color == ChatColor.values().length + 1) Actions.set(name, "rainbow", world, pluginPart[0]);
-			else if (color == ChatColor.values().length + 2) Actions.set(name, "random", world, pluginPart[0]);
-			else Actions.set(name, ChatColor.values()[color].name().toLowerCase(), world, pluginPart[0]);
+			if (color == ChatColor.values().length + 1) actions.set(name, "rainbow", world, pluginPart[0]);
+			else if (color == ChatColor.values().length + 2) actions.set(name, "random", world, pluginPart[0]);
+			else actions.set(name, ChatColor.values()[color].name().toLowerCase(), world, pluginPart[0]);
 		}
-		Actions.checkNames(name, world);
-		ColorMe.logDebug("\t---PlayerJoinEvent End---");
-		ColorMe.logDebug("");
+		actions.checkNames(name, world);
+		plugin.logDebug("\t---PlayerJoinEvent End---");
+		plugin.logDebug("");
 	}
 
 
 	// Loads the the values and set them to default one if not known
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		ColorMe.logDebug("\t---PlayerChatEvent Begin---");
+		plugin.logDebug("\t---PlayerChatEvent Begin---");
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase(), nameExact = player.getName();
 		String world = player.getWorld().getName().toLowerCase();
-		Actions.checkNames(name, world);
-		if (ColorMe.otherChatPluginFound) return;
+		actions.checkNames(name, world);
+		if (plugin.otherChatPluginFound) return;
 		String prefix = "", suffix = "", globalSuffix = "", globalPrefix = "", groupPrefix = "", groupSuffix = "";
 		// Group check!
-		if (ColorMe.groups) {
-			if (ColorMe.pex) {
+		if (plugin.groups) {
+			if (plugin.pex) {
 				PermissionUser user = PermissionsEx.getUser(player);
 				// Only first group
 				PermissionGroup group = user.getGroups(world)[0];
 				// Get the prefix from the pex config
-				groupPrefix = Actions.replaceThings(group.getPrefix(world));
+				groupPrefix = actions.replaceThings(group.getPrefix(world));
 				// Get the suffix from the pex config
-				groupSuffix = Actions.replaceThings(group.getSuffix(world));
+				groupSuffix = actions.replaceThings(group.getSuffix(world));
 			}
-			else if (ColorMe.bPermissions) {
+			else if (plugin.bPermissions) {
 				// Only fist group
 				String group = ApiLayer.getGroups(world, CalculableType.USER, nameExact)[0];
-				groupPrefix = Actions.replaceThings(ApiLayer.getValue(player.getWorld().getName(), CalculableType.GROUP, group, "prefix"));
-				groupSuffix = Actions.replaceThings(ApiLayer.getValue(player.getWorld().getName(), CalculableType.GROUP, group, "suffix"));
+				groupPrefix = actions.replaceThings(ApiLayer.getValue(player.getWorld().getName(), CalculableType.GROUP, group, "prefix"));
+				groupSuffix = actions.replaceThings(ApiLayer.getValue(player.getWorld().getName(), CalculableType.GROUP, group, "suffix"));
 			}
-			else if (ColorMe.groupManager) {
+			else if (plugin.groupManager) {
 				// World data -> then groups (only first) & finally the suffix & prefix!
 				OverloadedWorldHolder groupManager = groupManagerWorldsHolder.getWorldData(world);
 				if (groupManager != null) {
 					String group = groupManager.getUser(nameExact).getGroupName();
-					groupPrefix = Actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("prefix"));
-					groupSuffix = Actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("suffix"));
+					groupPrefix = actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("prefix"));
+					groupSuffix = actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("suffix"));
 				}
 			}
-			else if (ColorMe.ownSystem) {
-				if (Actions.playerHasGroup(name)) {
-					String group = Actions.playerGetGroup(name);
-					if (Actions.hasGroup(group, world, "prefix")) groupPrefix = Actions.getGroup(group, world, "prefix");
-					if (Actions.hasGroup(group, "default", "prefix")) groupPrefix = Actions.getGroup(group, "default", "prefix");
-					if (Actions.hasGroup(group, world, "suffix")) groupSuffix = Actions.getGroup(group, world, "suffix");
-					if (Actions.hasGroup(group, "default", "suffix")) groupSuffix = Actions.getGroup(group, "default", "suffix");
+			else if (plugin.ownSystem) {
+				if (actions.playerHasGroup(name)) {
+					String group = actions.playerGetGroup(name);
+					if (actions.hasGroup(group, world, "prefix")) groupPrefix = actions.getGroup(group, world, "prefix");
+					if (actions.hasGroup(group, "default", "prefix")) groupPrefix = actions.getGroup(group, "default", "prefix");
+					if (actions.hasGroup(group, world, "suffix")) groupSuffix = actions.getGroup(group, world, "suffix");
+					if (actions.hasGroup(group, "default", "suffix")) groupSuffix = actions.getGroup(group, "default", "suffix");
 				}
 			}
 			if (!groupPrefix.equalsIgnoreCase("")) groupPrefix += " ";
 			if (!groupSuffix.equalsIgnoreCase("")) groupSuffix += " ";
 		}
 
-		if (ColorMe.Prefixer) {
+		if (plugin.Prefixer) {
 			// Get world prefix if available
-			if (Actions.has(name, world, "prefix")) {
-				prefix = Actions.get(name, world, "prefix") + " ";
+			if (actions.has(name, world, "prefix")) {
+				prefix = actions.get(name, world, "prefix") + " ";
 			}
 			// Get default prefix
-			else if (Actions.has(name, "default", "prefix")) {
-				prefix = Actions.get(name, "default", "prefix") + " ";
+			else if (actions.has(name, "default", "prefix")) {
+				prefix = actions.get(name, "default", "prefix") + " ";
 			}
 			// Get the global prefix
-			else if (ColorMe.globalPrefix) {
-				prefix = Actions.getGlobal("prefix") + " ";
+			else if (plugin.globalPrefix) {
+				prefix = actions.getGlobal("prefix") + " ";
 			}
 			// Display global one, too?
-			if (ColorMe.globalPrefix && ColorMe.displayAlwaysGlobalPrefix) {
-				globalPrefix = Actions.getGlobal("prefix") + " ";
+			if (plugin.globalPrefix && plugin.displayAlwaysGlobalPrefix) {
+				globalPrefix = actions.getGlobal("prefix") + " ";
 				if (globalPrefix.equals(prefix)) globalPrefix = "";
 			}
 		}
-		if (ColorMe.Suffixer) {
+		if (plugin.Suffixer) {
 			// Get world suffix if available
-			if (Actions.has(name, world, "suffix")) {
-				suffix = Actions.get(name, world, "suffix");
+			if (actions.has(name, world, "suffix")) {
+				suffix = actions.get(name, world, "suffix");
 			}
 			// Get default suffix
-			else if (Actions.has(name, "default", "suffix")) {
-				suffix = Actions.get(name, "default", "suffix");
+			else if (actions.has(name, "default", "suffix")) {
+				suffix = actions.get(name, "default", "suffix");
 			}
 			// Get the global suffix
-			else if (ColorMe.globalSuffix) {
-				suffix = Actions.getGlobal("suffix");
+			else if (plugin.globalSuffix) {
+				suffix = actions.getGlobal("suffix");
 			}
 			// Display global one, too?
-			if (ColorMe.globalSuffix && ColorMe.displayAlwaysGlobalSuffix) {
-				globalSuffix = Actions.getGlobal("suffix");
+			if (plugin.globalSuffix && plugin.displayAlwaysGlobalSuffix) {
+				globalSuffix = actions.getGlobal("suffix");
 				if (globalSuffix.equals(suffix)) globalSuffix = "";
 			}
 		}
 		// Remove the chat brackets if wanted
-		if (!ColorMe.chatBrackets) {
+		if (!plugin.chatBrackets) {
 			String format = "";
 			if (globalSuffix.equals("") && groupSuffix.equals("") && suffix.equals("")) {
 				format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s" + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + ": %2$s";
@@ -173,10 +181,10 @@ public class ColorMePlayerListener implements Listener {
 			event.setFormat(format);
 		}
 		// Color the message, too?
-		if (ColorMe.chatColors && player.hasPermission("colorme.chat"))	{
-			event.setMessage(Actions.replaceThings(event.getMessage()));
+		if (plugin.chatColors && player.hasPermission("colorme.chat"))	{
+			event.setMessage(actions.replaceThings(event.getMessage()));
 		}
-		ColorMe.logDebug("\t---PlayerChatEvent End---");
-		ColorMe.logDebug("");
+		plugin.logDebug("\t---PlayerChatEvent End---");
+		plugin.logDebug("");
 	}
 }
