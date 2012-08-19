@@ -80,7 +80,6 @@ public class ColorMePlayerListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase(), nameExact = player.getName();
 		String world = player.getWorld().getName().toLowerCase();
-		actions.checkNames(name, world);
 		if (plugin.otherChatPluginFound) return;
 		String prefix = "", suffix = "", globalSuffix = "", globalPrefix = "", groupPrefix = "", groupSuffix = "";
 		// Group check!
@@ -160,9 +159,9 @@ public class ColorMePlayerListener implements Listener {
 				if (globalSuffix.equals(suffix)) globalSuffix = "";
 			}
 		}
+		String format = "";
 		// Remove the chat brackets if wanted
 		if (!plugin.chatBrackets) {
-			String format = "";
 			if (globalSuffix.equals("") && groupSuffix.equals("") && suffix.equals("")) {
 				format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s" + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + ": %2$s";
 			}
@@ -177,7 +176,7 @@ public class ColorMePlayerListener implements Listener {
 			else if (!groupSuffix.equals("")) groupSuffix += ChatColor.RESET + ": ";
 			if (!groupSuffix.equals("") && !suffix.equals("")) groupSuffix += " ";
 			if (!suffix.equals("") && !globalSuffix.equals("")) suffix += " ";
-			String format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "<%1$s> " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + "%2$s";
+			format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "<%1$s> " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + "%2$s";
 			event.setFormat(format);
 		}
 		// Color the message, too?

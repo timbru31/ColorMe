@@ -141,6 +141,7 @@ public class ColorMeCommands implements CommandExecutor {
 				}
 				// Remove color
 				actions.remove(target, world, pluginPart);
+				actions.checkNames(target, world);
 				if (plugin.getServer().getPlayerExact(target) != null) {
 					// Notify player is online
 					Player player = plugin.getServer().getPlayerExact(target);
@@ -291,6 +292,7 @@ public class ColorMeCommands implements CommandExecutor {
 				Double cost = plugin.config.getDouble("costs.color");
 				if (plugin.economy == null || cost == 0) {
 					actions.set(senderName, color, world, pluginPart);
+					actions.checkNames(senderName, world);
 					message = plugin.localization.getString("changed_color_self");
 					plugin.message(sender, null, message, color, world, null, null);
 					return true;
@@ -299,6 +301,7 @@ public class ColorMeCommands implements CommandExecutor {
 				else if (plugin.economy != null) {
 					if (color.equalsIgnoreCase("white")) {
 						actions.set(senderName, color, world, pluginPart);
+						actions.checkNames(senderName, world);
 						message = plugin.localization.getString("changed_color_self");
 						plugin.message(sender, null, message, color, world, null, null);
 						return true;
@@ -324,6 +327,7 @@ public class ColorMeCommands implements CommandExecutor {
 						}
 						// Set color and notify sender
 						actions.set(senderName, color, world, pluginPart);
+						actions.checkNames(senderName, world);
 						message = plugin.localization.getString("changed_color_self");
 						plugin.message(sender, null, message, color, world, null, null);
 						return true;
@@ -334,6 +338,7 @@ public class ColorMeCommands implements CommandExecutor {
 			else if (sender.hasPermission("colorme.other") && !actions.self(sender, target)) {
 				// Set the new color
 				actions.set(target, color, world, pluginPart);
+				actions.checkNames(target, world);
 				if (plugin.getServer().getPlayerExact(target) != null) {
 					// Tell the affected player
 					Player player = plugin.getServer().getPlayerExact(target);
