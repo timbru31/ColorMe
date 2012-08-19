@@ -466,7 +466,7 @@ public class Actions {
 					}
 					else newDisplayName = ChatColor.valueOf(colorPart.toUpperCase()) + newDisplayName;
 				}
-				player.setDisplayName(newDisplayName + ChatColor.WHITE);
+				player.setDisplayName(newDisplayName);
 			}
 			// Check for playerList
 			if (plugin.tabList) {

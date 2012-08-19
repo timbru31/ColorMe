@@ -57,7 +57,6 @@ public class ColorMeTagAPIListener implements Listener {
 			color = colors[0].toUpperCase();
 			if (!actions.isStandard(color)) return;
 			name = ChatColor.valueOf(color.toUpperCase()) + name;
-			if (name.endsWith("\u00A7f")) name = name.substring(0, (name.length() -2));
 			if (name != "" && name != null) event.setTag(name);
 		}
 	}
