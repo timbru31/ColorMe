@@ -54,9 +54,10 @@ public class ColorMeTagAPIListener implements Listener {
 			}
 			// Check if valid
 			String[] colors = color.split("-");
-			color = colors[0].toUpperCase();
-			if (!actions.isStandard(color)) return;
-			name = ChatColor.valueOf(color.toUpperCase()) + name;
+			for (String colorActual : colors) {
+				if (!actions.isStandard(colorActual)) break;
+				name = ChatColor.valueOf(colorActual.toUpperCase()) + name;
+			}
 			if (name != "" && name != null) event.setTag(name);
 		}
 	}
