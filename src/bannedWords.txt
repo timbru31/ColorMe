@@ -1,1 +1,4 @@
 God
+Admin
+Mod
+Moderator

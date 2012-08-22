@@ -37,6 +37,7 @@ colors:
   underline: true
   italic: true
   custom: true
+  mixed: true
 global_default:
   prefix: ''
   suffix: ''
@@ -46,3 +47,15 @@ chatBrackets: true
 lengthLimit:
   Prefixer: 16
   Suffixer: 16
+debug: false
+newColorOnJoin: false
+displayAlways:
+  globalSuffix: false
+  globalPefix: false
+useWordBlacklist: true
+groups:
+  enable: true
+  ownSystem: true
+softMode:
+  enabled: true
+  ownChatPlugin: Herochat

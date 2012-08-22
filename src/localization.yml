@@ -18,8 +18,7 @@ disabled_color: '&4Sorry, but the color ''&e%color&4'' is disabled.'
 removed_color_self: '&eYour &2name color in the world &e%world &2has been removed.'
 removed_color_other: '&2Removed &e%player&2''s color in the world &e%world.'
 removed_color_global: '&2Removed the global color.'
-changed_color_self: '&eYour &2name color has been changed to &e%color &2in the world
-  &e%world'
+changed_color_self: '&eYour &2name color has been changed to &e%color &2in the world &e%world'
 changed_color_other: '&2Changed &e%player&2''s color to &e%color &2in the world &e%world'
 changed_color_global: '&2The global color has been changed to &e%color'
 get_color_self: '&eYou &2have got the color &e%color &2in the world &e%world'
@@ -43,10 +42,8 @@ same_prefix_global: '&4The global prefix is already this prefix!'
 removed_prefix_self: '&eYour &2prefix in the world &e%world &2has been removed.'
 removed_prefix_other: '&2Removed &e%player&2''s prefix in the world &e%world.'
 removed_prefix_global: '&2Removed the global prefix.'
-changed_prefix_self: '&eYour &2prefix has been changed to &f%prefix &2in the world
-  &e%world'
-changed_prefix_other: '&2Changed &e%player&2''s prefix to &f%prefix &2in the world
-  &e%world'
+changed_prefix_self: '&eYour &2prefix has been changed to &f%prefix &2in the world &e%world'
+changed_prefix_other: '&2Changed &e%player&2''s prefix to &f%prefix &2in the world &e%world'
 changed_prefix_global: '&2The global prefix has been changed to &f%prefix'
 get_prefix_self: '&eYou &2have got the prefix %prefix &2in the world &e%world'
 get_prefix_other: '&e%player &2has got the prefix %prefix %2in the world &e%world'
@@ -69,10 +66,8 @@ same_suffix_global: '&4The global suffix is already this suffix!'
 removed_suffix_self: '&eYour &2suffix in the world &e%world &2has been removed.'
 removed_suffix_other: '&2Removed &e%player&2''s suffix in the world &e%world.'
 removed_suffix_global: '&2Removed the global suffix.'
-changed_suffix_self: '&eYour &2suffix has been changed to &f%suffix &2in the world
-  &e%world'
-changed_suffix_other: '&2Changed &e%player&2''s suffix to &f%suffix &2in the world
-  &e%world'
+changed_suffix_self: '&eYour &2suffix has been changed to &f%suffix &2in the world &e%world'
+changed_suffix_other: '&2Changed &e%player&2''s suffix to &f%suffix &2in the world &e%world'
 changed_suffix_global: '&2The global suffix has been changed to &f%suffix'
 get_suffix_self: '&eYou &2have got the suffix %suffix &2in the world &e%world'
 get_suffix_other: '&e%player &2has got the suffix %suffix %2in the world &e%world'
@@ -86,6 +81,34 @@ help_suffix_6: /suffixer remove <name> [world] - Removes suffix
 help_suffix_7: /suffixer me <suffix> [world] - Sets your own suffix
 help_suffix_8: /suffixer <name> <suffix> [world] - Sets player's suffix
 help_suffix_9: /suffixer global <suffix> - Sets the suffix prefix
-custom_colors_enabled: '&4Custom colors are enabled, too! Please ask your admin for
-  them!'
+custom_colors_enabled: '&4Custom colors are enabled, too! Please ask your admin for them!'
 too_long: '&4Sorry, this message is too long!'
+bad_words: '&4Sorry,but ''%s'' is on the blacklist!'
+help_group_1: '&2Welcome to the Groups (part of ColorMe) version &4%version &2help!'
+help_group_2: '&4 <> = Required, [] = Optional'
+help_group_3: /group help - Shows the help
+help_group_4: /color list - Shows list of colors
+help_group_5: /group create <name> - Creates a group
+help_group_6: /group delete <name> - Deletes a group
+help_group_7: /group add <name> - Adds a member
+help_group_8: /group remove <name> - Removes a member
+help_group_9: /group members <groupName> - Lists all members
+help_group_10: /group set <groupName> <part> <value> [world] - Sets a value of the group
+help_group_11: /group get <groupName> <part> [world] - Gets a value of the group
+help_group_12: /group list - Lists all groups
+no_groups: '&4There are no groups!'
+no_members: '&4There are no members!'
+memberlist: '&2Members of the group &e%groupName'
+grouplist: '&2Currently enabled groups:'
+group_not_existing: '&4The group &e%groupName &4doesn''t exist!'
+group_already_existing: '&4The group &e%groupName &4already exist!'
+unrecognized_part: '&4The part &e%part &4is not known'
+deleted_group: '&2Group &e%groupName &2deleted.'
+created_group: '&2Group &e%groupName &2created.'
+already_a_member: '&e%playerName &4is already a member of the group &e%groupName'
+not_a_member: '&e%playerName &4is not a member of the group &e%groupName'
+removed_member: '&2Removed &e%playerName &2from the group &e%groupName'
+added_member: '&2Added &e%playerName &2to the group &e%groupName'
+group_has_nothing: '&4The group &e%groupName &4doesn''t have a value in the world &e%world'
+group_get_value: '&2The group &e%groupName &2has got the value &e%value &2in the world &e%world'
+group_set_value: '&2Set the value of the group &e%groupName &2to &e%value &2in the world &e%world'

@@ -172,13 +172,14 @@ public class ColorMe extends JavaPlugin {
 		// Force to update the config (remove empty lines)
 		if (config.getBoolean("updateConfig")) {
 			try {
-				updateConfig(playersFile);
+				removeEmptyLines(playersFile);
 			}
 			catch (IOException e) {
 				this.getServer().getLogger().warning("[ColorMe] Failed to update the config! Please report this! IOExcpetion");
 			}
 			finally {
 				config.set("updateConfig", false);
+				saveConfig();
 			}
 		}
 
@@ -407,7 +408,7 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Remove empty lines
-	public void updateConfig(File config) throws IOException, FileNotFoundException {
+	private void removeEmptyLines(File config) throws IOException, FileNotFoundException {
 		BufferedReader reader = new BufferedReader(new FileReader(config));
 		File tempFile = new File(getDataFolder(), "temp.txt");
 		BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
@@ -431,7 +432,7 @@ public class ColorMe extends JavaPlugin {
 			config.delete();
 			tempFile.renameTo(config);
 		}
-	}
+	}	
 
 	// Load the banned words
 	private void loadBannedWords() throws IOException{
@@ -447,7 +448,7 @@ public class ColorMe extends JavaPlugin {
 
 
 	// Loads the config at the start
-	public void loadConfig() {
+	private void loadConfig() {
 		config.options().header("For help please refer to http://bit.ly/colormebukkit or http://bit.ly/bukkitdevcolorme");
 		config.addDefault("debug", false);
 		config.addDefault("updateConfig", false);
@@ -492,7 +493,7 @@ public class ColorMe extends JavaPlugin {
 	}
 
 	// Loads the localization
-	public void loadLocalization() {
+	private void loadLocalization() {
 		localization.options().header("The underscores are used for the different lines!");
 		localization.addDefault("permission_denied", "&4You don't have the permission to do this!");
 		localization.addDefault("part_disabled", "&4Sorry, but this command and plugin part is disabled!");

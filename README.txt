@@ -30,20 +30,34 @@ This plugin is released under the Creative Commons Attribution-NonCommercial-Sha
 
 This plugin supports economy! Required is Vault, if you want to use economy!
 Additionally support for Spout to change the color of the player title.
+Even TagAPI is supported to change the name above the head!
 
 Standard config:
 
 # For help please refer to http://bit.ly/colormebukkit or http://bit.ly/bukkitdevcolorme
+# If economy is enabled, the values below are charged. Set them to 0 to make it free. Remember the free permissions!
 costs:
   color: 5.0
   prefix: 5.0
   suffix: 5.0
+# Should Prefixer be enabled?
 Prefixer: true
+# Should Suffixer be enabled?
 Suffixer: true
 ColorMe:
+  # The display name is used in chat
   displayName: true
+  # Tab list can cause auto complete problems...
   tabList: false
-  playerTitle: true
+  # If Spout is enabled color the name above the head?
+  playerTitle: false
+  # Also possible with the TagAPI!
+  playerTitleWithoutSpout: false
+  # Should colors on signs be enabled?
+  signColors: true
+  # Can the chat message contain colors?
+  chatColors: true
+# Define which colors are enabled
 colors:
   black: true
   dark_blue: true
@@ -64,10 +78,43 @@ colors:
   magic: true
   random: true
   rainbow: true
+  bold: true
+  strikethrough: true
+  underline: true
+  italic: true
+  custom: true
+  mixed: true
+# The global default values, if a player has nothing and the group, too
 global_default:
   prefix: ''
   suffix: ''
   color: ''
+# Clears the empty lines out of the config
+updateConfig: false
+# Show the '<' and '>' brackets
+chatBrackets: true
+# How long can a prefix/suffix be? (Without colors)
+lengthLimit:
+  Prefixer: 16
+  Suffixer: 16
+# Creates an extra log file. Helps to find bugs.
+debug: false
+# Should the player receive a new color on join?
+newColorOnJoin: false
+# Always, regardless if the player got own, display the global suffix/prefix?
+displayAlways:
+  globalSuffix: false
+  globalPefix: false
+# Prevent some words in prefixes/suffixes?
+useWordBlacklist: true
+# Use groups or not. Own system or PEX, bPerms or GroupManager.
+groups:
+  enable: true
+  ownSystem: true
+# SoftMode -> doesn't alter the chat. Ability to add own plugin.
+softMode:
+  enabled: true
+  ownChatPlugin: Herochat
 
 Commands & Permissions (if no permissions system is detected, only OPs are able to use the commands!)
 Only bukkit's permissions system is supported!
@@ -118,6 +165,12 @@ Description: Sets color for an other player (no world -> default)
 Node: colorme.global
 Description: Sets the global color
 
+Node: colorme.sign
+Description: Allows coloring of signs
+
+Node: colorme.chat
+Description: Allows coloring of the chat
+
 Prefixer:
 
 /prefix reload
@@ -143,7 +196,7 @@ Description: Gets actual prefix ("me" as the name -> yourself)
 Node: prefixer.global
 Description: Gets the global prefix
 
-/prefix  me <prefix> [world]
+/prefix me <prefix> [world]
 Node: prefixer.self
 Node: prefixer.free -> No costs
 Description: Sets your own prefix (no world -> default)
@@ -155,6 +208,9 @@ Description: Sets prefix for an other player (no world -> default)
 /prefix global <prefix>
 Node: prefixer.global
 Description: Sets the global prefix
+
+Node: prefixer.nofilter
+Description: Allows using of words which are on the blacklist
 
 Suffixer:
 
@@ -181,7 +237,7 @@ Description: Gets actual suffix ("me" as the name -> yourself)
 Node: suffixer.global
 Description: Gets the global suffix
 
-/suffix  me <suffix> [world]
+/suffix me <suffix> [world]
 Node: suffixer.self
 Node: suffixer.free -> No costs
 Description: Sets your own suffix (no world -> default)
@@ -193,3 +249,6 @@ Description: Sets suffix for an other player (no world -> default)
 /suffix global <suffix>
 Node: suffixer.global
 Description: Sets the global suffix
+
+Node: suffixer.nofilter
+Description: Allows using of words which are on the blacklist
