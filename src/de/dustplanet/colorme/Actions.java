@@ -23,6 +23,13 @@ public class Actions {
 	 */
 
 	// Return the group's name color/prefix/suffix
+	/**
+	 * Gets a value of a group
+	 * @param groupName - the group name
+	 * @param world - the world
+	 * @param groupPart - the given plugin part
+	 * @return the string from the config
+	 */
 	public String getGroup(String groupName, String world, String groupPart) {
 		plugin.logDebug("Actions -> get");
 		plugin.logDebug("Asked to get the " + groupPart + " from " + groupName + " in the world " + world);
@@ -34,6 +41,13 @@ public class Actions {
 	}
 
 	// Check if a group has a color/prefix/suffix or not
+	/**
+	 * Checks if a group has got a value
+	 * @param groupName - the name of the group
+	 * @param world - the world
+	 * @param groupPart - the part (colors, prefix or suffix)
+	 * @return yes or no
+	 */
 	public boolean hasGroup(String groupName, String world, String groupPart) {
 		plugin.logDebug("Actions -> hasGroup");
 		plugin.logDebug("Asked if " + groupName + " has got a " + groupPart + " in the world " + world);
@@ -48,6 +62,11 @@ public class Actions {
 	}
 
 	// Checks if a group exists
+	/**
+	 * Checks if a group exists
+	 * @param groupName - the group name
+	 * @return yes or no
+	 */
 	public boolean existsGroup(String groupName) {
 		plugin.logDebug("Actions -> existsGroup");
 		plugin.logDebug("Asked if " + groupName + " exists");
@@ -57,6 +76,10 @@ public class Actions {
 	}
 
 	// Deletes a group
+	/**
+	 * Deletes a group
+	 * @param groupName - the group Name
+	 */
 	public void deleteGroup(String groupName) {
 		plugin.logDebug("Actions -> deleteGroup");
 		plugin.logDebug("Asked to delete the group " + groupName);
@@ -70,6 +93,11 @@ public class Actions {
 		saveFile(plugin.groupsFile, plugin.group);
 	}
 	// Lists the members
+	/**
+	 * Lists members of a group
+	 * @param groupName - the groupName
+	 * @return the list of members
+	 */
 	public List<String> listMembers(String groupName) {
 		plugin.logDebug("Actions -> listMembers");
 		plugin.logDebug("Asked to list the members of " + groupName);
@@ -79,6 +107,13 @@ public class Actions {
 	}
 
 	// Sets a value for a group
+	/**
+	 * Sets a value of a group in a world
+	 * @param groupName - the name of the group
+	 * @param value - the value (color, prefix or suffix)
+	 * @param world - the world
+	 * @param groupPart - the part
+	 */
 	public void setGroup(String groupName, String value, String world, String groupPart) {
 		plugin.logDebug("Actions -> set");
 		plugin.logDebug("Asked to set the " + groupPart + " of " + groupName + " in the world " + world);
@@ -91,6 +126,10 @@ public class Actions {
 	}
 
 	// Create a group
+	/**
+	 * Creates a group
+	 * @param groupName - the group name
+	 */
 	public void createGroup(String groupName) {
 		plugin.logDebug("Actions -> Asked to create the group " + groupName);
 		groupName = groupName.toLowerCase();
@@ -102,6 +141,11 @@ public class Actions {
 	}
 
 	// Add a member to a group
+	/**
+	 * Adds a member to a group
+	 * @param groupName - the group name
+	 * @param name - the player name
+	 */
 	public void addMember(String groupName, String name) {
 		plugin.logDebug("Actions -> Add member " + name + " to the group " + groupName);
 		name = name.toLowerCase();
@@ -115,6 +159,11 @@ public class Actions {
 	}
 
 	// Remove a player from a group
+	/**
+	 * Removes a member from a group
+	 * @param groupName - the name of the group
+	 * @param name - the name of the player
+	 */
 	public void removeMember(String groupName, String name) {
 		plugin.logDebug("Actions -> Remove member " + name + " from the group " + groupName);
 		plugin.players.set(name + ".group", "");
@@ -128,6 +177,12 @@ public class Actions {
 	}
 
 	// Check if a player has a color/prefix/suffix or not
+	/**
+	 * Checks if the member is member of a given group
+	 * @param groupName - the name of the group
+	 * @param name - the player name
+	 * @return true or false, yes or no
+	 */
 	public boolean isMember(String groupName, String name) {
 		plugin.logDebug("Actions -> isMember");
 		plugin.logDebug("Asked if " + name + " is a member of the group " + groupName);
@@ -148,6 +203,11 @@ public class Actions {
 
 
 	// Get global default
+	/**
+	 * Gets the global part
+	 * @param pluginPart - the part (color, suffix or prefix)
+	 * @return the string from the config
+	 */
 	public String getGlobal(String pluginPart) {
 		plugin.logDebug("Actions -> getGlobal");
 		plugin.logDebug("Asked to get the global " + pluginPart);
@@ -158,6 +218,11 @@ public class Actions {
 	}
 
 	// Check if the global default is not null
+	/**
+	 * Checks if the global values are used
+	 * @param pluginPart - the part (color, suffix, prefix)
+	 * @return yes or no
+	 */
 	public boolean hasGlobal(String pluginPart) {
 		plugin.logDebug("Actions -> hasGlobal");
 		plugin.logDebug("Asked if the global value of " + pluginPart + " is set");
@@ -166,6 +231,10 @@ public class Actions {
 	}
 
 	// Removes a color/prefix/suffix if exists, otherwise returns false
+	/**
+	 * Removes the global value
+	 * @param pluginPart - color/prefix or suffix
+	 */
 	public void removeGlobal(String pluginPart) {
 		plugin.logDebug("Actions -> removeGlobal");
 		plugin.logDebug("Asked to remove the global part of " + pluginPart);
@@ -181,6 +250,11 @@ public class Actions {
 	 */
 
 	// Check if the player has got a group
+	/**
+	 * Checks if the player has got a group or not
+	 * @param name - the player name
+	 * @return yes or not
+	 */
 	public boolean playerHasGroup(String name) {
 		plugin.logDebug("Actions -> playerHasGroup");
 		plugin.logDebug("Asked if " + name + " has got a group");
@@ -193,6 +267,11 @@ public class Actions {
 	}
 
 	// Get the group of a player
+	/**
+	 * Returns the group of a player
+	 * @param name - the player name
+	 * @return the name of the group
+	 */
 	public String playerGetGroup(String name) {
 		plugin.logDebug("Actions -> playerGetGroup");
 		plugin.logDebug("Asked for the group of " + name);
@@ -201,12 +280,25 @@ public class Actions {
 	}
 
 	// Checks if the player is itself
+	/**
+	 * Checks if the command sender is itself
+	 * @param sender - the sender of the command
+	 * @param name - the given name
+	 * @return yes or no!
+	 */
 	public boolean self(CommandSender sender, String name) {
 		plugin.logDebug("Actions -> self");
 		return sender.equals(plugin.getServer().getPlayerExact(name));
 	}
 
 	// Return the player's name color/prefix/suffix
+	/**
+	 * Returns the player color/suffix or prefix
+	 * @param name - the player name
+	 * @param world - the world
+	 * @param pluginPart - the part
+	 * @return the string out of the config! "" if not set!
+	 */
 	public String get(String name, String world, String pluginPart) {
 		plugin.logDebug("Actions -> get");
 		plugin.logDebug("Asked to get the " + pluginPart + " from " + name + " in the world " + world);
@@ -218,6 +310,13 @@ public class Actions {
 	}
 
 	// Set player's color/prefix/suffix
+	/**
+	 * Sets the players color, suffix or prefix
+	 * @param name - the name
+	 * @param value - the actual "value"
+	 * @param world - the world
+	 * @param pluginPart - colors/prefix/suffix
+	 */
 	public void set(String name, String value, String world, String pluginPart) {
 		plugin.logDebug("Actions -> set");
 		plugin.logDebug("Asked to set the " + pluginPart + " from " + name + " in the world " + world);
@@ -230,6 +329,13 @@ public class Actions {
 	}
 
 	// Check if a player has a color/prefix/suffix or not
+	/**
+	 * Checks if the player has got a suffix/prefix or color
+	 * @param name - the name of the player
+	 * @param world - the world
+	 * @param pluginPart - the part, prefix/suffix/colors
+	 * @return true if the player has it or false if not
+	 */
 	public boolean has(String name, String world, String pluginPart) {
 		plugin.logDebug("Actions -> has");
 		plugin.logDebug("Asked if " + name + " has got a " + pluginPart + " in the world " + world);
@@ -243,7 +349,12 @@ public class Actions {
 		return false;
 	}
 
-	// Removes a color/prefix/suffix if exists, otherwise returns false
+	// Removes a color/prefix/suffix
+	/** Removes the color/prefix/suffix of a player
+	 * @param name - the player name
+	 * @param world - the world
+	 * @param pluginPart - the plugin part
+	 */
 	public void remove(String name, String world, String pluginPart) {
 		plugin.logDebug("Actions -> remove");
 		plugin.logDebug("Asked to remove the " + pluginPart + " from " + name + " in the world " + world);
@@ -267,6 +378,11 @@ public class Actions {
 	 */
 
 	// Used to create a random effect
+	/**
+	 * Creates a random color
+	 * @param name of the player
+	 * @return the updated name
+	 */
 	public String randomColor(String name) {
 		plugin.logDebug("Actions -> randomColor");
 		plugin.logDebug("Asked to color the string " + name);
@@ -283,6 +399,11 @@ public class Actions {
 	}
 
 	// Used to create a rainbow effect
+	/**
+	 * Creates a rainbow effect
+	 * @param name of the player
+	 * @return the updated name
+	 */
 	public String rainbowColor(String name) {
 		plugin.logDebug("Actions -> rainbowColor");
 		plugin.logDebug("Asked to color the string " + name);
@@ -301,6 +422,12 @@ public class Actions {
 	}
 
 	// Make the custom colors!
+	/**
+	 * Creates the custom color effect
+	 * @param color - the name of the color
+	 * @param text - the text to color with
+	 * @return the updated text
+	 */
 	public String updateCustomColor(String color, String text) {
 		plugin.logDebug("Actions -> updateCustomColor");
 		plugin.logDebug("Asked to color the string " + text + " with the color " + color);
@@ -321,6 +448,11 @@ public class Actions {
 	}
 
 	// Replace all in a String
+	/**
+	 * Replaces all the colors
+	 * @param string - the message
+	 * @return the colorized message
+	 */
 	public String replaceThings(String string) {
 		plugin.logDebug("Actions -> replaceThings");
 		if (string == null) return "";
@@ -397,6 +529,11 @@ public class Actions {
 	 */
 
 	// Check the whole names
+	/**
+	 * Checks the names of a player
+	 * @param name - the player name
+	 * @param world - the world
+	 */
 	public void checkNames(String name, String world) {
 		plugin.logDebug("Actions -> checkNames");
 		plugin.logDebug("Asked to check the color of the player " + name + " in the world " + world);
@@ -439,6 +576,11 @@ public class Actions {
 	}
 
 	// Update the displayName, tabName, title, prefix & suffix in a specific world (after setting, removing, onJoin and onChat)
+	/**
+	 * Updates the display name, tab list or the name above the head of a player
+	 * @param name - the name of the player
+	 * @param color - the color
+	 */
 	public void updateName(String name, String color) {
 		plugin.logDebug("Actions -> updateName");
 		plugin.logDebug("Asked to update the color of " + name + " to the color " + color);
@@ -513,6 +655,10 @@ public class Actions {
 	}
 
 	// Restore the "clean", white name
+	/**
+	 * Restores the name of a player to a clean white one
+	 * @param name - the name of the player
+	 */
 	public void restoreName(String name) {
 		plugin.logDebug("Actions -> restoreName");
 		plugin.logDebug("Asked to restore the name " + name);
@@ -544,6 +690,12 @@ public class Actions {
 	}
 
 	// Check if the color is possible
+	/**
+	 * Checks if the config is recognized
+	 * Possible are custom colors, random or rainbow and standard ones
+	 * @param color - name of the color
+	 * @return  the result - yes or no
+	 */
 	public boolean validColor(String color) {
 		plugin.logDebug("Actions -> validColor");
 		// if it's random or rainbow -> possible
@@ -571,6 +723,11 @@ public class Actions {
 	}
 
 	// If the config value is disabled, return true
+	/**
+	 * Checks if the given color is disabled in the config
+	 * @param color - name of the color
+	 * @return Yes or no - disabled or not
+	 */
 	public boolean isDisabled(String color) {
 		plugin.logDebug("Actions -> isDisabled");
 		if (plugin.config.getBoolean("colors." + color.toLowerCase())) {
@@ -587,6 +744,11 @@ public class Actions {
 	}
 	
 	// Checks if the given color is a standard vanilla one
+	/**
+	 * Checks if the given color is a standard color
+	 * @param color - name of the color
+	 * @return Yes or no - whether the color is standard ore not
+	 */
 	public boolean isStandard(String color) {
 		plugin.logDebug("Actions -> isStandard");
 		color = color.toUpperCase();

@@ -86,16 +86,16 @@ too_long: '&4Sorry, this message is too long!'
 bad_words: '&4Sorry,but ''%s'' is on the blacklist!'
 help_group_1: '&2Welcome to the Groups (part of ColorMe) version &4%version &2help!'
 help_group_2: '&4 <> = Required, [] = Optional'
-help_group_3: /group help - Shows the help
+help_group_3: /groups help - Shows the help
 help_group_4: /color list - Shows list of colors
-help_group_5: /group create <name> - Creates a group
-help_group_6: /group delete <name> - Deletes a group
-help_group_7: /group add <name> - Adds a member
-help_group_8: /group remove <name> - Removes a member
-help_group_9: /group members <groupName> - Lists all members
-help_group_10: /group set <groupName> <part> <value> [world] - Sets a value of the group
-help_group_11: /group get <groupName> <part> [world] - Gets a value of the group
-help_group_12: /group list - Lists all groups
+help_group_5: /groups create <name> - Creates a group
+help_group_6: /groups delete <name> - Deletes a group
+help_group_7: /groups add <name> - Adds a member
+help_group_8: /groups remove <name> - Removes a member
+help_group_9: /groups members <groupName> - Lists all members
+help_group_10: /groups set <groupName> <part> <value> [world] - Sets a value of the group
+help_group_11: /groups get <groupName> <part> [world] - Gets a value of the group
+help_group_12: /groups list - Lists all groups
 no_groups: '&4There are no groups!'
 no_members: '&4There are no members!'
 memberlist: '&2Members of the group &e%groupName'
