@@ -585,8 +585,8 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("help_group_4", "/color list - Shows list of colors");
 		localization.addDefault("help_group_5", "/groups create <name> - Creates a group");
 		localization.addDefault("help_group_6", "/groups delete <name> - Deletes a group");
-		localization.addDefault("help_group_7", "/groups add <name> - Adds a member");
-		localization.addDefault("help_group_8", "/groups remove <name> - Removes a member");
+		localization.addDefault("help_group_7", "/groups add <groupName> <name> - Adds a member");
+		localization.addDefault("help_group_8", "/groups remove <groupName> <name> - Removes a member");
 		localization.addDefault("help_group_9", "/groups members <groupName> - Lists all members");
 		localization.addDefault("help_group_10", "/groups set <groupName> <part> <value> [world] - Sets a value of the group");
 		localization.addDefault("help_group_11", "/groups get <groupName> <part> [world] - Gets a value of the group");

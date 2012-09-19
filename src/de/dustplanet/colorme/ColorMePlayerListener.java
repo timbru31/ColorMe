@@ -73,10 +73,28 @@ public class ColorMePlayerListener implements Listener {
 	}
 
 
+	@EventHandler
+	public void onPlayerChatLow(AsyncPlayerChatEvent event) {
+		if (plugin.softMode) {
+			plugin.logDebug("\t---PlayerChatEvent NormalPriority Begin---");
+			modifyChat(event);
+			plugin.logDebug("\t---PlayerChatEvent NormalPriority End---");
+			plugin.logDebug("");
+		}
+	}
+
 	// Loads the the values and set them to default one if not known
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		plugin.logDebug("\t---PlayerChatEvent Begin---");
+	public void onPlayerChatHigh(AsyncPlayerChatEvent event) {
+		if (!plugin.softMode) {
+			plugin.logDebug("\t---PlayerChatEvent HighestPriority Begin---");
+			modifyChat(event);
+			plugin.logDebug("\t---PlayerChatEvent HighestPriorityEnd---");
+			plugin.logDebug("");
+		}
+	}
+
+	private void modifyChat(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase(), nameExact = player.getName();
 		String world = player.getWorld().getName().toLowerCase();
@@ -183,7 +201,5 @@ public class ColorMePlayerListener implements Listener {
 		if (plugin.chatColors && player.hasPermission("colorme.chat"))	{
 			event.setMessage(actions.replaceThings(event.getMessage()));
 		}
-		plugin.logDebug("\t---PlayerChatEvent End---");
-		plugin.logDebug("");
 	}
 }
