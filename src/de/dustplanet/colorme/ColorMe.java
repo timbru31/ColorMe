@@ -48,6 +48,14 @@ import net.milkbowl.vault.economy.Economy;
  * 
  */
 
+/*
+ * TODO
+ * NewColorOnJoin mixed? Custom?
+ * First char of rainbow/random above the head
+ * Write colored in chat automatically
+ * 
+ */
+
 public class ColorMe extends JavaPlugin {
 	private Actions actions;
 	private ColorMePlayerListener playerListener;
@@ -69,8 +77,6 @@ public class ColorMe extends JavaPlugin {
 
 	// Shutdown
 	public void onDisable() {
-		PluginDescriptionFile pdfFile = this.getDescription();
-		this.getServer().getLogger().info("[" + pdfFile.getName() + "]" + " " + pdfFile.getVersion()	+ " has been disabled!");
 		// Clear stuff
 		values.clear();
 		bannedWords.clear();
@@ -104,7 +110,7 @@ public class ColorMe extends JavaPlugin {
 		debug = config.getBoolean("debug");
 		checkDebug();
 		if (debug) {
-			this.getServer().getLogger().info("[ColorMe] Debug is enabled. Will log actions.");
+			getLogger().info("[ColorMe] Debug is enabled. Will log actions.");
 			logDebug("\t-----BEGIN LOG------");
 		}
 
@@ -164,7 +170,7 @@ public class ColorMe extends JavaPlugin {
 			try {
 				loadBannedWords();
 			} catch (IOException e) {
-				this.getServer().getLogger().warning("[ColorMe] Failed to load the bannedWords.txt! Please report this! IOException");
+				getLogger().warning("[ColorMe] Failed to load the bannedWords.txt! Please report this! IOException");
 				logDebug("Failed to load the banned words");
 			}
 		}
@@ -175,7 +181,7 @@ public class ColorMe extends JavaPlugin {
 				removeEmptyLines(playersFile);
 			}
 			catch (IOException e) {
-				this.getServer().getLogger().warning("[ColorMe] Failed to update the config! Please report this! IOExcpetion");
+				getLogger().warning("[ColorMe] Failed to update the config! Please report this! IOExcpetion");
 			}
 			finally {
 				config.set("updateConfig", false);
@@ -201,33 +207,33 @@ public class ColorMe extends JavaPlugin {
 
 		// Message
 		PluginDescriptionFile pdfFile = this.getDescription();
-		this.getServer().getLogger().info("[" + pdfFile.getName() + "]" + " " + pdfFile.getVersion() + " is enabled!");
+		getLogger().info("[" + pdfFile.getName() + "]" + " " + pdfFile.getVersion() + " is enabled!");
 		logDebug("ColorMe enabled");
 
 		// Check for Vault
 		Plugin vault = this.getServer().getPluginManager().getPlugin("Vault");
 		if (vault != null & vault instanceof Vault) {
 			// If Vault is enabled, load the economy
-			this.getServer().getLogger().info("[ColorMe] Loaded Vault successfully");
+			getLogger().info("[ColorMe] Loaded Vault successfully");
 			logDebug("Vault hooked and loaded");
 			setupEconomy();
 		}
 		else {
 			// Else tell the admin about the missing of Vault
-			this.getServer().getLogger().info("[ColorMe] Vault was not found! Running without economy!");
+			getLogger().info("[ColorMe] Vault was not found! Running without economy!");
 			logDebug("Vault not found");
 		}
 
 		// Check for Spout
 		Plugin spout = this.getServer().getPluginManager().getPlugin("Spout");
 		if (spout != null) {
-			this.getServer().getLogger().info("[ColorMe] Loaded Spout successfully");
+			getLogger().info("[ColorMe] Loaded Spout successfully");
 			logDebug("Spout hooked and loaded");
 			// Spout is enabled
 			spoutEnabled = true;
 		}
 		else {
-			this.getServer().getLogger().info("[ColorMe] Running without Spout!");
+			getLogger().info("[ColorMe] Running without Spout!");
 			logDebug("Spout not found");
 			// Spout is disabled
 			spoutEnabled = false;
@@ -237,92 +243,92 @@ public class ColorMe extends JavaPlugin {
 		checkParts();
 
 		if (groups && !ownSystem) {
-			Plugin pexPlugin = this.getServer().getPluginManager().getPlugin("PermissionsEx");
-			Plugin bPermissionsPlugin = this.getServer().getPluginManager().getPlugin("bPermissions");
-			Plugin groupManagerPlugin = this.getServer().getPluginManager().getPlugin("GroupManager");
+			Plugin pexPlugin = getServer().getPluginManager().getPlugin("PermissionsEx");
+			Plugin bPermissionsPlugin = getServer().getPluginManager().getPlugin("bPermissions");
+			Plugin groupManagerPlugin = getServer().getPluginManager().getPlugin("GroupManager");
 			if (pexPlugin != null) {
 				pex = true;
-				this.getServer().getLogger().info("[ColorMe] Found PermissionsEx. Will use it for groups!");
+				getLogger().info("[ColorMe] Found PermissionsEx. Will use it for groups!");
 				logDebug("Hooked into PermissionsEx for groups");
 			}
 			else if (bPermissionsPlugin != null) {
 				bPermissions = true;
-				this.getLogger().info("[ColorMe] Found bPermissions. Will use it for groups!");
+				getLogger().info("[ColorMe] Found bPermissions. Will use it for groups!");
 				logDebug("Hooked into bPermissions for groups");
 			}
 			else if (groupManagerPlugin != null) {
 				groupManager = true;
-				this.getServer().getLogger().info("[ColorMe] Found GroupManager. Will use it for groups!");
+				getLogger().info("[ColorMe] Found GroupManager. Will use it for groups!");
 				//ColorMePlayerListener.groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
 				logDebug("Hooked into GroupManager for groups");
 			}
 			else {
-				this.getServer().getLogger().info("[ColorMe] Haven't found any supported group systems. Disabling groups");
+				getLogger().info("[ColorMe] Haven't found any supported group systems. Disabling groups");
 				logDebug("No group system found, disabling groups");
 				groups = false;
 			}
 		}
 		else if (groups)  {
 			logDebug("Using own group system");
-			this.getServer().getLogger().info("[ColorMe] Using own group system!");
+			getLogger().info("[ColorMe] Using own group system!");
 		}
 		else {
 			logDebug("Groups disabled");
-			this.getServer().getLogger().info("[ColorMe] Groups disabled.");
+			getLogger().info("[ColorMe] Groups disabled.");
 		}
 		
 		// SoftMode
 		if (softMode) {
 			logDebug("SoftMode enabled");
-			this.getServer().getLogger().info("[ColorMe] SoftMode enabled. If other chat plugins are found, the chat won't be affected by ColorMe.");
+			getLogger().info("[ColorMe] SoftMode enabled. If other chat plugins are found, the chat won't be affected by ColorMe.");
 			Plugin chatManager = this.getServer().getPluginManager().getPlugin("ChatManager");
 			Plugin bChatManager = this.getServer().getPluginManager().getPlugin("bChatManager");
 			Plugin EssentialsChat = this.getServer().getPluginManager().getPlugin("EssentialsChat");
 			Plugin mChatSuite = this.getServer().getPluginManager().getPlugin("mChatSuite");
 			if (chatManager != null) {
 				otherChatPluginFound = true;
-				this.getServer().getLogger().info("[ColorMe] Found ChatManager. Will use it for chat!");
+				getLogger().info("[ColorMe] Found ChatManager. Will use it for chat!");
 				logDebug("Found ChatManager");
 			}
 			else if (bChatManager != null) {
 				otherChatPluginFound = true;
-				this.getServer().getLogger().info("[ColorMe] Found bChatManager. Will use it for chat!");
+				getLogger().info("[ColorMe] Found bChatManager. Will use it for chat!");
 				logDebug("Found bChatManager");
 			}
 			else if (EssentialsChat != null) {
 				otherChatPluginFound = true;
-				this.getServer().getLogger().info("[ColorMe] Found EssentialsChat. Will use it for chat!");
+				getLogger().info("[ColorMe] Found EssentialsChat. Will use it for chat!");
 				logDebug("Found EssentialsChat");
 			}
 			else if (mChatSuite != null) {
 				otherChatPluginFound = true;
-				this.getServer().getLogger().info("[ColorMe] Found mChatSuite. Will use it for chat!");
+				getLogger().info("[ColorMe] Found mChatSuite. Will use it for chat!");
 				logDebug("Found mChatSuite");
 			}
 			else {
 				Plugin customChatPlugin = this.getServer().getPluginManager().getPlugin(config.getString("softMode.ownChatPlugin"));
 				if (customChatPlugin != null) {
 					otherChatPluginFound = true;
-					this.getServer().getLogger().info("[ColorMe] Found " + customChatPlugin.getName() + ". Will use it for chat!");
+					getLogger().info("[ColorMe] Found " + customChatPlugin.getName() + ". Will use it for chat!");
 					logDebug("Found " + customChatPlugin.getName());
 				}
 			}
 		}
 		else {
 			logDebug("SoftMode disabled");
-			this.getServer().getLogger().info("[ColorMe] SoftMode disabled. Trying to override other chat plugins.");
+			getLogger().info("[ColorMe] SoftMode disabled. Trying to override other chat plugins.");
 		}
 		
 		if (playerTitleWithoutSpout) {
 			Plugin tagAPIPlugin = this.getServer().getPluginManager().getPlugin("TagAPI");
 			if (tagAPIPlugin != null) {
 				tagAPI = true;
-				this.getServer().getLogger().info("[ColorMe] Found TagAPI, will use it for names above the head!");
+				getLogger().info("[ColorMe] Found TagAPI, will use it for names above the head!");
 				logDebug("Found TagAPI");
 				pm.registerEvents(tagAPIListener, this);
 			}
 			else {
-				this.getServer().getLogger().info("[ColorMe] Didn't found TagAPI!");
+				getLogger().info("[ColorMe] Didn't found TagAPI!");
 				logDebug("TagAPI not found");
 			}
 		}
@@ -366,7 +372,7 @@ public class ColorMe extends JavaPlugin {
 			in.close();
 		}
 		catch (IOException e) {
-			this.getServer().getLogger().warning("[ColorMe] An error occured while copying the default file! IO Exception");
+			getLogger().warning("[ColorMe] An error occured while copying the default file! IO Exception");
 		}
 	}
 
@@ -388,7 +394,7 @@ public class ColorMe extends JavaPlugin {
 				}
 				writer.close();
 			} catch (IOException e) {
-				Bukkit.getServer().getLogger().warning("[ColorMe] An error occurred while writing to the log! IOException");
+				getLogger().warning("[ColorMe] An error occurred while writing to the log! IOException");
 			}
 		}
 	}
@@ -401,7 +407,7 @@ public class ColorMe extends JavaPlugin {
 				try {
 					debugFile.createNewFile();
 				} catch (IOException e) {
-					Bukkit.getServer().getLogger().warning("[ColorMe] Failed to create the debug.log! IOException");
+					getLogger().warning("[ColorMe] Failed to create the debug.log! IOException");
 				}
 			}
 		}
@@ -422,7 +428,7 @@ public class ColorMe extends JavaPlugin {
 			logDebug("Updated the config");
 		}
 		catch (IOException e) {
-			this.getServer().getLogger().warning("[ColorMe] An error occurred while updating the config! IOException");
+			getLogger().warning("[ColorMe] An error occurred while updating the config! IOException");
 			logDebug("Failed to update the config");
 		}
 		finally {
@@ -612,7 +618,7 @@ public class ColorMe extends JavaPlugin {
 			localization.save(localizationFile);
 			logDebug("Default localization saved");
 		} catch (IOException e) {
-			this.getServer().getLogger().warning("[ColorMe] Failed to save the localization! Please report this! IOException");
+			getLogger().warning("[ColorMe] Failed to save the localization! Please report this! IOException");
 			logDebug("Failed to save the default localization");
 		}
 	}
@@ -641,11 +647,11 @@ public class ColorMe extends JavaPlugin {
 			logDebug("Configs and files loaded again");
 		}
 		catch (FileNotFoundException e) {
-			Bukkit.getServer().getLogger().warning("[ColorMe] Failed to load the configs! Please report this! FileNotFoundException");
+			getLogger().warning("[ColorMe] Failed to load the configs! Please report this! FileNotFoundException");
 		} catch (IOException e) {
-			Bukkit.getServer().getLogger().warning("[ColorMe] Failed to load the configs! Please report this! IOException");
+			getLogger().warning("[ColorMe] Failed to load the configs! Please report this! IOException");
 		} catch (InvalidConfigurationException e) {
-			Bukkit.getServer().getLogger().warning("[ColorMe] Failed to load the configs! Please report this! InvalidConfigurationException");
+			getLogger().warning("[ColorMe] Failed to load the configs! Please report this! InvalidConfigurationException");
 		}
 	}
 
