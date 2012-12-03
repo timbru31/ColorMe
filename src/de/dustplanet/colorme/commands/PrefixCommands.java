@@ -1,4 +1,4 @@
-package de.dustplanet.colorme;
+package de.dustplanet.colorme.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -6,6 +6,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+
+import de.dustplanet.colorme.Actions;
+import de.dustplanet.colorme.ColorMe;
 
 public class PrefixCommands implements CommandExecutor {
 	private ColorMe plugin;

@@ -28,6 +28,14 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.kitteh.tag.TagAPI;
+
+import de.dustplanet.colorme.commands.ColorMeCommands;
+import de.dustplanet.colorme.commands.GroupCommands;
+import de.dustplanet.colorme.commands.PrefixCommands;
+import de.dustplanet.colorme.commands.SuffixCommands;
+import de.dustplanet.colorme.listeners.ColorMeBlockListener;
+import de.dustplanet.colorme.listeners.ColorMePlayerListener;
+import de.dustplanet.colorme.listeners.ColorMeTagAPIListener;
 // Economy
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
@@ -74,6 +82,7 @@ public class ColorMe extends JavaPlugin {
 	private GroupCommands groupExecutor;
 	public List<String> values = new ArrayList<String>();
 	public List<String> bannedWords = new ArrayList<String>();
+	public Thread mainThread;
 
 	// Shutdown
 	public void onDisable() {
@@ -332,6 +341,9 @@ public class ColorMe extends JavaPlugin {
 				logDebug("TagAPI not found");
 			}
 		}
+		
+		// Prevent ASync calls
+		mainThread = Thread.currentThread();
 
 		// Stats
 		checkStatsStuff();

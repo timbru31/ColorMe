@@ -1,9 +1,12 @@
-package de.dustplanet.colorme;
+package de.dustplanet.colorme.commands;
 
 import java.util.List;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import de.dustplanet.colorme.Actions;
+import de.dustplanet.colorme.ColorMe;
 
 public class GroupCommands implements CommandExecutor {
 	private Actions actions;

@@ -1,9 +1,12 @@
-package de.dustplanet.colorme;
+package de.dustplanet.colorme.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.kitteh.tag.PlayerReceiveNameTagEvent;
+
+import de.dustplanet.colorme.Actions;
+import de.dustplanet.colorme.ColorMe;
 
 /**
  * ColorMe for CraftBukkit/Bukkit

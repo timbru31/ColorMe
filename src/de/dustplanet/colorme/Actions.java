@@ -3,6 +3,8 @@ package de.dustplanet.colorme;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,6 +16,13 @@ public class Actions {
 	public ColorMe plugin;
 	public Actions(ColorMe instance) {
 		plugin = instance;
+	}
+
+	public static Actions hookIntoColorMe() {
+		ColorMe plugin = (ColorMe) Bukkit.getPluginManager().getPlugin("ColorMe");
+		if (plugin != null)return new Actions(plugin);
+		System.out.println("ColorMe instance not found returning null");
+		return null;
 	}
 
 	/*
@@ -592,7 +601,7 @@ public class Actions {
 			String newDisplayName = cleanDisplayName;
 			player.setDisplayName(cleanDisplayName);
 			player.setPlayerListName(cleanDisplayName);
-			if (plugin.tagAPI && plugin.playerTitleWithoutSpout) TagAPI.refreshPlayer(player);
+			if (plugin.tagAPI && plugin.playerTitleWithoutSpout && Thread.currentThread().equals(plugin.mainThread)) TagAPI.refreshPlayer(player);
 			String newName = cleanDisplayName;
 			String [] colors = color.split("-");
 			// Name color
@@ -649,7 +658,7 @@ public class Actions {
 			}
 			// Check if TagAPI should be used -> above the head!
 			if (plugin.playerTitleWithoutSpout && plugin.tagAPI && player.hasPermission("plugin.nametag")) {
-				if (!color.equalsIgnoreCase("rainbow") && !color.equalsIgnoreCase("random")) TagAPI.refreshPlayer(player);
+				if (!color.equalsIgnoreCase("rainbow") && !color.equalsIgnoreCase("random") && Thread.currentThread().equals(plugin.mainThread)) TagAPI.refreshPlayer(player);
 			}
 		}
 	}
@@ -683,7 +692,7 @@ public class Actions {
 				spoutPlayer.resetTitle();
 			}
 			// Check if TagAPI should be used -> above the head!
-			if (plugin.playerTitleWithoutSpout && plugin.tagAPI && player.hasPermission("plugin.nametag")) {
+			if (plugin.playerTitleWithoutSpout && plugin.tagAPI && player.hasPermission("plugin.nametag") && Thread.currentThread().equals(plugin.mainThread)) {
 				TagAPI.refreshPlayer(player);
 			}
 		}
@@ -742,7 +751,7 @@ public class Actions {
 		plugin.logDebug("Color " + color + " is enabled");
 		return true;
 	}
-	
+
 	// Checks if the given color is a standard vanilla one
 	/**
 	 * Checks if the given color is a standard color

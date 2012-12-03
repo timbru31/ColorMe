@@ -1,4 +1,4 @@
-package de.dustplanet.colorme;
+package de.dustplanet.colorme.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -15,6 +15,9 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 //bPermissions Import
 import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.util.CalculableType;
+import de.dustplanet.colorme.Actions;
+import de.dustplanet.colorme.ColorMe;
+
 import org.anjocaido.groupmanager.GroupManager;
 // GroupManager Import
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;

@@ -1,8 +1,11 @@
-package de.dustplanet.colorme;
+package de.dustplanet.colorme.listeners;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
+
+import de.dustplanet.colorme.Actions;
+import de.dustplanet.colorme.ColorMe;
 
 public class ColorMeBlockListener implements Listener {
 	private ColorMe plugin;
