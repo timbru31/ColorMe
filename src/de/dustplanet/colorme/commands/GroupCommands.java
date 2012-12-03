@@ -4,13 +4,13 @@ import java.util.List;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-
 import de.dustplanet.colorme.Actions;
 import de.dustplanet.colorme.ColorMe;
 
 public class GroupCommands implements CommandExecutor {
 	private Actions actions;
 	private ColorMe plugin;
+
 	public GroupCommands(ColorMe instance, Actions actionsInstance) {
 		plugin = instance;
 		actions = actionsInstance;
@@ -182,10 +182,12 @@ public class GroupCommands implements CommandExecutor {
 				message = plugin.localization.getString("memberlist");
 				plugin.message(sender, null, message, groupName, null, null, null);
 				List<String> list = actions.listMembers(groupName);
-				String msg = list.toString();
-				if (msg.equalsIgnoreCase("[]")) msg = actions.replaceThings(plugin.localization.getString("no_members"));
-				else msg = msg.substring(1, (list.size() - 1));
-				sender.sendMessage(msg);
+				if (list.isEmpty()) sender.sendMessage(actions.replaceThings(plugin.localization.getString("no_members")));
+				else {
+					String msg = list.toString();
+					msg = msg.substring(1, (list.size() - 1));
+					sender.sendMessage(msg);
+				}
 			}
 			else {
 				message = plugin.localization.getString("permission_denied");

@@ -4,18 +4,34 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
+import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.getspout.spoutapi.player.SpoutPlayer;
 import org.kitteh.tag.TagAPI;
 
+import ru.tehkode.permissions.PermissionGroup;
+import ru.tehkode.permissions.PermissionUser;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
+import de.bananaco.bpermissions.api.ApiLayer;
+import de.bananaco.bpermissions.api.util.CalculableType;
+
 public class Actions {
 	public ColorMe plugin;
+	private WorldsHolder groupManagerWorldsHolder;
+	
 	public Actions(ColorMe instance) {
 		plugin = instance;
+		if (plugin.groupManager) {
+			Plugin groupManagerPlugin = plugin.getServer().getPluginManager().getPlugin("GroupManager");
+			groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
+		}
 	}
 
 	public static Actions hookIntoColorMe() {
@@ -563,6 +579,28 @@ public class Actions {
 				if (hasGroup(group, world, "colors")) color = getGroup(group, world, "colors");
 				// Group default
 				else if (hasGroup(group, "default", "colors")) color = getGroup(group, "default", "colors");
+			}
+		}
+		else if (plugin.groups && !plugin.ownSystem) {
+			if (plugin.pex) {
+				PermissionUser user = PermissionsEx.getUser(name);
+				// Only first group
+				PermissionGroup group = user.getGroups(world)[0];
+				// Get the group color
+				color = group.getOption("color");
+			}
+			else if (plugin.bPermissions) {
+				// Only fist group
+				String group = ApiLayer.getGroups(world, CalculableType.USER, name)[0];
+				color = ApiLayer.getValue(world, CalculableType.GROUP, group, "prefix");
+			}
+			else if (plugin.groupManager) {
+				// World data -> then groups (only first) & finally the suffix & prefix!
+				OverloadedWorldHolder groupManager = groupManagerWorldsHolder.getWorldData(world);
+				if (groupManager != null) {
+					String group = groupManager.getUser(name).getGroupName();
+					color = groupManager.getGroup(group).getVariables().getVarString("color");
+				}
 			}
 		}
 		// Then check if still nothing found and globalColor

@@ -6,13 +6,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-
 import de.dustplanet.colorme.Actions;
 import de.dustplanet.colorme.ColorMe;
 
 public class SuffixCommands implements CommandExecutor {
 	private Actions actions;
 	private ColorMe plugin;
+	
 	public SuffixCommands(ColorMe instance, Actions actionsInstance) {
 		plugin = instance;
 		actions = actionsInstance;

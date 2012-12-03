@@ -5,7 +5,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-
 import de.dustplanet.colorme.Actions;
 import de.dustplanet.colorme.ColorMe;
 
@@ -26,6 +25,7 @@ import de.dustplanet.colorme.ColorMe;
 public class ColorMeCommands implements CommandExecutor {
 	private ColorMe plugin;
 	private Actions actions;
+	
 	public ColorMeCommands(ColorMe instance, Actions actionsInstance) {
 		plugin = instance;
 		actions = actionsInstance;

@@ -8,11 +8,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
-//PEX Import
+// PEX Import
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
-//bPermissions Import
+// bPermissions Import
 import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.util.CalculableType;
 import de.dustplanet.colorme.Actions;
@@ -75,9 +75,30 @@ public class ColorMePlayerListener implements Listener {
 		plugin.logDebug("");
 	}
 
+	// Loads the the values and set them to default one if not known
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onPlayerChatLowest(AsyncPlayerChatEvent event) {
+		if (plugin.softMode) {
+			plugin.logDebug("\t---PlayerChatEvent LowestPriority Begin---");
+			modifyChat(event);
+			plugin.logDebug("\t---PlayerChatEvent LowestPriority End---");
+			plugin.logDebug("");
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerChatLow(AsyncPlayerChatEvent event) {
+		if (plugin.softMode) {
+			plugin.logDebug("\t---PlayerChatEvent LowPriority Begin---");
+			modifyChat(event);
+			plugin.logDebug("\t---PlayerChatEvent LowPriority End---");
+			plugin.logDebug("");
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerChatNormal(AsyncPlayerChatEvent event) {
 		if (plugin.softMode) {
 			plugin.logDebug("\t---PlayerChatEvent NormalPriority Begin---");
 			modifyChat(event);
@@ -85,14 +106,33 @@ public class ColorMePlayerListener implements Listener {
 			plugin.logDebug("");
 		}
 	}
-
-	// Loads the the values and set them to default one if not known
-	@EventHandler(priority = EventPriority.HIGHEST)
+	
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerChatHigh(AsyncPlayerChatEvent event) {
+		if (!plugin.softMode) {
+			plugin.logDebug("\t---PlayerChatEvent HighPriority Begin---");
+			modifyChat(event);
+			plugin.logDebug("\t---PlayerChatEvent HighPriority End---");
+			plugin.logDebug("");
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerChatHighest(AsyncPlayerChatEvent event) {
 		if (!plugin.softMode) {
 			plugin.logDebug("\t---PlayerChatEvent HighestPriority Begin---");
 			modifyChat(event);
 			plugin.logDebug("\t---PlayerChatEvent HighestPriorityEnd---");
+			plugin.logDebug("");
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerChatMonitor(AsyncPlayerChatEvent event) {
+		if (!plugin.softMode) {
+			plugin.logDebug("\t---PlayerChatEvent MonitorPriority Begin---");
+			modifyChat(event);
+			plugin.logDebug("\t---PlayerChatEvent MonitorPriority End---");
 			plugin.logDebug("");
 		}
 	}
@@ -197,11 +237,23 @@ public class ColorMePlayerListener implements Listener {
 			else if (!groupSuffix.equals("")) groupSuffix += ChatColor.RESET + ": ";
 			if (!groupSuffix.equals("") && !suffix.equals("")) groupSuffix += " ";
 			if (!suffix.equals("") && !globalSuffix.equals("")) suffix += " ";
-			format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "<%1$s> " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + "%2$s";
+			format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "<%1$s" + ChatColor.RESET + "> " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + "%2$s";
 			event.setFormat(format);
 		}
 		// Color the message, too?
-		if (plugin.chatColors && player.hasPermission("colorme.chat"))	{
+		if (plugin.chatColors && player.hasPermission("colorme.chat")) {
+			// Should the chat be auto colored?
+			if (plugin.autoChatColor) {
+				for (ChatColor value : ChatColor.values()) {
+					// get the name from the integer
+					String color = value.name().toLowerCase();
+					if (player.hasPermission("colorme.autochatcolor." + color)) {
+						event.setMessage(value + event.getMessage());
+						break;
+					}
+				}
+			}
+			// Still color message
 			event.setMessage(actions.replaceThings(event.getMessage()));
 		}
 	}
