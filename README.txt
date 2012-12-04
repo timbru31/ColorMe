@@ -115,6 +115,8 @@ groups:
 softMode:
   enabled: true
   ownChatPlugin: Herochat
+# Should the chat be automatic colored if the permission colorme.autochatcolor.<color> is given?
+autoChatColor: true
 
 Commands & Permissions (if no permissions system is detected, only OPs are able to use the commands!)
 Only bukkit's permissions system is supported!
@@ -170,6 +172,9 @@ Description: Allows coloring of signs
 
 Node: colorme.chat
 Description: Allows coloring of the chat
+
+Node: colorme.autochatcolor.<color>
+Description: Allows auto coloring of the text in the given color
 
 Prefixer:
 

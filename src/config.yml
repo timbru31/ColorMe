@@ -59,3 +59,4 @@ groups:
 softMode:
   enabled: true
   ownChatPlugin: Herochat
+autoChatColor: true
