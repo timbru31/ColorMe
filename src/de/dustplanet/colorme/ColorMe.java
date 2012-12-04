@@ -55,10 +55,7 @@ import net.milkbowl.vault.economy.Economy;
  */
 
 /*
- * TODO
- * NewColorOnJoin mixed? Custom?
  * First char of rainbow/random above the head
- * Write colored in chat automatically
  * 
  */
 
@@ -72,7 +69,7 @@ public class ColorMe extends JavaPlugin {
 	public File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile, debugFile, groupsFile;
 	public boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets;
 	public boolean chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist, tagAPI;
-	public boolean groups, ownSystem, pex, bPermissions, groupManager, softMode, otherChatPluginFound, autoChatColor;
+	public boolean groups, ownSystem, pex, bPermissions, groupManager, softMode, otherChatPluginFound, autoChatColor, factions, tryToInsert = true;
 	public int prefixLength, suffixLength;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
@@ -112,7 +109,7 @@ public class ColorMe extends JavaPlugin {
 			configFile.getParentFile().mkdirs();
 			copy(getResource("config.yml"), configFile);
 		}
-		config = this.getConfig();
+		config = getConfig();
 		loadConfig();
 		debug = config.getBoolean("debug");
 		checkDebug();
@@ -215,7 +212,7 @@ public class ColorMe extends JavaPlugin {
 		logDebug("ColorMe enabled");
 
 		// Check for Vault
-		Plugin vault = this.getServer().getPluginManager().getPlugin("Vault");
+		Plugin vault = getServer().getPluginManager().getPlugin("Vault");
 		if (vault != null & vault instanceof Vault) {
 			// If Vault is enabled, load the economy
 			getLogger().info("Loaded Vault successfully");
@@ -229,7 +226,7 @@ public class ColorMe extends JavaPlugin {
 		}
 
 		// Check for Spout
-		Plugin spout = this.getServer().getPluginManager().getPlugin("Spout");
+		Plugin spout = getServer().getPluginManager().getPlugin("Spout");
 		if (spout != null) {
 			getLogger().info("Loaded Spout successfully");
 			logDebug("Spout hooked and loaded");
@@ -284,10 +281,12 @@ public class ColorMe extends JavaPlugin {
 		if (softMode) {
 			logDebug("SoftMode enabled");
 			getLogger().info("SoftMode enabled. If other chat plugins are found, the chat won't be affected by ColorMe.");
-			Plugin chatManager = this.getServer().getPluginManager().getPlugin("ChatManager");
-			Plugin bChatManager = this.getServer().getPluginManager().getPlugin("bChatManager");
-			Plugin EssentialsChat = this.getServer().getPluginManager().getPlugin("EssentialsChat");
-			Plugin mChatSuite = this.getServer().getPluginManager().getPlugin("mChatSuite");
+			Plugin chatManager = getServer().getPluginManager().getPlugin("ChatManager");
+			Plugin bChatManager = getServer().getPluginManager().getPlugin("bChatManager");
+			Plugin EssentialsChat = getServer().getPluginManager().getPlugin("EssentialsChat");
+			Plugin mChatSuite = getServer().getPluginManager().getPlugin("mChatSuite");
+			Plugin iChat = getServer().getPluginManager().getPlugin("iChat");
+			Plugin factionsPlugin = getServer().getPluginManager().getPlugin("Factions");
 			if (chatManager != null) {
 				otherChatPluginFound = true;
 				getLogger().info("Found ChatManager. Will use it for chat!");
@@ -308,8 +307,18 @@ public class ColorMe extends JavaPlugin {
 				getLogger().info("Found mChatSuite. Will use it for chat!");
 				logDebug("Found mChatSuite");
 			}
+			else if (iChat != null) {
+				otherChatPluginFound = true;
+				getLogger().info("Found iChat. Will use it for chat!");
+				logDebug("Found iChat");
+			}
+			else if (factionsPlugin != null) {
+				factions = true;
+				getLogger().info("Found Factions, will attempt to support it!");
+				logDebug("Found Factions");
+			}
 			else {
-				Plugin customChatPlugin = this.getServer().getPluginManager().getPlugin(config.getString("softMode.ownChatPlugin"));
+				Plugin customChatPlugin = getServer().getPluginManager().getPlugin(config.getString("softMode.ownChatPlugin"));
 				if (customChatPlugin != null) {
 					otherChatPluginFound = true;
 					getLogger().info("Found " + customChatPlugin.getName() + ". Will use it for chat!");
@@ -323,7 +332,7 @@ public class ColorMe extends JavaPlugin {
 		}
 		
 		if (playerTitleWithoutSpout) {
-			Plugin tagAPIPlugin = this.getServer().getPluginManager().getPlugin("TagAPI");
+			Plugin tagAPIPlugin = getServer().getPluginManager().getPlugin("TagAPI");
 			if (tagAPIPlugin != null) {
 				tagAPI = true;
 				getLogger().info("TagAPI, will use it for names above the head!");

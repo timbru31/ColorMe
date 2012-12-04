@@ -24,14 +24,9 @@ import de.bananaco.bpermissions.api.util.CalculableType;
 
 public class Actions {
 	public ColorMe plugin;
-	private WorldsHolder groupManagerWorldsHolder;
 	
 	public Actions(ColorMe instance) {
 		plugin = instance;
-		if (plugin.groupManager) {
-			Plugin groupManagerPlugin = plugin.getServer().getPluginManager().getPlugin("GroupManager");
-			groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
-		}
 	}
 
 	public static Actions hookIntoColorMe() {
@@ -413,10 +408,9 @@ public class Actions {
 		plugin.logDebug("Asked to color the string " + name);
 		String newName = "";
 		// As long as the length of the name isn't reached
-		for (int i = 0; i < name.length(); i++) {
+		for (char ch : name.toCharArray()) {
 			// Roll the dice between 0 and 16 ;)
 			int x = (int) (Math.random() * ChatColor.values().length);
-			char ch = name.charAt(i);
 			// Color the character
 			newName += ChatColor.values()[x] + Character.toString(ch);
 		}
@@ -436,12 +430,13 @@ public class Actions {
 		String newName = "";
 		String rainbow[] = {"DARK_RED", "RED", "GOLD", "YELLOW", "GREEN", "DARK_GREEN", "AQUA", "DARK_AQUA", "BLUE", "DARK_BLUE", "LIGHT_PURPLE", "DARK_PURPLE"};
 		// As long as the length of the name isn't reached
-		for (int i = 0, z= 0; i < name.length(); i++, z++) {
+		int z = 0;
+		for (char ch : name.toCharArray()) {
 			// Reset if z reaches 12
 			if (z == 12) z = 0;
-			char ch = name.charAt(i);
 			// Add to the new name the colored character
 			newName += ChatColor.valueOf(rainbow[z]) + Character.toString(ch);
+			z++;
 		}
 		return newName;
 	}
@@ -591,16 +586,23 @@ public class Actions {
 			}
 			else if (plugin.bPermissions) {
 				// Only fist group
-				String group = ApiLayer.getGroups(world, CalculableType.USER, name)[0];
-				color = ApiLayer.getValue(world, CalculableType.GROUP, group, "prefix");
+				if (ApiLayer.getGroups(world, CalculableType.USER, name).length > 0) {
+					String group = ApiLayer.getGroups(world, CalculableType.USER, name)[0];
+					color = ApiLayer.getValue(world, CalculableType.GROUP, group, "color");
+				}
 			}
 			else if (plugin.groupManager) {
 				// World data -> then groups (only first) & finally the suffix & prefix!
-				OverloadedWorldHolder groupManager = groupManagerWorldsHolder.getWorldData(world);
-				if (groupManager != null) {
-					String group = groupManager.getUser(name).getGroupName();
-					color = groupManager.getGroup(group).getVariables().getVarString("color");
+				try {
+					Plugin groupManagerPlugin = plugin.getServer().getPluginManager().getPlugin("GroupManager");
+					WorldsHolder groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
+					OverloadedWorldHolder groupManager = groupManagerWorldsHolder.getWorldData(world);
+					if (groupManager != null) {
+						String group = groupManager.getUser(name).getGroupName();
+						color = groupManager.getGroup(group).getVariables().getVarString("color");
+					}
 				}
+				catch (NullPointerException e) {}
 			}
 		}
 		// Then check if still nothing found and globalColor
@@ -650,7 +652,7 @@ public class Actions {
 					// Rainbow
 					else if (colorPart.equalsIgnoreCase("rainbow")) newDisplayName = rainbowColor(cleanDisplayName);
 					// Custom colors
-					else if (plugin.colors.contains(colorPart) && (plugin.colors.getString(colorPart).trim().length() > 1 ? true : false) == true) {
+					else if (plugin.colors.contains(colorPart) && !plugin.colors.getString(colorPart).isEmpty()) {
 						newDisplayName = updateCustomColor(colorPart, cleanDisplayName);
 					}
 					else newDisplayName = ChatColor.valueOf(colorPart.toUpperCase()) + newDisplayName;
@@ -782,7 +784,7 @@ public class Actions {
 			return false;
 		}
 		// Custom color? (Must contain something!!! NOT '' or null)
-		else if (plugin.colors.contains(color) && plugin.colors.getString(color).trim().length() > 1 && plugin.config.getBoolean("colors.custom")) {
+		else if (plugin.colors.contains(color) && !plugin.colors.getString(color).isEmpty() && plugin.config.getBoolean("colors.custom")) {
 			plugin.logDebug("Color " + color + " is enabled");
 			return false;
 		}

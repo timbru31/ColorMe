@@ -17,12 +17,10 @@ import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.util.CalculableType;
 import de.dustplanet.colorme.Actions;
 import de.dustplanet.colorme.ColorMe;
-
-import org.anjocaido.groupmanager.GroupManager;
 // GroupManager Import
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
-
+import org.anjocaido.groupmanager.GroupManager;
 /**
  * ColorMe for CraftBukkit/Bukkit
  * Handles the player activities
@@ -42,15 +40,10 @@ public class ColorMePlayerListener implements Listener {
 	private Actions actions;
 	public ColorMePlayerListener(ColorMe instance, Actions actionsInstance) {
 		plugin = instance;
-		if (plugin.groupManager) {
-			Plugin groupManagerPlugin = plugin.getServer().getPluginManager().getPlugin("GroupManager");
-			groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
-		}
 		actions = actionsInstance;
 	}
 
 	private String[] pluginPart = {"colors", "prefix", "suffix"};
-	private WorldsHolder groupManagerWorldsHolder;
 
 	// Loads the the values and set them to default one if not known
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -62,12 +55,22 @@ public class ColorMePlayerListener implements Listener {
 		// New color onJoin?
 		if (plugin.newColorOnJoin) {
 			// Normal colors + rainbow & random
-			int color = (int) (Math.random()*(ChatColor.values().length + 2));
+			int customColors = plugin.colors.getKeys(false).size();
+			int colors = ChatColor.values().length;
+			int color = (int) (Math.random()* ((colors + 2 + customColors)));
 			// 22 == Reset -> bad
-			while (color == 22) color = (int) (Math.random()*(ChatColor.values().length + 2));
+			while (color == 22) color = (int) (Math.random()* ((colors + 2 + customColors)));
 			// Set it.
 			if (color == ChatColor.values().length + 1) actions.set(name, "rainbow", world, pluginPart[0]);
 			else if (color == ChatColor.values().length + 2) actions.set(name, "random", world, pluginPart[0]);
+			else if (color > ChatColor.values().length + 2) {
+				color -= (2 + ChatColor.values().length);
+				int i = 0;
+				for (String colorName : plugin.colors.getKeys(false)) {
+					if (i == color) actions.set(name, colorName, world, pluginPart[0]);
+					i++;
+				}
+			}
 			else actions.set(name, ChatColor.values()[color].name().toLowerCase(), world, pluginPart[0]);
 		}
 		actions.checkNames(name, world);
@@ -86,7 +89,7 @@ public class ColorMePlayerListener implements Listener {
 			plugin.logDebug("");
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerChatLow(AsyncPlayerChatEvent event) {
 		if (plugin.softMode) {
@@ -96,7 +99,7 @@ public class ColorMePlayerListener implements Listener {
 			plugin.logDebug("");
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerChatNormal(AsyncPlayerChatEvent event) {
 		if (plugin.softMode) {
@@ -106,7 +109,7 @@ public class ColorMePlayerListener implements Listener {
 			plugin.logDebug("");
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerChatHigh(AsyncPlayerChatEvent event) {
 		if (!plugin.softMode) {
@@ -126,7 +129,7 @@ public class ColorMePlayerListener implements Listener {
 			plugin.logDebug("");
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerChatMonitor(AsyncPlayerChatEvent event) {
 		if (!plugin.softMode) {
@@ -141,7 +144,6 @@ public class ColorMePlayerListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase(), nameExact = player.getName();
 		String world = player.getWorld().getName().toLowerCase();
-		if (plugin.otherChatPluginFound) return;
 		String prefix = "", suffix = "", globalSuffix = "", globalPrefix = "", groupPrefix = "", groupSuffix = "";
 		// Group check!
 		if (plugin.groups) {
@@ -156,17 +158,26 @@ public class ColorMePlayerListener implements Listener {
 			}
 			else if (plugin.bPermissions) {
 				// Only fist group
-				String group = ApiLayer.getGroups(world, CalculableType.USER, nameExact)[0];
-				groupPrefix = actions.replaceThings(ApiLayer.getValue(player.getWorld().getName(), CalculableType.GROUP, group, "prefix"));
-				groupSuffix = actions.replaceThings(ApiLayer.getValue(player.getWorld().getName(), CalculableType.GROUP, group, "suffix"));
+				if (ApiLayer.getGroups(world, CalculableType.USER, name).length > 0) {
+					String group = ApiLayer.getGroups(world, CalculableType.USER, nameExact)[0];
+					groupPrefix = actions.replaceThings(ApiLayer.getValue(player.getWorld().getName(), CalculableType.GROUP, group, "prefix"));
+					groupSuffix = actions.replaceThings(ApiLayer.getValue(player.getWorld().getName(), CalculableType.GROUP, group, "suffix"));
+				}
 			}
 			else if (plugin.groupManager) {
 				// World data -> then groups (only first) & finally the suffix & prefix!
-				OverloadedWorldHolder groupManager = groupManagerWorldsHolder.getWorldData(world);
-				if (groupManager != null) {
-					String group = groupManager.getUser(nameExact).getGroupName();
-					groupPrefix = actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("prefix"));
-					groupSuffix = actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("suffix"));
+				try {
+					Plugin groupManagerPlugin = plugin.getServer().getPluginManager().getPlugin("GroupManager");
+					WorldsHolder groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
+					OverloadedWorldHolder groupManager = groupManagerWorldsHolder.getWorldData(world);
+					if (groupManager != null) {
+						String group = groupManager.getUser(nameExact).getGroupName();
+						groupPrefix = actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("prefix"));
+						groupSuffix = actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("suffix"));
+					}
+				}
+				catch (NullPointerException e) {
+					e.printStackTrace();
 				}
 			}
 			else if (plugin.ownSystem) {
@@ -220,25 +231,40 @@ public class ColorMePlayerListener implements Listener {
 				if (globalSuffix.equals(suffix)) globalSuffix = "";
 			}
 		}
-		String format = "";
 		// Remove the chat brackets if wanted
-		if (!plugin.chatBrackets) {
-			if (globalSuffix.equals("") && groupSuffix.equals("") && suffix.equals("")) {
-				format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s" + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + ": %2$s";
+		if (!plugin.otherChatPluginFound) {
+			String format = "";
+			if (!plugin.chatBrackets) {
+				if (globalSuffix.equals("") && groupSuffix.equals("") && suffix.equals("")) {
+					format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s" + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + ": %2$s";
+				}
+				else {
+					format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + ": %2$s";
+				}
+				if (!plugin.factions) event.setFormat(format);
+				else event.setFormat("[FACTION] " + format);
 			}
 			else {
-				format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + ": %2$s";
+				if (!globalSuffix.equals("")) globalSuffix += ChatColor.RESET + ": ";
+				else if (!suffix.equals("")) suffix += ChatColor.RESET + ": ";
+				else if (!groupSuffix.equals("")) groupSuffix += ChatColor.RESET + ": ";
+				if (!groupSuffix.equals("") && !suffix.equals("")) groupSuffix += " ";
+				if (!suffix.equals("") && !globalSuffix.equals("")) suffix += " ";
+				format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "<%1$s" + ChatColor.RESET + "> " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + "%2$s";
+				if (!plugin.factions) event.setFormat(format);
+				else event.setFormat("[FACTION] " + format);
 			}
-			event.setFormat(format);
 		}
 		else {
-			if (!globalSuffix.equals("")) globalSuffix += ChatColor.RESET + ": ";
-			else if (!suffix.equals("")) suffix += ChatColor.RESET + ": ";
-			else if (!groupSuffix.equals("")) groupSuffix += ChatColor.RESET + ": ";
-			if (!groupSuffix.equals("") && !suffix.equals("")) groupSuffix += " ";
-			if (!suffix.equals("") && !globalSuffix.equals("")) suffix += " ";
-			format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "<%1$s" + ChatColor.RESET + "> " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + "%2$s";
-			event.setFormat(format);
+			// Replace the different values
+			String newFormat = event.getFormat();
+			newFormat = newFormat.replace("[ColorMePrefix]", prefix)
+					.replace("[ColorMeGroupPrefix]", groupPrefix)
+					.replace("[ColorMeGlobalPrefix]", globalPrefix)
+					.replace("[ColorMeSuffix]", suffix)
+					.replace("[ColorMeGroupSuffix]", groupSuffix)
+					.replace("[ColorMeGlobalSuffix]", globalSuffix);
+			event.setFormat(newFormat);
 		}
 		// Color the message, too?
 		if (plugin.chatColors && player.hasPermission("colorme.chat")) {
