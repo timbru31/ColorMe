@@ -31,7 +31,7 @@ public class Actions {
 
 	public static Actions hookIntoColorMe() {
 		ColorMe plugin = (ColorMe) Bukkit.getPluginManager().getPlugin("ColorMe");
-		if (plugin != null)return new Actions(plugin);
+		if (plugin != null) return new Actions(plugin);
 		System.out.println("ColorMe instance not found returning null");
 		return null;
 	}
@@ -875,5 +875,16 @@ public class Actions {
 			plugin.getServer().getLogger().warning("Failed to save the " + file + "! Please report this! IOException");
 			plugin.logDebug("Failed to save");
 		}
+	}
+
+	public String containsBlackListedWord(String message) {
+		message = ChatColor.translateAlternateColorCodes('\u0026', message);
+		message = ChatColor.stripColor(message).toLowerCase();
+		for (String s : plugin.bannedWords) {
+			if (message.contains(s.toLowerCase())) {
+				return s;
+			}
+		}
+		return null;
 	}
 }

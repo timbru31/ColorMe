@@ -55,13 +55,12 @@ public class PrefixCommands implements CommandExecutor {
 				}
 				// If sender hasn't got the noFilter permission look if there are bad words in!
 				if (plugin.blacklist && !sender.hasPermission("prefixer.nofilter")) {
-					for (String s : plugin.bannedWords) {
-						if (globalPrefix.contains(s)) {
-							// Message, bad words in etc.
-							message = plugin.localization.getString("bad_words");
-							plugin.message(sender, null, message, s, null, null, null);
-							return true;
-						}
+					String s = actions.containsBlackListedWord(globalPrefix);
+					if (s != null) {
+						// Message, bad words in etc.
+						message = plugin.localization.getString("bad_words");
+						plugin.message(sender, null, message, s, null, null, null);
+						return true;
 					}
 				}
 				// Check if the message is too long
@@ -252,13 +251,12 @@ public class PrefixCommands implements CommandExecutor {
 			if (sender.hasPermission("prefixer.self") && actions.self(sender, target)) {
 				// If sender hasn't got the noFilter permission look if there are bad words in!
 				if (plugin.blacklist && !sender.hasPermission("prefixer.nofilter")) {
-					for (String s : plugin.bannedWords) {
-						if (prefix.contains(s)) {
-							// Message, bad words in etc.
-							message = plugin.localization.getString("bad_words");
-							plugin.message(sender, null, message, s, null, null, null);
-							return true;
-						}
+					String s = actions.containsBlackListedWord(prefix);
+					if (s != null) {
+						// Message, bad words in etc.
+						message = plugin.localization.getString("bad_words");
+						plugin.message(sender, null, message, s, null, null, null);
+						return true;
 					}
 				}
 				// Check if the message is too long
@@ -308,13 +306,12 @@ public class PrefixCommands implements CommandExecutor {
 			else if (sender.hasPermission("prefixer.other") && !actions.self(sender, target)) {
 				// If sender hasn't got the noFilter permission look if there are bad words in!
 				if (plugin.blacklist && !sender.hasPermission("prefixer.nofilter")) {
-					for (String s : plugin.bannedWords) {
-						if (prefix.contains(s)) {
-							// Message, bad words in etc.
-							message = plugin.localization.getString("bad_words");
-							plugin.message(sender, null, message, s, null, null, null);
-							return true;
-						}
+					String s = actions.containsBlackListedWord(prefix);
+					if (s != null) {
+						// Message, bad words in etc.
+						message = plugin.localization.getString("bad_words");
+						plugin.message(sender, null, message, s, null, null, null);
+						return true;
 					}
 				}
 				// Check if the message is too long

@@ -335,7 +335,7 @@ public class ColorMe extends JavaPlugin {
 			Plugin tagAPIPlugin = getServer().getPluginManager().getPlugin("TagAPI");
 			if (tagAPIPlugin != null) {
 				tagAPI = true;
-				getLogger().info("TagAPI, will use it for names above the head!");
+				getLogger().info("Found TagAPI, will use it for names above the head!");
 				logDebug("Found TagAPI");
 				pm.registerEvents(tagAPIListener, this);
 			}

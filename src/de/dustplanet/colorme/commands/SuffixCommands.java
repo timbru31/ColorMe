@@ -12,7 +12,7 @@ import de.dustplanet.colorme.ColorMe;
 public class SuffixCommands implements CommandExecutor {
 	private Actions actions;
 	private ColorMe plugin;
-	
+
 	public SuffixCommands(ColorMe instance, Actions actionsInstance) {
 		plugin = instance;
 		actions = actionsInstance;
@@ -55,13 +55,12 @@ public class SuffixCommands implements CommandExecutor {
 				}
 				// If sender hasn't got the noFilter permission look if there are bad words in!
 				if (plugin.blacklist && !sender.hasPermission("suffixer.nofilter")) {
-					for (String s : plugin.bannedWords) {
-						if (globalSuffix.contains(s)) {
-							// Message, bad words in etc.
-							message = plugin.localization.getString("bad_words");
-							plugin.message(sender, null, message, s, null, null, null);
-							return true;
-						}
+					String s = actions.containsBlackListedWord(globalSuffix);
+					if (s != null) {
+						// Message, bad words in etc.
+						message = plugin.localization.getString("bad_words");
+						plugin.message(sender, null, message, s, null, null, null);
+						return true;
 					}
 				}
 				// Check if the message is too long
@@ -253,13 +252,12 @@ public class SuffixCommands implements CommandExecutor {
 			if (sender.hasPermission("suffixer.self") && actions.self(sender, target)) {
 				// If sender hasn't got the noFilter permission look if there are bad words in!
 				if (plugin.blacklist && !sender.hasPermission("suffixer.nofilter")) {
-					for (String s : plugin.bannedWords) {
-						if (suffix.contains(s)) {
-							// Message, bad words in etc.
-							message = plugin.localization.getString("bad_words");
-							plugin.message(sender, null, message, s, null, null, null);
-							return true;
-						}
+					String s = actions.containsBlackListedWord(suffix);
+					if (s != null) {
+						// Message, bad words in etc.
+						message = plugin.localization.getString("bad_words");
+						plugin.message(sender, null, message, s, null, null, null);
+						return true;
 					}
 				}
 				// Check if the message is too long
@@ -309,13 +307,12 @@ public class SuffixCommands implements CommandExecutor {
 			else if (sender.hasPermission("suffixer.other") && !actions.self(sender, target)) {
 				// If sender hasn't got the noFilter permission look if there are bad words in!
 				if (plugin.blacklist && !sender.hasPermission("suffixer.nofilter")) {
-					for (String s : plugin.bannedWords) {
-						if (suffix.contains(s)) {
-							// Message, bad words in etc.
-							message = plugin.localization.getString("bad_words");
-							plugin.message(sender, null, message, s, null, null, null);
-							return true;
-						}
+					String s = actions.containsBlackListedWord(suffix);
+					if (s != null) {
+						// Message, bad words in etc.
+						message = plugin.localization.getString("bad_words");
+						plugin.message(sender, null, message, s, null, null, null);
+						return true;
 					}
 				}
 				// Check if the message is too long
