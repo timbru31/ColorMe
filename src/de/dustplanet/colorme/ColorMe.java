@@ -68,7 +68,7 @@ public class ColorMe extends JavaPlugin {
 	public FileConfiguration config, players, localization, colors, group;
 	public File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile, debugFile, groupsFile;
 	public boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor;
-	public boolean chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist, tagAPI;
+	public boolean chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist, tagAPI, useLegacyFormat, chatBrackets = true;
 	public boolean groups, ownSystem, pex, bPermissions, groupManager, softMode, otherChatPluginFound, autoChatColor, factions, removeNameAboveHead;
 	public int prefixLength, suffixLength;
 	private ColorMeCommands colorExecutor;
@@ -513,6 +513,8 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("softMode.ownChatPlugin", "Herochat");
 		config.addDefault("autoChatColor", false);
 		config.addDefault("removeNameAboveHead", false);
+		config.addDefault("chatBrackets", true);
+		config.addDefault("useLegacyFormat", false);
 		config.addDefault("format", "[GlobalPrefix]&r[GroupPrefix]&r[Prefix]&r<[name]&r>[Suffix]&r[GroupSuffix]&r[GlobalSuffix]&r: [message]");
 		config.options().copyDefaults(true);
 		saveConfig();
@@ -701,7 +703,9 @@ public class ColorMe extends JavaPlugin {
 		softMode = config.getBoolean("softMode.enabled");
 		autoChatColor = config.getBoolean("autoChatColor");
 		removeNameAboveHead = config.getBoolean("removeNameAboveHead");
+		useLegacyFormat = config.getBoolean("useLegacyFormat");
 		format = config.getString("format");
+		chatBrackets = config.getBoolean("chatBrackets");
 		if (debug) {
 			logDebug("Suffixer is " + Suffixer);
 			logDebug("Prefixer is " + Prefixer);
@@ -724,6 +728,8 @@ public class ColorMe extends JavaPlugin {
 			logDebug("ownSystem is " + ownSystem);
 			logDebug("autoChatColor is " + autoChatColor);
 			logDebug("removeNameAboveHead is " + removeNameAboveHead);
+			logDebug("useLegacyFormat is " + useLegacyFormat);
+			logDebug("chatBrackets are " + chatBrackets);
 		}
 	}
 

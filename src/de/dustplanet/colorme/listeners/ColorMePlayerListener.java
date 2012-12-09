@@ -230,41 +230,44 @@ public class ColorMePlayerListener implements Listener {
 			}
 		}
 		// Remove the chat brackets if wanted
-		// TODO Format
 		if (!plugin.otherChatPluginFound) {
-			String format = plugin.format;
-			format = format.replace("[Prefix]", prefix)
-					.replace("[Suffix]", suffix)
-					.replace("[GlobalPrefix]", globalPrefix)
-					.replace("[GlobalSuffix]", globalSuffix)
-					.replace("[GroupPrefix]", groupPrefix)
-					.replace("[GroupSuffix]", groupSuffix)
-					.replace("[name]", "%1$s")
-					.replace("[message]", "%2$s");
-			format = ChatColor.translateAlternateColorCodes('\u0026', format);
-			if (plugin.factions && !format.contains("[FACTION]")) format = "[FACTION]" + format;
-			event.setFormat(format);
-//			String format = "";
-//			if (!plugin.chatBrackets) {
-//				if (globalSuffix.equals("") && groupSuffix.equals("") && suffix.equals("")) {
-//					format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s" + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + ": %2$s";
-//				}
-//				else {
-//					format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + ": %2$s";
-//				}
-//				if (!plugin.factions) event.setFormat(format);
-//				else event.setFormat("[FACTION] " + format);
-//			}
-//			else {
-//				if (!globalSuffix.equals("")) globalSuffix += ChatColor.RESET + ": ";
-//				else if (!suffix.equals("")) suffix += ChatColor.RESET + ": ";
-//				else if (!groupSuffix.equals("")) groupSuffix += ChatColor.RESET + ": ";
-//				if (!groupSuffix.equals("") && !suffix.equals("")) groupSuffix += " ";
-//				if (!suffix.equals("") && !globalSuffix.equals("")) suffix += " ";
-//				format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "<%1$s" + ChatColor.RESET + "> " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + "%2$s";
-//				if (!plugin.factions) event.setFormat(format);
-//				else event.setFormat("[FACTION] " + format);
-//			}
+			if (!plugin.useLegacyFormat) {
+				String format = plugin.format;
+				format = format.replace("[Prefix]", prefix)
+						.replace("[Suffix]", suffix)
+						.replace("[GlobalPrefix]", globalPrefix)
+						.replace("[GlobalSuffix]", globalSuffix)
+						.replace("[GroupPrefix]", groupPrefix)
+						.replace("[GroupSuffix]", groupSuffix)
+						.replace("[name]", "%1$s")
+						.replace("[message]", "%2$s");
+				format = ChatColor.translateAlternateColorCodes('\u0026', format);
+				if (plugin.factions && !format.contains("[FACTION]")) format = "[FACTION]" + format;
+				event.setFormat(format);
+			}
+			else {
+				String format = "";
+				if (!plugin.chatBrackets) {
+					if (globalSuffix.equals("") && groupSuffix.equals("") && suffix.equals("")) {
+						format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s" + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + ": %2$s";
+					}
+					else {
+						format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + ": %2$s";
+					}
+					if (!plugin.factions) event.setFormat(format);
+					else event.setFormat("[FACTION] " + format);
+				}
+				else {
+					if (!globalSuffix.equals("")) globalSuffix += ChatColor.RESET + ": ";
+					else if (!suffix.equals("")) suffix += ChatColor.RESET + ": ";
+					else if (!groupSuffix.equals("")) groupSuffix += ChatColor.RESET + ": ";
+					if (!groupSuffix.equals("") && !suffix.equals("")) groupSuffix += " ";
+					if (!suffix.equals("") && !globalSuffix.equals("")) suffix += " ";
+					format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "<%1$s" + ChatColor.RESET + "> " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + "%2$s";
+					if (!plugin.factions) event.setFormat(format);
+					else event.setFormat("[FACTION] " + format);
+				}
+			}
 		}
 		else {
 			// Replace the different values
