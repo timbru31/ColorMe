@@ -67,9 +67,9 @@ public class ColorMe extends JavaPlugin {
 	public Economy economy = null;
 	public FileConfiguration config, players, localization, colors, group;
 	public File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile, debugFile, groupsFile;
-	public boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets;
+	public boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor;
 	public boolean chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist, tagAPI;
-	public boolean groups, ownSystem, pex, bPermissions, groupManager, softMode, otherChatPluginFound, autoChatColor, factions, tryToInsert = true, removeNameAboveHead;
+	public boolean groups, ownSystem, pex, bPermissions, groupManager, softMode, otherChatPluginFound, autoChatColor, factions, removeNameAboveHead;
 	public int prefixLength, suffixLength;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
@@ -78,6 +78,7 @@ public class ColorMe extends JavaPlugin {
 	public List<String> values = new ArrayList<String>();
 	public List<String> bannedWords = new ArrayList<String>();
 	public Thread mainThread;
+	public String format = "[GlobalPrefix]&r[GroupPrefix]&r[Prefix]&r<[name]&r>[Suffix]&r[GroupSuffix]&r[GlobalSuffix]&r: [message]";
 
 	// Shutdown
 	public void onDisable() {
@@ -483,7 +484,6 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("global_default.color", "");
 		config.addDefault("Prefixer", true);
 		config.addDefault("Suffixer", true);
-		config.addDefault("chatBrackets", true);
 		config.addDefault("ColorMe.displayName", true);
 		config.addDefault("ColorMe.tabList", false);
 		config.addDefault("ColorMe.playerTitle", false);
@@ -513,6 +513,7 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("softMode.ownChatPlugin", "Herochat");
 		config.addDefault("autoChatColor", false);
 		config.addDefault("removeNameAboveHead", false);
+		config.addDefault("format", "[GlobalPrefix]&r[GroupPrefix]&r[Prefix]&r<[name]&r>[Suffix]&r[GroupSuffix]&r[GlobalSuffix]&r: [message]");
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
@@ -684,7 +685,6 @@ public class ColorMe extends JavaPlugin {
 		tabList = config.getBoolean("ColorMe.tabList");
 		playerTitle = config.getBoolean("ColorMe.playerTitle");
 		playerTitleWithoutSpout = config.getBoolean("ColorMe.playerTitleWithoutSpout");
-		chatBrackets = config.getBoolean("chatBrackets");
 		signColors = config.getBoolean("ColorMe.signColors");
 		chatColors = config.getBoolean("ColorMe.chatColors");
 		globalPrefix = config.getString("global_default." + "prefix").isEmpty();
@@ -701,6 +701,7 @@ public class ColorMe extends JavaPlugin {
 		softMode = config.getBoolean("softMode.enabled");
 		autoChatColor = config.getBoolean("autoChatColor");
 		removeNameAboveHead = config.getBoolean("removeNameAboveHead");
+		format = config.getString("format");
 		if (debug) {
 			logDebug("Suffixer is " + Suffixer);
 			logDebug("Prefixer is " + Prefixer);
@@ -708,7 +709,6 @@ public class ColorMe extends JavaPlugin {
 			logDebug("displayName is " + displayName);
 			logDebug("playerTitle is " + playerTitle);
 			logDebug("playerTitleWithoutSpout is " + playerTitleWithoutSpout);
-			logDebug("chatBrackets are " + chatBrackets);
 			logDebug("signColors are " + signColors);
 			logDebug("chatColors are " + chatColors);
 			logDebug("globalPrefix is " + globalPrefix);

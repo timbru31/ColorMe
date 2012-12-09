@@ -52,7 +52,7 @@ ColorMe:
   # If Spout is enabled color the name above the head?
   playerTitle: false
   # Also possible with the TagAPI!
-  playerTitleWithoutSpout: false
+  playerTitleWithoutSpout: true
   # Should colors on signs be enabled?
   signColors: true
   # Can the chat message contain colors?
@@ -116,7 +116,9 @@ softMode:
   enabled: true
   ownChatPlugin: Herochat
 # Should the chat be automatic colored if the permission colorme.autochatcolor.<color> is given?
-autoChatColor: true
+autoChatColor: false
+# Removes the name above the head. Warning: breaks your skin
+removeNameAboveHead: false
 
 Commands & Permissions (if no permissions system is detected, only OPs are able to use the commands!)
 Only bukkit's permissions system is supported!
