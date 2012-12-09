@@ -1,6 +1,6 @@
 name: ColorMe
 main: de.dustplanet.colorme.ColorMe
-version: 3.6
+version: 3.7
 author: xGhOsTkiLLeRx
 authors: [Valrix]
 website: http://bit.ly/bukkitdevcolorme
@@ -156,6 +156,92 @@ permissions:
     colorme.reload:
         default: op
         description: Allows reloading
+    colorme.autochatcolor.*:
+        children:
+            colorme.autochatcolor.black: true
+            colorme.autochatcolor.dark_blue: true
+            colorme.autochatcolor.dark_green: true
+            colorme.autochatcolor.dark_aqua: true
+            colorme.autochatcolor.dark_red: true
+            colorme.autochatcolor.dark_purple: true
+            colorme.autochatcolor.gold: true
+            colorme.autochatcolor.gray: true
+            colorme.autochatcolor.dark_gray: true
+            colorme.autochatcolor.blue: true
+            colorme.autochatcolor.green: true
+            colorme.autochatcolor.aqua: true
+            colorme.autochatcolor.red: true
+            colorme.autochatcolor.light_purple: true
+            colorme.autochatcolor.yellow: true
+            colorme.autochatcolor.magic: true
+            colorme.autochatcolor.white: true
+            colorme.autochatcolor.bold: true
+            colorme.autochatcolor.italic: true
+            colorme.autochatcolor.underline: true
+            colorme.autochatcolor.strikethrough: true
+    colorme.autochatcolor.black:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.dark_blue:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.dark_green:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.dark_aqua:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.dark_red:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.dark_purple:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.gold:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.gray:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.dark_gray:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.blue:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.green:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.aqua:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.red:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.light_purple:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.yellow:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.magic:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.white:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.bold:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.italic:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.underline:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.strikethrough:
+        default: false
+        description: Allows automatic coloring of the text
     colorme.*:
         children:
             colorme.list: true
@@ -169,6 +255,7 @@ permissions:
             colorme.sign: true
             colorme.nametag: true
             colorme.reload: true
+            colorme.autochatcolor.*: false
         description: Allows all commands for ColorMe
     prefixer.list:
         default: true

@@ -189,26 +189,24 @@ public class ColorMePlayerListener implements Listener {
 					if (actions.hasGroup(group, "default", "suffix")) groupSuffix = actions.getGroup(group, "default", "suffix");
 				}
 			}
-			if (!groupPrefix.equalsIgnoreCase("")) groupPrefix += " ";
-			if (!groupSuffix.equalsIgnoreCase("")) groupSuffix += " ";
 		}
 
 		if (plugin.Prefixer) {
 			// Get world prefix if available
 			if (actions.has(name, world, "prefix")) {
-				prefix = actions.get(name, world, "prefix") + " ";
+				prefix = actions.get(name, world, "prefix");
 			}
 			// Get default prefix
 			else if (actions.has(name, "default", "prefix")) {
-				prefix = actions.get(name, "default", "prefix") + " ";
+				prefix = actions.get(name, "default", "prefix");
 			}
 			// Get the global prefix
 			else if (plugin.globalPrefix) {
-				prefix = actions.getGlobal("prefix") + " ";
+				prefix = actions.getGlobal("prefix");
 			}
 			// Display global one, too?
 			if (plugin.globalPrefix && plugin.displayAlwaysGlobalPrefix) {
-				globalPrefix = actions.getGlobal("prefix") + " ";
+				globalPrefix = actions.getGlobal("prefix");
 				if (globalPrefix.equals(prefix)) globalPrefix = "";
 			}
 		}

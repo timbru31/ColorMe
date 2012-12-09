@@ -69,7 +69,7 @@ public class ColorMe extends JavaPlugin {
 	public File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile, debugFile, groupsFile;
 	public boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor, chatBrackets;
 	public boolean chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist, tagAPI;
-	public boolean groups, ownSystem, pex, bPermissions, groupManager, softMode, otherChatPluginFound, autoChatColor, factions, tryToInsert = true;
+	public boolean groups, ownSystem, pex, bPermissions, groupManager, softMode, otherChatPluginFound, autoChatColor, factions, tryToInsert = true, removeNameAboveHead;
 	public int prefixLength, suffixLength;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
@@ -487,7 +487,7 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("ColorMe.displayName", true);
 		config.addDefault("ColorMe.tabList", false);
 		config.addDefault("ColorMe.playerTitle", false);
-		config.addDefault("ColorMe.playerTitleWithoutSpout", false);
+		config.addDefault("ColorMe.playerTitleWithoutSpout", true);
 		config.addDefault("ColorMe.signColors", true);
 		config.addDefault("ColorMe.chatColors", true);
 		for (ChatColor value : ChatColor.values()) {
@@ -511,7 +511,8 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("groups.ownSystem", true);
 		config.addDefault("softMode.enabled", true);
 		config.addDefault("softMode.ownChatPlugin", "Herochat");
-		config.addDefault("autoChatColor", true);
+		config.addDefault("autoChatColor", false);
+		config.addDefault("removeNameAboveHead", false);
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
@@ -686,9 +687,9 @@ public class ColorMe extends JavaPlugin {
 		chatBrackets = config.getBoolean("chatBrackets");
 		signColors = config.getBoolean("ColorMe.signColors");
 		chatColors = config.getBoolean("ColorMe.chatColors");
-		globalPrefix = config.getString("global_default." + "prefix").trim().length() > 1 ? true : false;
-		globalSuffix = config.getString("global_default." + "suffix").trim().length() > 1 ? true : false;
-		globalColor = config.getString("global_default." + "color").trim().length() > 1 ? true : false;
+		globalPrefix = config.getString("global_default." + "prefix").isEmpty();
+		globalSuffix = config.getString("global_default." + "suffix").isEmpty();
+		globalColor = config.getString("global_default." + "color").isEmpty();
 		prefixLength = config.getInt("lengthLimit.Prefixer");
 		suffixLength = config.getInt("lengthLimit.Suffixer");
 		newColorOnJoin = config.getBoolean("newColorOnJoin");
@@ -699,6 +700,7 @@ public class ColorMe extends JavaPlugin {
 		ownSystem = config.getBoolean("groups.ownSystem");
 		softMode = config.getBoolean("softMode.enabled");
 		autoChatColor = config.getBoolean("autoChatColor");
+		removeNameAboveHead = config.getBoolean("removeNameAboveHead");
 		if (debug) {
 			logDebug("Suffixer is " + Suffixer);
 			logDebug("Prefixer is " + Prefixer);
@@ -721,6 +723,7 @@ public class ColorMe extends JavaPlugin {
 			logDebug("groups is " +  groups);
 			logDebug("ownSystem is " + ownSystem);
 			logDebug("autoChatColor is " + autoChatColor);
+			logDebug("removeNameAboveHead is " + removeNameAboveHead);
 		}
 	}
 

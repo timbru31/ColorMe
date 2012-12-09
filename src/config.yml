@@ -9,7 +9,7 @@ ColorMe:
   displayName: true
   tabList: false
   playerTitle: false
-  playerTitleWithoutSpout: false
+  playerTitleWithoutSpout: true
   signColors: true
   chatColors: true
 colors:
@@ -59,4 +59,5 @@ groups:
 softMode:
   enabled: true
   ownChatPlugin: Herochat
-autoChatColor: true
+autoChatColor: false
+removeNameAboveHead: false

@@ -43,6 +43,10 @@ public class ColorMeTagAPIListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onNameTag(final PlayerReceiveNameTagEvent event) {
 		if (event.getNamedPlayer().hasPermission("colorme.nametag")) {
+			if (plugin.removeNameAboveHead) {
+				event.setTag("");
+				return;
+			}
 			String name = event.getNamedPlayer().getName();
 			String world = event.getNamedPlayer().getWorld().getName();
 			// Fallback
