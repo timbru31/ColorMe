@@ -70,7 +70,7 @@ public class ColorMe extends JavaPlugin {
 	public boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor;
 	public boolean chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist, tagAPI, useLegacyFormat, chatBrackets = true;
 	public boolean groups, ownSystem, pex, bPermissions, groupManager, softMode, otherChatPluginFound, autoChatColor, factions, removeNameAboveHead;
-	public int prefixLength, suffixLength;
+	public int prefixLengthMax, suffixLengthMax, prefixLengthMin, suffixLengthMin;
 	private ColorMeCommands colorExecutor;
 	private PrefixCommands prefixExecutor;
 	private SuffixCommands suffixExecutor;
@@ -501,8 +501,10 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("colors.rainbow", true);
 		config.addDefault("colors.custom", true);
 		config.addDefault("colors.mixed", true);
-		config.addDefault("lengthLimit.Prefixer", 16);
-		config.addDefault("lengthLimit.Suffixer", 16);
+		config.addDefault("lengthLimit.Prefixer.max", 16);
+		config.addDefault("lengthLimit.Suffixer.max", 16);
+		config.addDefault("lengthLimit.Prefixer.min", 3);
+		config.addDefault("lengthLimit.Suffixer.min", 3);
 		config.addDefault("newColorOnJoin" , false);
 		config.addDefault("displayAlways.globalSuffix", false);
 		config.addDefault("displayAlways.globalPefix", false);
@@ -606,6 +608,7 @@ public class ColorMe extends JavaPlugin {
 		localization.addDefault("help_suffix_8", "/suffixer <name> <suffix> [world] - Sets player's suffix");
 		localization.addDefault("help_suffix_9", "/suffixer global <suffix> - Sets the global suffix");
 		localization.addDefault("too_long", "&4Sorry, this message is too long!");
+		localization.addDefault("too_short", "&4Sorry, this message is too short!");
 		localization.addDefault("bad_words", "&4Sorry,but '%s' is on the blacklist!");
 		localization.addDefault("help_group_1", "&2Welcome to the Groups (part of ColorMe) version &4%version &2help!");
 		localization.addDefault("help_group_2", "&4 <> = Required, [] = Optional");
@@ -692,8 +695,10 @@ public class ColorMe extends JavaPlugin {
 		globalPrefix = config.getString("global_default." + "prefix").isEmpty();
 		globalSuffix = config.getString("global_default." + "suffix").isEmpty();
 		globalColor = config.getString("global_default." + "color").isEmpty();
-		prefixLength = config.getInt("lengthLimit.Prefixer");
-		suffixLength = config.getInt("lengthLimit.Suffixer");
+		prefixLengthMin = config.getInt("lengthLimit.Prefixer.min");
+		suffixLengthMin = config.getInt("lengthLimit.Suffixer.min");
+		prefixLengthMax = config.getInt("lengthLimit.Prefixer.max");
+		suffixLengthMax = config.getInt("lengthLimit.Suffixer.max");
 		newColorOnJoin = config.getBoolean("newColorOnJoin");
 		displayAlwaysGlobalPrefix = config.getBoolean("displayAlways.globalPefix");
 		displayAlwaysGlobalSuffix = config.getBoolean("displayAlways.globalSuffix");
@@ -718,8 +723,10 @@ public class ColorMe extends JavaPlugin {
 			logDebug("globalPrefix is " + globalPrefix);
 			logDebug("globalSuffix is " + globalSuffix);
 			logDebug("globalColor is " + globalColor);
-			logDebug("prefixLength is " + prefixLength);
-			logDebug("suffixLength is " + suffixLength);
+			logDebug("prefixLengthMin is " + prefixLengthMin);
+			logDebug("suffixLengthMin is " + suffixLengthMin);
+			logDebug("prefixLengthMax is " + prefixLengthMax);
+			logDebug("suffixLengthMax is " + suffixLengthMax);
 			logDebug("newColorOnJoin is " + newColorOnJoin);
 			logDebug("displayAlwaysGlobalPrefix is " + displayAlwaysGlobalPrefix);
 			logDebug("displayAlwaysGlobalSuffix is " + displayAlwaysGlobalSuffix);

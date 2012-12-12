@@ -63,8 +63,13 @@ public class PrefixCommands implements CommandExecutor {
 						return true;
 					}
 				}
-				// Check if the message is too long
-				if (ChatColor.stripColor(actions.replaceThings(globalPrefix)).length() > plugin.prefixLength) {
+				// Check if the message is too long or too short
+				if (ChatColor.stripColor(actions.replaceThings(globalPrefix)).length() < plugin.prefixLengthMin) {
+					message = plugin.localization.getString("too_short");
+					plugin.message(sender, null, message, null, null, null, null);
+					return true;
+				}
+				if (ChatColor.stripColor(actions.replaceThings(globalPrefix)).length() > plugin.prefixLengthMax) {
 					message = plugin.localization.getString("too_long");
 					plugin.message(sender, null, message, null, null, null, null);
 					return true;
@@ -259,8 +264,13 @@ public class PrefixCommands implements CommandExecutor {
 						return true;
 					}
 				}
-				// Check if the message is too long
-				if (ChatColor.stripColor(actions.replaceThings(prefix)).length() > plugin.prefixLength) {
+				// Check if the message is too long or too short
+				if (ChatColor.stripColor(actions.replaceThings(prefix)).length() < plugin.prefixLengthMin) {
+					message = plugin.localization.getString("too_short");
+					plugin.message(sender, null, message, null, null, null, null);
+					return true;
+				}
+				if (ChatColor.stripColor(actions.replaceThings(prefix)).length() > plugin.prefixLengthMax) {
 					message = plugin.localization.getString("too_long");
 					plugin.message(sender, null, message, null, null, null, null);
 					return true;
@@ -314,8 +324,13 @@ public class PrefixCommands implements CommandExecutor {
 						return true;
 					}
 				}
-				// Check if the message is too long
-				if (ChatColor.stripColor(actions.replaceThings(prefix)).length() > plugin.prefixLength) {
+				// Check if the message is too long or too short
+				if (ChatColor.stripColor(actions.replaceThings(prefix)).length() < plugin.prefixLengthMin) {
+					message = plugin.localization.getString("too_short");
+					plugin.message(sender, null, message, null, null, null, null);
+					return true;
+				}
+				if (ChatColor.stripColor(actions.replaceThings(prefix)).length() > plugin.prefixLengthMax) {
 					message = plugin.localization.getString("too_long");
 					plugin.message(sender, null, message, null, null, null, null);
 					return true;

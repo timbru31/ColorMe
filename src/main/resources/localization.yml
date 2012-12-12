@@ -82,6 +82,7 @@ help_suffix_7: /suffixer me <suffix> [world] - Sets your own suffix
 help_suffix_8: /suffixer <name> <suffix> [world] - Sets player's suffix
 help_suffix_9: /suffixer global <suffix> - Sets the suffix prefix
 too_long: '&4Sorry, this message is too long!'
+too_short: '&4Sorry, this message is too short!'
 bad_words: '&4Sorry, but &e''%s'' &4is on the blacklist!'
 help_group_1: '&2Welcome to the Groups (part of ColorMe) version &4%version &2help!'
 help_group_2: '&4 <> = Required, [] = Optional'

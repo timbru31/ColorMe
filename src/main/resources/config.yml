@@ -45,8 +45,12 @@ global_default:
 updateConfig: false
 chatBrackets: true
 lengthLimit:
-  Prefixer: 16
-  Suffixer: 16
+  Prefixer:
+    max: 16
+    min: 3
+  Suffixer:
+    max: 16
+    min: 3
 debug: false
 newColorOnJoin: false
 displayAlways:

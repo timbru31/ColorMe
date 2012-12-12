@@ -95,8 +95,12 @@ updateConfig: false
 chatBrackets: true
 # How long can a prefix/suffix be? (Without colors)
 lengthLimit:
-  Prefixer: 16
-  Suffixer: 16
+  Prefixer:
+    max: 16
+    min: 3
+  Suffixer:
+    max: 16
+    min: 3
 # Creates an extra log file. Helps to find bugs.
 debug: false
 # Should the player receive a new color on join?

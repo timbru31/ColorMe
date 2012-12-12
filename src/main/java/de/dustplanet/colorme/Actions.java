@@ -882,7 +882,7 @@ public class Actions {
 
 	// Checks if the prefix/suffix contains a blocked word (not case-sensitive or color-sensitive)
 	public String containsBlackListedWord(String message) {
-		message = ChatColor.translateAlternateColorCodes('\u0026', message);
+		message = replaceThings(message);
 		message = ChatColor.stripColor(message).toLowerCase();
 		for (String s : plugin.bannedWords) {
 			if (message.contains(s.toLowerCase())) {
