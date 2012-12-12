@@ -3,24 +3,27 @@ package de.dustplanet.colorme;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
-import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
-import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+// Spout
 import org.getspout.spoutapi.player.SpoutPlayer;
+// TagAPI
 import org.kitteh.tag.TagAPI;
-
+// PermissionsEx
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
+// bPermissions
 import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.util.CalculableType;
+// GroupManager
+import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
+import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 
 public class Actions {
 	public ColorMe plugin;
