@@ -378,4 +378,4 @@ permissions:
             groups.members: true
             groups.reload: true
         description: Allows all commands for Groups
-softdepend: [Vault, Spout, TagAPI]
+softdepend: [Vault, Spout, TagAPI, bPermissions, PermissionsEx, GroupManager]

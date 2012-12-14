@@ -1,18 +1,15 @@
 package de.dustplanet.colorme.listeners;
 
-import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
-import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 import org.kitteh.tag.PlayerReceiveNameTagEvent;
-
+// PermissionsEx
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
-
+// bPermissions
 import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.util.CalculableType;
 import de.dustplanet.colorme.Actions;
@@ -35,6 +32,7 @@ import de.dustplanet.colorme.ColorMe;
 public class ColorMeTagAPIListener implements Listener {
 	private ColorMe plugin;
 	private Actions actions;
+
 	public ColorMeTagAPIListener(ColorMe instance, Actions actionsInstance) {
 		plugin = instance;
 		actions = actionsInstance;
@@ -82,16 +80,9 @@ public class ColorMeTagAPIListener implements Listener {
 				}
 				else if (plugin.groupManager) {
 					// World data -> then groups (only first) & finally the suffix & prefix!
-					try {
-						Plugin groupManagerPlugin = plugin.getServer().getPluginManager().getPlugin("GroupManager");
-						WorldsHolder groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
-						OverloadedWorldHolder groupManager = groupManagerWorldsHolder.getWorldData(world);
-						if (groupManager != null) {
-							String group = groupManager.getUser(name).getGroupName();
-							color = groupManager.getGroup(group).getVariables().getVarString("color");
-						}
-					}
-					catch (NullPointerException e) {}
+					OverloadedWorldHolder groupManager = plugin.groupManagerWorldsHolder.getWorldData(world);
+					String group = groupManager.getUser(name).getGroupName();
+					color = groupManager.getGroup(group).getVariables().getVarString("color");
 				}
 			}
 			// Then check if still nothing found and globalColor

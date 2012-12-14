@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 // Spout
 import org.getspout.spoutapi.player.SpoutPlayer;
 // TagAPI
@@ -20,14 +19,11 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 // bPermissions
 import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.util.CalculableType;
-// GroupManager
-import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
-import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 
 public class Actions {
 	public ColorMe plugin;
-	
+
 	public Actions(ColorMe instance) {
 		plugin = instance;
 	}
@@ -596,16 +592,9 @@ public class Actions {
 			}
 			else if (plugin.groupManager) {
 				// World data -> then groups (only first) & finally the suffix & prefix!
-				try {
-					Plugin groupManagerPlugin = plugin.getServer().getPluginManager().getPlugin("GroupManager");
-					WorldsHolder groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
-					OverloadedWorldHolder groupManager = groupManagerWorldsHolder.getWorldData(world);
-					if (groupManager != null) {
-						String group = groupManager.getUser(name).getGroupName();
-						color = groupManager.getGroup(group).getVariables().getVarString("color");
-					}
-				}
-				catch (NullPointerException e) {}
+				OverloadedWorldHolder groupManager = plugin.groupManagerWorldsHolder.getWorldData(world);
+				String group = groupManager.getUser(name).getGroupName();
+				color = groupManager.getGroup(group).getVariables().getVarString("color");
 			}
 		}
 		// Then check if still nothing found and globalColor

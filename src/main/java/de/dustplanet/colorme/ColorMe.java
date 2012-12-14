@@ -15,6 +15,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -79,6 +82,7 @@ public class ColorMe extends JavaPlugin {
 	public List<String> bannedWords = new ArrayList<String>();
 	public Thread mainThread;
 	public String format = "[GlobalPrefix]&r[GroupPrefix]&r[Prefix]&r<[name]&r>[Suffix]&r[GroupSuffix]&r[GlobalSuffix]&r: [message]";
+	public WorldsHolder groupManagerWorldsHolder = null;
 
 	// Shutdown
 	public void onDisable() {
@@ -260,6 +264,7 @@ public class ColorMe extends JavaPlugin {
 			}
 			else if (groupManagerPlugin != null) {
 				groupManager = true;
+				groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
 				getLogger().info("Found GroupManager. Will use it for groups!");
 				logDebug("Hooked into GroupManager for groups");
 			}

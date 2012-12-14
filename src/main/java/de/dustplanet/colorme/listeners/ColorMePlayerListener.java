@@ -7,7 +7,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.Plugin;
 // PEX Import
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionUser;
@@ -19,8 +18,7 @@ import de.dustplanet.colorme.Actions;
 import de.dustplanet.colorme.ColorMe;
 // GroupManager Import
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
-import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
-import org.anjocaido.groupmanager.GroupManager;
+
 /**
  * ColorMe for CraftBukkit/Bukkit
  * Handles the player activities
@@ -166,19 +164,10 @@ public class ColorMePlayerListener implements Listener {
 			}
 			else if (plugin.groupManager) {
 				// World data -> then groups (only first) & finally the suffix & prefix!
-				try {
-					Plugin groupManagerPlugin = plugin.getServer().getPluginManager().getPlugin("GroupManager");
-					WorldsHolder groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
-					OverloadedWorldHolder groupManager = groupManagerWorldsHolder.getWorldData(world);
-					if (groupManager != null) {
-						String group = groupManager.getUser(nameExact).getGroupName();
-						groupPrefix = actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("prefix"));
-						groupSuffix = actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("suffix"));
-					}
-				}
-				catch (NullPointerException e) {
-					e.printStackTrace();
-				}
+				OverloadedWorldHolder groupManager = plugin.groupManagerWorldsHolder.getWorldData(world);
+				String group = groupManager.getUser(nameExact).getGroupName();
+				groupPrefix = actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("prefix"));
+				groupSuffix = actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("suffix"));
 			}
 			else if (plugin.ownSystem) {
 				if (actions.playerHasGroup(name)) {
