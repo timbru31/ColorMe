@@ -884,6 +884,7 @@ public class Actions {
 	public String containsBlackListedWord(String message) {
 		message = replaceThings(message);
 		message = ChatColor.stripColor(message).toLowerCase();
+		message = message.replaceAll("[^a-zA-Z0-9]+","");
 		for (String s : plugin.bannedWords) {
 			if (message.contains(s.toLowerCase())) {
 				return s;
