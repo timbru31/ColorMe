@@ -461,7 +461,7 @@ public class ColorMe extends JavaPlugin {
 			config.delete();
 			tempFile.renameTo(config);
 		}
-	}	
+	}
 
 	// Load the banned words
 	private void loadBannedWords() throws IOException{

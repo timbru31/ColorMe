@@ -89,6 +89,10 @@ public class ColorMeTagAPIListener implements Listener {
 			if (plugin.globalColor && color == null) {
 				if (actions.hasGlobal("color")) color = actions.getGlobal("color");
 			}
+			
+			// Additional null check
+			if (color == null) color = "WHITE";
+			
 			// Check if valid
 			String[] colors = color.split("-");
 			for (String colorActual : colors) {
