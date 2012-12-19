@@ -236,6 +236,9 @@ public class ColorMePlayerListener implements Listener {
 			}
 			else {
 				String format = "";
+				if (!globalPrefix.equals("")) globalPrefix += " ";
+				if (!groupPrefix.equals("")) groupPrefix += " ";
+				if (!prefix.equals("")) prefix += " ";
 				if (!plugin.chatBrackets) {
 					if (globalSuffix.equals("") && groupSuffix.equals("") && suffix.equals("")) {
 						format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "%1$s" + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + ": %2$s";
@@ -252,9 +255,6 @@ public class ColorMePlayerListener implements Listener {
 					else if (!groupSuffix.equals("")) groupSuffix += ChatColor.RESET + ": ";
 					if (!groupSuffix.equals("") && !suffix.equals("")) groupSuffix += " ";
 					if (!suffix.equals("") && !globalSuffix.equals("")) suffix += " ";
-					if (!globalPrefix.equals("")) globalPrefix += " ";
-					if (!groupPrefix.equals("")) groupPrefix += " ";
-					if (!prefix.equals("")) prefix += " ";
 					format = globalPrefix + ChatColor.RESET + groupPrefix + ChatColor.RESET + prefix + ChatColor.RESET + "<%1$s" + ChatColor.RESET + "> " + ChatColor.RESET + groupSuffix + ChatColor.RESET + suffix + ChatColor.RESET + globalSuffix + "%2$s";
 					if (!plugin.factions) event.setFormat(format);
 					else event.setFormat("[FACTION] " + format);
