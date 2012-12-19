@@ -870,6 +870,11 @@ public class Actions {
 	}
 
 	// Checks if the prefix/suffix contains a blocked word (not case-sensitive or color-sensitive)
+	/**
+	 * Checks if a message contains a blacklisted word
+	 * @param message you want to check
+	 * @return null if nothing was found, otherwise the found word will be returned
+	 */
 	public String containsBlackListedWord(String message) {
 		message = replaceThings(message);
 		message = ChatColor.stripColor(message).toLowerCase();

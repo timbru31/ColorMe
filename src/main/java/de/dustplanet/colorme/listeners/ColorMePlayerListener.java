@@ -36,12 +36,12 @@ import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 public class ColorMePlayerListener implements Listener {
 	private ColorMe plugin;
 	private Actions actions;
+	private String[] pluginPart = {"colors", "prefix", "suffix"};
+	
 	public ColorMePlayerListener(ColorMe instance, Actions actionsInstance) {
 		plugin = instance;
 		actions = actionsInstance;
 	}
-
-	private String[] pluginPart = {"colors", "prefix", "suffix"};
 
 	// Loads the the values and set them to default one if not known
 	@EventHandler(priority = EventPriority.HIGHEST)
