@@ -98,11 +98,11 @@ public class ColorMeTagAPIListener implements Listener {
 			for (String colorActual : colors) {
 				// Special case: not a standard, use first char then!
 				if (!actions.isStandard(colorActual)) {
-					if (color.equals("rainbow")) {
+					if (color.equalsIgnoreCase("rainbow")) {
 						colorActual = "dark_red";
 					}
 					// Generate a random color
-					else if (color.equals("random")) {
+					else if (color.equalsIgnoreCase("random")) {
 						int x = (int) (Math.random() * ChatColor.values().length);
 						colorActual = ChatColor.values()[x].name().toLowerCase();
 					}
