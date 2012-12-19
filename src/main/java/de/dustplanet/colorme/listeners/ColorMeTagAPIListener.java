@@ -91,7 +91,7 @@ public class ColorMeTagAPIListener implements Listener {
 			}
 			
 			// Additional null check
-			if (color == null) color = "WHITE";
+			if (color == null || color == "") color = "WHITE";
 			
 			// Check if valid
 			String[] colors = color.split("-");
