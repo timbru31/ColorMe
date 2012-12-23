@@ -357,7 +357,7 @@ public class Actions {
 	 */
 	public boolean has(String name, String world, String pluginPart) {
 		plugin.logDebug("Actions -> has");
-		plugin.logDebug("Asked if " + name + " has got a " + pluginPart + " in the world " + world);
+		plugin.logDebug("Asked if " + name + " has got (a) " + pluginPart + " in the world " + world);
 		name = name.toLowerCase();
 		world = world.toLowerCase();
 		pluginPart = pluginPart.toLowerCase();

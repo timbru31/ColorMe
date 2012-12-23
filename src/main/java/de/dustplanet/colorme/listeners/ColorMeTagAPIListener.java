@@ -47,11 +47,16 @@ public class ColorMeTagAPIListener implements Listener {
 			}
 			String name = event.getNamedPlayer().getName();
 			String world = event.getNamedPlayer().getWorld().getName();
+			
 			// Fallback
-			String color = "WHITE";
+			String color = null;
+			
+			// Specific world
 			if (actions.has(name, world, "colors"))	color = actions.get(name, world, "colors");
+
 			// Check player default
 			else if (actions.has(name, "default", "colors")) color = actions.get(name, "default", "colors");
+			
 			// If groups enabled
 			else if (plugin.groups) {
 				if (plugin.ownSystem) {
@@ -86,9 +91,7 @@ public class ColorMeTagAPIListener implements Listener {
 				}
 			}
 			// Then check if still nothing found and globalColor
-			if (plugin.globalColor && color == null) {
-				if (actions.hasGlobal("color")) color = actions.getGlobal("color");
-			}
+			if (plugin.globalColor && color == null && actions.hasGlobal("color")) color = actions.getGlobal("color");
 			
 			// Additional null check
 			if (color == null || color == "") color = "WHITE";
@@ -98,16 +101,15 @@ public class ColorMeTagAPIListener implements Listener {
 			for (String colorActual : colors) {
 				// Special case: not a standard, use first char then!
 				if (!actions.isStandard(colorActual)) {
-					if (color.equalsIgnoreCase("rainbow")) {
-						colorActual = "dark_red";
-					}
+					if (colorActual.equalsIgnoreCase("rainbow")) colorActual = "dark_red";
+
 					// Generate a random color
-					else if (color.equalsIgnoreCase("random")) {
+					else if (colorActual.equalsIgnoreCase("random")) {
 						int x = (int) (Math.random() * ChatColor.values().length);
 						colorActual = ChatColor.values()[x].name().toLowerCase();
 					}
 					else {
-						String colorChars = ChatColor.translateAlternateColorCodes('\u0026', plugin.colors.getString(color));
+						String colorChars = ChatColor.translateAlternateColorCodes('\u0026', plugin.colors.getString(colorActual));
 						// No § or &? Not valid; doesn't start with §? Not valid! Ending without a char? Not valid!
 						if (!colorChars.contains("\u00A7") || colorChars.contains("\u0026") || !colorChars.startsWith("\u00A7") || colorChars.endsWith("\u00A7")) colorActual = "white";
 						// Split the color values
