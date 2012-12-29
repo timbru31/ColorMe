@@ -156,29 +156,6 @@ permissions:
     colorme.reload:
         default: op
         description: Allows reloading
-    colorme.autochatcolor.*:
-        children:
-            colorme.autochatcolor.black: true
-            colorme.autochatcolor.dark_blue: true
-            colorme.autochatcolor.dark_green: true
-            colorme.autochatcolor.dark_aqua: true
-            colorme.autochatcolor.dark_red: true
-            colorme.autochatcolor.dark_purple: true
-            colorme.autochatcolor.gold: true
-            colorme.autochatcolor.gray: true
-            colorme.autochatcolor.dark_gray: true
-            colorme.autochatcolor.blue: true
-            colorme.autochatcolor.green: true
-            colorme.autochatcolor.aqua: true
-            colorme.autochatcolor.red: true
-            colorme.autochatcolor.light_purple: true
-            colorme.autochatcolor.yellow: true
-            colorme.autochatcolor.magic: true
-            colorme.autochatcolor.white: true
-            colorme.autochatcolor.bold: true
-            colorme.autochatcolor.italic: true
-            colorme.autochatcolor.underline: true
-            colorme.autochatcolor.strikethrough: true
     colorme.autochatcolor.black:
         default: false
         description: Allows automatic coloring of the text
@@ -255,7 +232,6 @@ permissions:
             colorme.sign: true
             colorme.nametag: true
             colorme.reload: true
-            colorme.autochatcolor.*: false
         description: Allows all commands for ColorMe
     prefixer.list:
         default: true
