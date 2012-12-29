@@ -214,8 +214,6 @@ public class ColorMe extends JavaPlugin {
 		groupExecutor = new GroupCommands(this, actions);
 		getCommand("groups").setExecutor(groupExecutor);
 
-		logDebug("ColorMe enabled");
-
 		// Check for Vault
 		Plugin vault = getServer().getPluginManager().getPlugin("Vault");
 		if (vault != null & vault instanceof Vault) {
@@ -376,6 +374,8 @@ public class ColorMe extends JavaPlugin {
 			metrics.start();
 		}
 		catch (IOException e) {}
+
+		logDebug("ColorMe enabled");
 		logDebug("");
 	}
 
