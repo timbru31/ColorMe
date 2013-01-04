@@ -11,7 +11,7 @@ import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 // bPermissions
 import de.bananaco.bpermissions.api.ApiLayer;
-import de.bananaco.bpermissions.api.util.CalculableType;
+import de.bananaco.bpermissions.api.CalculableType;
 import de.dustplanet.colorme.Actions;
 import de.dustplanet.colorme.ColorMe;
 

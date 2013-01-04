@@ -18,7 +18,7 @@ import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 // bPermissions
 import de.bananaco.bpermissions.api.ApiLayer;
-import de.bananaco.bpermissions.api.util.CalculableType;
+import de.bananaco.bpermissions.api.CalculableType;
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 
 public class Actions {
