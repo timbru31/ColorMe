@@ -37,7 +37,7 @@ public class ColorMePlayerListener implements Listener {
 	private ColorMe plugin;
 	private Actions actions;
 	private String[] pluginPart = {"colors", "prefix", "suffix"};
-	
+
 	public ColorMePlayerListener(ColorMe instance, Actions actionsInstance) {
 		plugin = instance;
 		actions = actionsInstance;
@@ -103,6 +103,8 @@ public class ColorMePlayerListener implements Listener {
 		if (plugin.softMode) {
 			plugin.logDebug("\t---PlayerChatEvent NormalPriority Begin---");
 			modifyChat(event);
+			// Just call the chat coloring event once
+			colorChat(event);
 			plugin.logDebug("\t---PlayerChatEvent NormalPriority End---");
 			plugin.logDebug("");
 		}
@@ -113,6 +115,8 @@ public class ColorMePlayerListener implements Listener {
 		if (!plugin.softMode) {
 			plugin.logDebug("\t---PlayerChatEvent HighPriority Begin---");
 			modifyChat(event);
+			// Just call the chat coloring event once
+			colorChat(event);
 			plugin.logDebug("\t---PlayerChatEvent HighPriority End---");
 			plugin.logDebug("");
 		}
@@ -179,7 +183,7 @@ public class ColorMePlayerListener implements Listener {
 				}
 			}
 		}
-
+		// Prefixes?
 		if (plugin.Prefixer) {
 			// Get world prefix if available
 			if (actions.has(name, world, "prefix")) {
@@ -199,6 +203,7 @@ public class ColorMePlayerListener implements Listener {
 				if (globalPrefix.equals(prefix)) globalPrefix = "";
 			}
 		}
+		// Suffixes?
 		if (plugin.Suffixer) {
 			// Get world suffix if available
 			if (actions.has(name, world, "suffix")) {
@@ -272,21 +277,35 @@ public class ColorMePlayerListener implements Listener {
 					.replace("[ColorMeGlobalSuffix]", globalSuffix);
 			event.setFormat(newFormat);
 		}
+	}
+	
+	private void colorChat(AsyncPlayerChatEvent event) {
+		Player player = event.getPlayer();
 		// Color the message, too?
 		if (plugin.chatColors && player.hasPermission("colorme.chat")) {
+			// Still color message
+			event.setMessage(actions.replaceThings(event.getMessage()));
 			// Should the chat be auto colored?
-			if (plugin.autoChatColor) {
-				for (ChatColor value : ChatColor.values()) {
-					// get the name from the integer
-					String color = value.name().toLowerCase();
-					if (player.hasPermission("colorme.autochatcolor." + color)) {
-						event.setMessage(value + event.getMessage());
-						break;
+			if (plugin.autoChatColor && !event.getMessage().contains("\u00A7")) {
+				String message = event.getMessage();
+				// Support for random & rainbow
+				if (player.hasPermission("colorme.autochatcolor.rainbow")) {
+					event.setMessage(actions.rainbowColor(message));
+				}
+				else if (player.hasPermission("colorme.autochatcolor.random")) {
+					event.setMessage(actions.randomColor(message));
+				}
+				else {
+					for (ChatColor value : ChatColor.values()) {
+						// get the name from the integer
+						String color = value.name().toLowerCase();
+						if (player.hasPermission("colorme.autochatcolor." + color)) {
+							event.setMessage(value + message);
+							break;
+						}
 					}
 				}
 			}
-			// Still color message
-			event.setMessage(actions.replaceThings(event.getMessage()));
 		}
 	}
 }

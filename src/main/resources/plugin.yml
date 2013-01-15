@@ -219,6 +219,12 @@ permissions:
     colorme.autochatcolor.strikethrough:
         default: false
         description: Allows automatic coloring of the text
+    colorme.autochatcolor.rainbow:
+        default: false
+        description: Allows automatic coloring of the text
+    colorme.autochatcolor.random:
+        default: false
+        description: Allows automatic coloring of the text
     colorme.*:
         children:
             colorme.list: true
