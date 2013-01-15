@@ -399,6 +399,7 @@ public class Actions {
 	// Used to create a random effect
 	/**
 	 * Creates a random color
+	 * You may use this method in your own plugin, please give me credits then!
 	 * @param name of the player
 	 * @return the updated name
 	 */
@@ -419,6 +420,7 @@ public class Actions {
 	// Used to create a rainbow effect
 	/**
 	 * Creates a rainbow effect
+	 * You may use this method in your own plugin, please give me credits then!
 	 * @param name of the player
 	 * @return the updated name
 	 */
@@ -575,7 +577,9 @@ public class Actions {
 				else if (hasGroup(group, "default", "colors")) color = getGroup(group, "default", "colors");
 			}
 		}
+		// Group check for other plugins
 		else if (plugin.groups && !plugin.ownSystem) {
+			// Case PermissionsEx
 			if (plugin.pex) {
 				PermissionUser user = PermissionsEx.getUser(name);
 				// Only first group
@@ -583,6 +587,7 @@ public class Actions {
 				// Get the group color
 				color = group.getOption("color");
 			}
+			// Case bPermissions
 			else if (plugin.bPermissions) {
 				// Only fist group
 				if (ApiLayer.getGroups(world, CalculableType.USER, name).length > 0) {
@@ -590,6 +595,7 @@ public class Actions {
 					color = ApiLayer.getValue(world, CalculableType.GROUP, group, "color");
 				}
 			}
+			// Case GroupManager
 			else if (plugin.groupManager) {
 				// World data -> then groups (only first) & finally the suffix & prefix!
 				OverloadedWorldHolder groupManager = plugin.groupManagerWorldsHolder.getWorldData(world);
@@ -616,7 +622,7 @@ public class Actions {
 		updateName(name, color);
 	}
 
-	// Update the displayName, tabName, title, prefix & suffix in a specific world (after setting, removing, onJoin and onChat)
+	// Update the displayName, tabName, title, prefix & suffix in a specific world (after setting, removing and onJoin)
 	/**
 	 * Updates the display name, tab list or the name above the head of a player
 	 * @param name - the name of the player
@@ -625,16 +631,27 @@ public class Actions {
 	public void updateName(String name, String color) {
 		plugin.logDebug("Actions -> updateName");
 		plugin.logDebug("Asked to update the color of " + name + " to the color " + color);
+		// We always work with lowercase
 		name = name.toLowerCase();
-		final Player player = plugin.getServer().getPlayerExact(name);
+		Player player = plugin.getServer().getPlayerExact(name);
+		// Make sure our player is valid! (online)
 		if (player != null) {
 			String displayName = player.getDisplayName();
+			// Strip all colors out
 			String cleanDisplayName = ChatColor.stripColor(displayName);
+			// We will work on the name, based on the clean display name
 			String newDisplayName = cleanDisplayName;
+			// First restore temp to white
 			player.setDisplayName(cleanDisplayName);
-			player.setPlayerListName(cleanDisplayName);
+			// When we set if for the tabList we need to make sure the displayName is not too long (could be changed by other plugins!)
+			if (cleanDisplayName.length() > 16) {
+				String tempDispName = cleanDisplayName.substring(0, 13) + "..";
+				player.setPlayerListName(tempDispName);
+			}
+			else player.setPlayerListName(cleanDisplayName);
+			// Check for Async
 			if (plugin.tagAPI && plugin.playerTitleWithoutSpout && Thread.currentThread().equals(plugin.mainThread)) TagAPI.refreshPlayer(player);
-			String newName = cleanDisplayName;
+			// Support for multiple colors
 			String [] colors = color.split("-");
 			// Name color
 			if (plugin.displayName) {
@@ -650,27 +667,6 @@ public class Actions {
 					else newDisplayName = ChatColor.valueOf(colorPart.toUpperCase()) + newDisplayName;
 				}
 				player.setDisplayName(newDisplayName);
-			}
-			// Check for playerList
-			if (plugin.tabList) {
-				for (String colorPart : colors) {
-					// Random
-					if (colorPart.equalsIgnoreCase("random")) newName = randomColor(cleanDisplayName);
-					// Rainbow
-					else if (colorPart.equalsIgnoreCase("rainbow")) newName = rainbowColor(cleanDisplayName);
-					// Custom colors
-					else if (plugin.colors.contains(colorPart) && !plugin.colors.getString(colorPart).isEmpty()) {
-						newName = updateCustomColor(colorPart, cleanDisplayName);
-					}
-					else newName = ChatColor.valueOf(colorPart.toUpperCase()) + newName;
-				}
-				// Shorten it, if too long
-				if (!newName.equals("") && newName != null) {
-					if (newName.length() > 16) {
-						newName = newName.substring(0, 12) + ChatColor.WHITE + "..";
-					}
-					player.setPlayerListName(newName);
-				}
 			}
 			// Check for Spout
 			if (plugin.spoutEnabled && plugin.playerTitle && player.hasPermission("plugin.nametag")) {
@@ -688,6 +684,27 @@ public class Actions {
 				}
 				spoutPlayer.setTitle(newDisplayName);
 			}
+			// Check for playerList
+			if (plugin.tabList) {
+				for (String colorPart : colors) {
+					// Random
+					if (colorPart.equalsIgnoreCase("random")) newDisplayName = randomColor(cleanDisplayName);
+					// Rainbow
+					else if (colorPart.equalsIgnoreCase("rainbow")) newDisplayName = rainbowColor(cleanDisplayName);
+					// Custom colors
+					else if (plugin.colors.contains(colorPart) && !plugin.colors.getString(colorPart).isEmpty()) {
+						newDisplayName = updateCustomColor(colorPart, cleanDisplayName);
+					}
+					else newDisplayName = ChatColor.valueOf(colorPart.toUpperCase()) + newDisplayName;
+				}
+				// Shorten it, if too long
+				if (!newDisplayName.equals("") && newDisplayName != null) {
+					if (newDisplayName.length() > 16) {
+						newDisplayName = newDisplayName.substring(0, 12) + ChatColor.WHITE + "..";
+					}
+					player.setPlayerListName(newDisplayName);
+				}
+			}
 			// Check if TagAPI should be used -> above the head!
 			if (plugin.playerTitleWithoutSpout && plugin.tagAPI && player.hasPermission("plugin.nametag")) {
 				if (!color.equalsIgnoreCase("rainbow") && !color.equalsIgnoreCase("random") && Thread.currentThread().equals(plugin.mainThread)) TagAPI.refreshPlayer(player);
@@ -703,14 +720,16 @@ public class Actions {
 	public void restoreName(String name) {
 		plugin.logDebug("Actions -> restoreName");
 		plugin.logDebug("Asked to restore the name " + name);
+		// We always work with lowercase
 		name = name.toLowerCase();
+		// Make sure player is online/valid
 		Player player = plugin.getServer().getPlayerExact(name);
 		if (player != null) {
 			plugin.logDebug("Player found and valid");
 			String displayName = player.getDisplayName();
+			// Strip color out
 			String cleanDisplayName = ChatColor.stripColor(displayName);
-			// No name -> back to white
-			player.setDisplayName(ChatColor.WHITE + cleanDisplayName);
+			player.setDisplayName(cleanDisplayName);
 			if (plugin.tabList) {
 				// If the TAB name is longer than 16 shorten it!
 				String newName = cleanDisplayName;
@@ -739,7 +758,7 @@ public class Actions {
 	 */
 	public boolean validColor(String color) {
 		plugin.logDebug("Actions -> validColor");
-		// if it's random or rainbow -> possible
+		// If it's random or rainbow -> possible
 		if (color.equalsIgnoreCase("rainbow") || color.equalsIgnoreCase("random")) {
 			plugin.logDebug("Color " + color + " is valid");
 			return true;
@@ -749,7 +768,7 @@ public class Actions {
 			plugin.logDebug("Color " + color + " is valid");
 			return true;
 		}
-		// Second place, cause random and rainbow aren't possible normally ;)
+		// Third place, cause random and rainbow aren't possible normally and custom colors not, too ;)
 		else {
 			for (ChatColor value : ChatColor.values()) {
 				// Check if the color is one of the 17
@@ -808,7 +827,9 @@ public class Actions {
 	// Displays the specific help
 	public void help(CommandSender sender, String pluginPart) {
 		plugin.logDebug("Actions -> help");
+		// Help variable, currently we have 9 sites
 		int z = 9;
+		// Groups? Then 12 sites
 		if (pluginPart.equals("group")) z = 12;
 		for (int i = 1; i <= z; i++) {
 			String message = plugin.localization.getString("help_" + pluginPart + "_" + Integer.toString(i));
@@ -878,12 +899,14 @@ public class Actions {
 	public String containsBlackListedWord(String message) {
 		message = replaceThings(message);
 		message = ChatColor.stripColor(message).toLowerCase();
+		// Only a-z (lower and uppercase and 0-9 are valid
 		message = message.replaceAll("[^a-zA-Z0-9]+","");
 		for (String s : plugin.bannedWords) {
 			if (message.contains(s.toLowerCase())) {
 				return s;
 			}
 		}
+		// Nothing found
 		return null;
 	}
 }
