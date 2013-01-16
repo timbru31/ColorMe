@@ -126,6 +126,7 @@ removeNameAboveHead: false
 # Should the old system be used or the new individual formatting?
 useLegacyFormat: false
 format: '[GlobalPrefix]&r[GroupPrefix]&r[Prefix]&r<[name]&r>[Suffix]&r[GroupSuffix]&r[GlobalSuffix]&r: [message]'
+factionsSupport: true
 
 Commands & Permissions (if no permissions system is detected, only OPs are able to use the commands!)
 Only bukkit's permissions system is supported!

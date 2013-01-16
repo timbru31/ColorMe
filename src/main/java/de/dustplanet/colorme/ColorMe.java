@@ -316,7 +316,7 @@ public class ColorMe extends JavaPlugin {
 				getLogger().info("Found iChat. Will use it for chat!");
 				logDebug("Found iChat");
 			}
-			else if (factionsPlugin != null) {
+			else if (factionsPlugin != null && config.getBoolean("factionsSupport")) {
 				factions = true;
 				getLogger().info("Found Factions, will attempt to support it!");
 				logDebug("Found Factions");
@@ -523,6 +523,7 @@ public class ColorMe extends JavaPlugin {
 		config.addDefault("chatBrackets", true);
 		config.addDefault("useLegacyFormat", false);
 		config.addDefault("format", "[GlobalPrefix]&r[GroupPrefix]&r[Prefix]&r<[name]&r>[Suffix]&r[GroupSuffix]&r[GlobalSuffix]&r: [message]");
+		config.addDefault("factionsSupport", true);
 		config.options().copyDefaults(true);
 		saveConfig();
 	}
