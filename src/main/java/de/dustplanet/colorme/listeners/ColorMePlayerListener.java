@@ -7,6 +7,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import de.dustplanet.colorme.Actions;
+import de.dustplanet.colorme.ColorMe;
 // PEX Import
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionUser;
@@ -14,8 +16,6 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 // bPermissions Import
 import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.CalculableType;
-import de.dustplanet.colorme.Actions;
-import de.dustplanet.colorme.ColorMe;
 // GroupManager Import
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 

@@ -1,9 +1,11 @@
 package de.dustplanet.colorme.listeners;
 
-import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import de.dustplanet.colorme.Actions;
+import de.dustplanet.colorme.ColorMe;
+// TagAPI
 import org.kitteh.tag.PlayerReceiveNameTagEvent;
 // PermissionsEx
 import ru.tehkode.permissions.PermissionGroup;
@@ -12,8 +14,8 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 // bPermissions
 import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.CalculableType;
-import de.dustplanet.colorme.Actions;
-import de.dustplanet.colorme.ColorMe;
+// GroupManager
+import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 
 /**
  * ColorMe for CraftBukkit/Bukkit

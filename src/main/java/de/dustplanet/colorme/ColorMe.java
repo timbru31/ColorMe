@@ -15,9 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -29,7 +26,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.kitteh.tag.TagAPI;
 import de.dustplanet.colorme.commands.ColorMeCommands;
 import de.dustplanet.colorme.commands.GroupCommands;
 import de.dustplanet.colorme.commands.PrefixCommands;
@@ -40,6 +36,11 @@ import de.dustplanet.colorme.listeners.ColorMeTagAPIListener;
 // Economy
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
+// GroupManager
+import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
+// TagAPI
+import org.kitteh.tag.TagAPI;
 
 
 /**
