@@ -184,7 +184,7 @@ public class ColorMePlayerListener implements Listener {
 			}
 		}
 		// Prefixes?
-		if (plugin.Prefixer) {
+		if (plugin.prefixer) {
 			// Get world prefix if available
 			if (actions.has(name, world, "prefix")) {
 				prefix = actions.get(name, world, "prefix");
@@ -204,7 +204,7 @@ public class ColorMePlayerListener implements Listener {
 			}
 		}
 		// Suffixes?
-		if (plugin.Suffixer) {
+		if (plugin.suffixer) {
 			// Get world suffix if available
 			if (actions.has(name, world, "suffix")) {
 				suffix = actions.get(name, world, "suffix");

@@ -33,7 +33,7 @@ public class SuffixCommands implements CommandExecutor {
 			return true;
 		}
 		// Stop here if suffixer is unwanted
-		if (!plugin.Suffixer) {
+		if (!plugin.suffixer) {
 			message = plugin.localization.getString("part_disabled");
 			plugin.message(sender, null, message, null, null, null, null);
 			return true;
@@ -287,32 +287,29 @@ public class SuffixCommands implements CommandExecutor {
 					return true;
 				}
 				// With economy
-				else if (plugin.economy != null) {
-					// Charge costs :)
-					if (cost > 0) {
-						// Charge player unless he has the free permissions
-						if (!sender.hasPermission("suffixer.free")) {
-							// Enough money?
-							if (plugin.economy.getBalance(senderName) < cost) {
-								// Tell and return
-								message = plugin.localization.getString("not_enough_money_1");
-								plugin.message(sender, null, message, null, null, null, null);
-								message = plugin.localization.getString("not_enough_money_2");
-								plugin.message(sender, null, message, null, null, null, cost);
-								return true;
-							}
-							else {
-								plugin.economy.withdrawPlayer(senderName, cost);
-								message = plugin.localization.getString("charged");
-								plugin.message(sender, null, message, null, null, null, cost);
-							}
+				else if (plugin.economy != null && cost > 0) {
+					// Charge player unless he has the free permissions
+					if (!sender.hasPermission("suffixer.free")) {
+						// Enough money?
+						if (plugin.economy.getBalance(senderName) < cost) {
+							// Tell and return
+							message = plugin.localization.getString("not_enough_money_1");
+							plugin.message(sender, null, message, null, null, null, null);
+							message = plugin.localization.getString("not_enough_money_2");
+							plugin.message(sender, null, message, null, null, null, cost);
+							return true;
 						}
-						// Set suffix and notify sender
-						actions.set(senderName, suffix, world, pluginPart);
-						message = plugin.localization.getString("changed_suffix_self");
-						plugin.message(sender, null, message, actions.replaceThings(suffix), world, null, null);
-						return true;
+						else {
+							plugin.economy.withdrawPlayer(senderName, cost);
+							message = plugin.localization.getString("charged");
+							plugin.message(sender, null, message, null, null, null, cost);
+						}
 					}
+					// Set suffix and notify sender
+					actions.set(senderName, suffix, world, pluginPart);
+					message = plugin.localization.getString("changed_suffix_self");
+					plugin.message(sender, null, message, actions.replaceThings(suffix), world, null, null);
+					return true;
 				}
 			}
 			// Suffixing other

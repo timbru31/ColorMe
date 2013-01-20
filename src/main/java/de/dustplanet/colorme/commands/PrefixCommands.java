@@ -12,7 +12,7 @@ import de.dustplanet.colorme.ColorMe;
 public class PrefixCommands implements CommandExecutor {
 	private ColorMe plugin;
 	private Actions actions;
-	
+
 	public PrefixCommands(ColorMe instance, Actions actionsInstance) {
 		plugin = instance;
 		actions = actionsInstance;
@@ -33,7 +33,7 @@ public class PrefixCommands implements CommandExecutor {
 			return true;
 		}
 		// Stop here if Prefixer is unwanted
-		if (!plugin.Prefixer) {
+		if (!plugin.prefixer) {
 			message = plugin.localization.getString("part_disabled");
 			plugin.message(sender, null, message, null, null, null, null);
 			return true;
@@ -284,32 +284,29 @@ public class PrefixCommands implements CommandExecutor {
 					return true;
 				}
 				// With economy
-				else if (plugin.economy != null) {
-					// Charge costs :)
-					if (cost > 0) {
-						// Charge player unless he has the free permissions
-						if (!sender.hasPermission("prefixer.free")) {
-							// Enough money?
-							if (plugin.economy.getBalance(senderName) < cost) {
-								// Tell and return
-								message = plugin.localization.getString("not_enough_money_1");
-								plugin.message(sender, null, message, null, null, null, null);
-								message = plugin.localization.getString("not_enough_money_2");
-								plugin.message(sender, null, message, null, null, null, cost);
-								return true;
-							}
-							else {
-								plugin.economy.withdrawPlayer(senderName, cost);
-								message = plugin.localization.getString("charged");
-								plugin.message(sender, null, message, null, null, null, cost);
-							}
+				else if (plugin.economy != null && cost > 0) {
+					// Charge player unless he has the free permissions
+					if (!sender.hasPermission("prefixer.free")) {
+						// Enough money?
+						if (plugin.economy.getBalance(senderName) < cost) {
+							// Tell and return
+							message = plugin.localization.getString("not_enough_money_1");
+							plugin.message(sender, null, message, null, null, null, null);
+							message = plugin.localization.getString("not_enough_money_2");
+							plugin.message(sender, null, message, null, null, null, cost);
+							return true;
 						}
-						// Set prefix and notify sender
-						actions.set(senderName, prefix, world, pluginPart);
-						message = plugin.localization.getString("changed_prefix_self");
-						plugin.message(sender, null, message, actions.replaceThings(prefix), world, null, null);
-						return true;
+						else {
+							plugin.economy.withdrawPlayer(senderName, cost);
+							message = plugin.localization.getString("charged");
+							plugin.message(sender, null, message, null, null, null, cost);
+						}
 					}
+					// Set prefix and notify sender
+					actions.set(senderName, prefix, world, pluginPart);
+					message = plugin.localization.getString("changed_prefix_self");
+					plugin.message(sender, null, message, actions.replaceThings(prefix), world, null, null);
+					return true;
 				}
 			}
 			// Prefixing other

@@ -72,7 +72,7 @@ public class ColorMe extends JavaPlugin {
 	public Economy economy = null;
 	public FileConfiguration config, players, localization, colors, group;
 	public File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile, debugFile, groupsFile;
-	public boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, Prefixer, Suffixer, globalSuffix, globalPrefix, globalColor;
+	public boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, prefixer, suffixer, globalSuffix, globalPrefix, globalColor;
 	public boolean chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist, tagAPI, useLegacyFormat, chatBrackets = true;
 	public boolean groups, ownSystem, pex, bPermissions, groupManager, softMode, otherChatPluginFound, autoChatColor, factions, removeNameAboveHead;
 	public int prefixLengthMax, suffixLengthMax, prefixLengthMin, suffixLengthMin;
@@ -692,8 +692,8 @@ public class ColorMe extends JavaPlugin {
 
 	// Maybe something changed on the fly
 	private void checkParts() {
-		Suffixer = config.getBoolean("Suffixer");
-		Prefixer = config.getBoolean("Prefixer");
+		suffixer = config.getBoolean("Suffixer");
+		prefixer = config.getBoolean("Prefixer");
 		displayName = config.getBoolean("ColorMe.displayName");
 		tabList = config.getBoolean("ColorMe.tabList");
 		playerTitle = config.getBoolean("ColorMe.playerTitle");
@@ -720,8 +720,8 @@ public class ColorMe extends JavaPlugin {
 		format = config.getString("format");
 		chatBrackets = config.getBoolean("chatBrackets");
 		if (debug) {
-			logDebug("Suffixer is " + Suffixer);
-			logDebug("Prefixer is " + Prefixer);
+			logDebug("Suffixer is " + suffixer);
+			logDebug("Prefixer is " + prefixer);
 			logDebug("tabList is " + tabList);
 			logDebug("displayName is " + displayName);
 			logDebug("playerTitle is " + playerTitle);
@@ -750,8 +750,8 @@ public class ColorMe extends JavaPlugin {
 
 	// Used for Metrics
 	private void checkStatsStuff() {
-		if (Prefixer) values.add("Prefixer");
-		if (Suffixer) values.add("Suffixer");
+		if (prefixer) values.add("Prefixer");
+		if (suffixer) values.add("Suffixer");
 		if (displayName) values.add("ColorMe - displayName");
 		if (tabList) values.add("ColorMe - tabList");
 		if (playerTitle) values.add("ColorMe - playerTitle");
