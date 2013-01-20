@@ -7,6 +7,9 @@
 	<name>ColorMe</name>
 	<url>http://dev.bukkit.org/server-mods/colorme</url>
 	<description>Allows coloring, prefixing and suffixing in the chat</description>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<repositories>
 		<repository>
 			<id>vault-repo</id>
@@ -31,7 +34,7 @@
 		</repository>
 	</repositories>
 	<build>
-		<defaultGoal>install</defaultGoal>
+		<defaultGoal>clean compile package</defaultGoal>
 		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
 		<plugins>
 			<plugin>
