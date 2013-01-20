@@ -111,8 +111,17 @@ public class ColorMe extends JavaPlugin {
 
 		// Config
 		configFile = new File(getDataFolder(), "config.yml");
+		// One file and the folder not existent
+		if (!configFile.exists() && !configFile.getParentFile().exists()) {
+			// Break if no folder can be created!
+			if (!configFile.getParentFile().mkdirs()) {
+				getLogger().severe("The config folder could NOT be created, make sure it's writable!");
+				getLogger().severe("Disabling now!");
+				setEnabled(false);
+				return;
+			}
+		}
 		if (!configFile.exists()) {
-			configFile.getParentFile().mkdirs();
 			copy(getResource("config.yml"), configFile);
 		}
 		config = getConfig();
@@ -129,7 +138,6 @@ public class ColorMe extends JavaPlugin {
 		// Copy if the players.yml doesn't exist
 		if (!playersFile.exists()) {
 			logDebug("players.yml didn't exist, creating one");
-			playersFile.getParentFile().mkdirs();
 			copy(getResource("players.yml"), playersFile);
 		}
 		// Try to load
@@ -140,7 +148,6 @@ public class ColorMe extends JavaPlugin {
 		// Copy if the custom colors doesn't exist
 		if (!colorsFile.exists()) {
 			logDebug("colors.yml didn't exist, creating one");
-			colorsFile.getParentFile().mkdirs();
 			copy(getResource("colors.yml"), colorsFile);
 		}
 		// Try to load
@@ -150,7 +157,6 @@ public class ColorMe extends JavaPlugin {
 		localizationFile = new File(getDataFolder(), "localization.yml");
 		if(!localizationFile.exists()) {
 			logDebug("localization.yml didn't exist, creating one");
-			localizationFile.getParentFile().mkdirs();
 			copy(getResource("localization.yml"), localizationFile);
 		}
 		// Try to load
@@ -162,18 +168,16 @@ public class ColorMe extends JavaPlugin {
 		// Copy if the groups.yml doesn't exist
 		if (!groupsFile.exists()) {
 			logDebug("groups.yml didn't exist, creating one");
-			groupsFile.getParentFile().mkdirs();
 			copy(getResource("groups.yml"), groupsFile);
 		}
 		// Try to load
 		group = YamlConfiguration.loadConfiguration(groupsFile);
-		
+
 		if (config.getBoolean("useWordBlacklist")) {
 			// BannedWords file
 			bannedWordsFile = new File(getDataFolder(), "bannedWords.txt");
 			if(!bannedWordsFile.exists()) {
 				logDebug("bannedWords.txt didn't exist, creating one");
-				bannedWordsFile.getParentFile().mkdirs();
 				copy(getResource("bannedWords.txt"), bannedWordsFile);
 			}
 			// Try to load
@@ -210,7 +214,7 @@ public class ColorMe extends JavaPlugin {
 		// Refer to SuffixCommands
 		suffixExecutor = new SuffixCommands(this, actions);
 		getCommand("suffix").setExecutor(suffixExecutor);
-		
+
 		// Refer to GroupCommands
 		groupExecutor = new GroupCommands(this, actions);
 		getCommand("groups").setExecutor(groupExecutor);
@@ -281,7 +285,7 @@ public class ColorMe extends JavaPlugin {
 			logDebug("Groups disabled");
 			getLogger().info("Groups disabled.");
 		}
-		
+
 		// SoftMode
 		if (softMode) {
 			logDebug("SoftMode enabled");
@@ -335,7 +339,7 @@ public class ColorMe extends JavaPlugin {
 			logDebug("SoftMode disabled");
 			getLogger().info("SoftMode disabled. Trying to override other chat plugins.");
 		}
-		
+
 		if (playerTitleWithoutSpout) {
 			Plugin tagAPIPlugin = getServer().getPluginManager().getPlugin("TagAPI");
 			if (tagAPIPlugin != null) {
@@ -349,7 +353,7 @@ public class ColorMe extends JavaPlugin {
 				logDebug("TagAPI not found");
 			}
 		}
-		
+
 		// Prevent ASync calls
 		mainThread = Thread.currentThread();
 
@@ -462,8 +466,11 @@ public class ColorMe extends JavaPlugin {
 			reader.close();
 			writer.flush();
 			writer.close();
-			config.delete();
-			tempFile.renameTo(config);
+			if (config.delete()) {
+				if (tempFile.renameTo(config));
+				else getLogger().warning("The tempFile could not be renamed while updating");
+			}
+			else getLogger().warning("Config could not be deleted while updating!");
 		}
 	}
 
@@ -675,7 +682,7 @@ public class ColorMe extends JavaPlugin {
 			loadBannedWords();
 			checkParts();
 			if (tagAPI && playerTitleWithoutSpout) {
-			for (Player p : getServer().getOnlinePlayers()) {
+				for (Player p : getServer().getOnlinePlayers()) {
 					TagAPI.refreshPlayer(p);
 				}
 			}

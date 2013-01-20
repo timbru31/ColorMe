@@ -200,11 +200,12 @@ public class GroupCommands implements CommandExecutor {
 			if (sender.hasPermission("groups.grouplist")) {
 				message = plugin.localization.getString("grouplist");
 				plugin.message(sender, null, message, null, null, null, null);
-				String groups = "";
+				StringBuffer buf = new StringBuffer();
 				// Iterate through the groups
 				for (String key : plugin.group.getKeys(false)) {
-					groups += key + ", ";
+					buf.append(key + ", ");
 				}
+				String groups = buf.toString();
 				// If groups is still empty change message, else replace last ","
 				if (groups.equalsIgnoreCase("")) groups = actions.replaceThings(plugin.localization.getString("no_groups"));
 				else groups = groups.substring(0, (groups.length() -2));

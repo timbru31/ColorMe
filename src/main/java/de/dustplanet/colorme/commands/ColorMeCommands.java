@@ -301,7 +301,7 @@ public class ColorMeCommands implements CommandExecutor {
 					return true;
 				}
 				// With economy
-				else if (plugin.economy != null) {
+				else {
 					if (color.equalsIgnoreCase("white")) {
 						actions.set(senderName, color, world, pluginPart);
 						actions.checkNames(senderName, world);

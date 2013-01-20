@@ -287,7 +287,7 @@ public class SuffixCommands implements CommandExecutor {
 					return true;
 				}
 				// With economy
-				else if (plugin.economy != null && cost > 0) {
+				else if (cost > 0) {
 					// Charge player unless he has the free permissions
 					if (!sender.hasPermission("suffixer.free")) {
 						// Enough money?

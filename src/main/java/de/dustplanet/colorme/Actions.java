@@ -24,6 +24,7 @@ import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 
 public class Actions {
 	public ColorMe plugin;
+	private static final String RAINBOW[] = {"DARK_RED", "RED", "GOLD", "YELLOW", "GREEN", "DARK_GREEN", "AQUA", "DARK_AQUA", "BLUE", "DARK_BLUE", "LIGHT_PURPLE", "DARK_PURPLE"};
 
 	public Actions(ColorMe instance) {
 		plugin = instance;
@@ -407,15 +408,15 @@ public class Actions {
 	public String randomColor(String name) {
 		plugin.logDebug("Actions -> randomColor");
 		plugin.logDebug("Asked to color the string " + name);
-		String newName = "";
+		StringBuffer buf = new StringBuffer();
 		// As long as the length of the name isn't reached
 		for (char ch : name.toCharArray()) {
 			// Roll the dice between 0 and 16 ;)
 			int x = (int) (Math.random() * ChatColor.values().length);
 			// Color the character
-			newName += ChatColor.values()[x] + Character.toString(ch);
+			buf.append(ChatColor.values()[x] + Character.toString(ch));
 		}
-		return newName;
+		return buf.toString();
 	}
 
 	// Used to create a rainbow effect
@@ -429,18 +430,17 @@ public class Actions {
 		plugin.logDebug("Actions -> rainbowColor");
 		plugin.logDebug("Asked to color the string " + name);
 		// Had to store the rainbow manually. Why did Mojang store it so..., forget it
-		String newName = "";
-		String rainbow[] = {"DARK_RED", "RED", "GOLD", "YELLOW", "GREEN", "DARK_GREEN", "AQUA", "DARK_AQUA", "BLUE", "DARK_BLUE", "LIGHT_PURPLE", "DARK_PURPLE"};
 		// As long as the length of the name isn't reached
 		int z = 0;
+		StringBuffer buf = new StringBuffer();
 		for (char ch : name.toCharArray()) {
 			// Reset if z reaches 12
 			if (z == 12) z = 0;
 			// Add to the new name the colored character
-			newName += ChatColor.valueOf(rainbow[z]) + Character.toString(ch);
+			buf.append(ChatColor.valueOf(RAINBOW[z]) + Character.toString(ch));
 			z++;
 		}
-		return newName;
+		return buf.toString();
 	}
 
 	// Make the custom colors!
@@ -454,19 +454,19 @@ public class Actions {
 		plugin.logDebug("Actions -> updateCustomColor");
 		plugin.logDebug("Asked to color the string " + text + " with the color " + color);
 		// Get color
-		String updatedText = "";
 		String colorChars = ChatColor.translateAlternateColorCodes('\u0026', plugin.colors.getString(color));
 		// No section sign or ampersand? Not valid; doesn't start with section sign? Not valid! Ending without a char? Not valid!
 		if (!colorChars.contains("\u00A7") || colorChars.contains("\u0026") || !colorChars.startsWith("\u00A7") || colorChars.endsWith("\u00A7")) return text;
 		// Split the color values
 		String colorValues[] = colorChars.split(",");
 		// For the text length
+		StringBuffer buf = new StringBuffer();
 		for (int i = 0, x = 0; i < text.length(); i++, x++) {
 			// No colors left? -> Start from 0
 			if (x == colorValues.length) x = 0;
-			updatedText += colorValues[x] + text.charAt(i);
+			buf.append(colorValues[x] + text.charAt(i));
 		}
-		return updatedText;
+		return buf.toString();
 	}
 
 	// Replace all in a String
@@ -851,7 +851,7 @@ public class Actions {
 		plugin.logDebug("Actions -> listColors");
 		String message = plugin.localization.getString("color_list");
 		plugin.message(sender, null, message, null, null, null, null);
-		String msg = "";
+		StringBuffer buf = new StringBuffer();
 		// As long as all colors aren't reached, including magic manual
 		for (ChatColor value : ChatColor.values()) {
 			// get the name from the integer
@@ -863,21 +863,21 @@ public class Actions {
 			if (colorChar.equalsIgnoreCase("k")) continue;
 			// color the name of the color
 			if (plugin.config.getBoolean("colors." + color)) {
-				msg += ChatColor.valueOf(color.toUpperCase()) + color + " (\u0026" + colorChar + ") " + ChatColor.WHITE;
+				buf.append(ChatColor.valueOf(color.toUpperCase()) + color + " (\u0026" + colorChar + ") " + ChatColor.WHITE);
 			}
 		}
-		if (plugin.config.getBoolean("colors.strikethrough")) msg += ChatColor.STRIKETHROUGH + "striketrough" + ChatColor.WHITE + " (\u0026m) ";
-		if (plugin.config.getBoolean("colors.underline")) msg += ChatColor.UNDERLINE + "underline" + ChatColor.WHITE + " (\u0026n) ";
-		if (plugin.config.getBoolean("colors.magic")) msg += "magic (" + ChatColor.MAGIC + "a" + ChatColor.WHITE + ", \u0026k) ";
+		if (plugin.config.getBoolean("colors.strikethrough")) buf.append(ChatColor.STRIKETHROUGH + "striketrough" + ChatColor.WHITE + " (\u0026m) ");
+		if (plugin.config.getBoolean("colors.underline")) buf.append(ChatColor.UNDERLINE + "underline" + ChatColor.WHITE + " (\u0026n) ");
+		if (plugin.config.getBoolean("colors.magic")) buf.append("magic (" + ChatColor.MAGIC + "a" + ChatColor.WHITE + ", \u0026k) ");
 		// Include custom colors
-		if (plugin.config.getBoolean("colors.random")) msg += randomColor("random (\u0026random)" + " ");
-		if (plugin.config.getBoolean("colors.rainbow")) msg += rainbowColor("rainbow (\u0026rainbow)") + " ";
+		if (plugin.config.getBoolean("colors.random"))buf.append(randomColor("random (\u0026random)" + " "));
+		if (plugin.config.getBoolean("colors.rainbow")) buf.append(rainbowColor("rainbow (\u0026rainbow)") + " ");
 		if (plugin.config.getBoolean("colors.custom"))	{
-			msg += ChatColor.RESET;
-			for (String color : plugin.colors.getKeys(false)) msg += color + " ";
+			buf.append(ChatColor.RESET);
+			for (String color : plugin.colors.getKeys(false)) buf.append(color + " ");
 		}
-		if (plugin.config.getBoolean("colors.mixed")) msg += ChatColor.RESET + "" + ChatColor.DARK_RED + "\nMixed colors are enabled. Example: blue-bold";
-		sender.sendMessage(msg);
+		if (plugin.config.getBoolean("colors.mixed")) buf.append(ChatColor.RESET + "" + ChatColor.DARK_RED + "\nMixed colors are enabled. Example: blue-bold");
+		sender.sendMessage(buf.toString());
 	}
 
 	// Saves a file
