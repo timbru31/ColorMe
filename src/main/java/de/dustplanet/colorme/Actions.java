@@ -579,31 +579,7 @@ public class Actions {
 			}
 		}
 		// Group check for other plugins
-		else if (plugin.groups && !plugin.ownSystem) {
-			// Case PermissionsEx
-			if (plugin.pex) {
-				PermissionUser user = PermissionsEx.getUser(name);
-				// Only first group
-				PermissionGroup group = user.getGroups(world)[0];
-				// Get the group color
-				color = group.getOption("color");
-			}
-			// Case bPermissions
-			else if (plugin.bPermissions) {
-				// Only fist group
-				if (ApiLayer.getGroups(world, CalculableType.USER, name).length > 0) {
-					String group = ApiLayer.getGroups(world, CalculableType.USER, name)[0];
-					color = ApiLayer.getValue(world, CalculableType.GROUP, group, "color");
-				}
-			}
-			// Case GroupManager
-			else if (plugin.groupManager) {
-				// World data -> then groups (only first) and finally the suffix and prefix!
-				OverloadedWorldHolder groupManager = plugin.groupManagerWorldsHolder.getWorldData(world);
-				String group = groupManager.getUser(name).getGroupName();
-				color = groupManager.getGroup(group).getVariables().getVarString("color");
-			}
-		}
+		else if (plugin.groups && !plugin.ownSystem) color = getColorFromGroup(name, world);
 		// Then check if still nothing found and globalColor
 		if (plugin.globalColor && color == null && hasGlobal("color")) color = getGlobal("color");
 		// Restore if nothing found...
@@ -621,6 +597,41 @@ public class Actions {
 		}
 		// Update the name
 		updateName(name, color);
+	}
+
+	// Check the third party plugins for a color
+	/**
+	 * Try to get the color from a specific group from either bPermissions, PermisisonsEx or GroupManager
+	 * @param name
+	 * @param world
+	 * @return
+	 */
+	public String getColorFromGroup(String name, String world) {
+		String color = null;
+		// Case PermissionsEx
+		if (plugin.pex) {
+			PermissionUser user = PermissionsEx.getUser(name);
+			// Only first group
+			PermissionGroup group = user.getGroups(world)[0];
+			// Get the group color
+			color = group.getOption("color");
+		}
+		// Case bPermissions
+		else if (plugin.bPermissions) {
+			// Only fist group
+			if (ApiLayer.getGroups(world, CalculableType.USER, name).length > 0) {
+				String group = ApiLayer.getGroups(world, CalculableType.USER, name)[0];
+				color = ApiLayer.getValue(world, CalculableType.GROUP, group, "color");
+			}
+		}
+		// Case GroupManager
+		else if (plugin.groupManager) {
+			// World data -> then groups (only first) and finally the suffix and prefix!
+			OverloadedWorldHolder groupManager = plugin.groupManagerWorldsHolder.getWorldData(world);
+			String group = groupManager.getUser(name).getGroupName();
+			color = groupManager.getGroup(group).getVariables().getVarString("color");
+		}
+		return color;
 	}
 
 	// Update the displayName, tabName, title, prefix and suffix in a specific world (after setting, removing and onJoin)

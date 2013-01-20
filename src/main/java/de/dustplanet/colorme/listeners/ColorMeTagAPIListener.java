@@ -7,15 +7,6 @@ import de.dustplanet.colorme.Actions;
 import de.dustplanet.colorme.ColorMe;
 // TagAPI
 import org.kitteh.tag.PlayerReceiveNameTagEvent;
-// PermissionsEx
-import ru.tehkode.permissions.PermissionGroup;
-import ru.tehkode.permissions.PermissionUser;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
-// bPermissions
-import de.bananaco.bpermissions.api.ApiLayer;
-import de.bananaco.bpermissions.api.CalculableType;
-// GroupManager
-import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 
 /**
  * ColorMe for CraftBukkit/Bukkit
@@ -71,26 +62,7 @@ public class ColorMeTagAPIListener implements Listener {
 						else if (actions.hasGroup(group, "default", "colors")) color = actions.getGroup(group, "default", "colors");
 					}
 				}
-				else if (plugin.pex) {
-					PermissionUser user = PermissionsEx.getUser(name);
-					// Only first group
-					PermissionGroup group = user.getGroups(world)[0];
-					// Get the group color
-					color = group.getOption("color");
-				}
-				else if (plugin.bPermissions) {
-					// Only fist group
-					if (ApiLayer.getGroups(world, CalculableType.USER, name).length > 0) {
-						String group = ApiLayer.getGroups(world, CalculableType.USER, name)[0];
-						color = ApiLayer.getValue(world, CalculableType.GROUP, group, "color");
-					}
-				}
-				else if (plugin.groupManager) {
-					// World data -> then groups (only first) & finally the suffix & prefix!
-					OverloadedWorldHolder groupManager = plugin.groupManagerWorldsHolder.getWorldData(world);
-					String group = groupManager.getUser(name).getGroupName();
-					color = groupManager.getGroup(group).getVariables().getVarString("color");
-				}
+				color = actions.getColorFromGroup(name, world);
 			}
 			// Then check if still nothing found and globalColor
 			if (plugin.globalColor && color == null && actions.hasGlobal("color")) color = actions.getGlobal("color");
