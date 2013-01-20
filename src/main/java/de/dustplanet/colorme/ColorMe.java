@@ -3,14 +3,14 @@ package de.dustplanet.colorme;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -409,7 +409,7 @@ public class ColorMe extends JavaPlugin {
 	public void logDebug(String string) {
 		if (debug) {
 			try {
-				PrintWriter writer = new PrintWriter(new FileWriter(debugFile, true), true);
+				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(debugFile, true), "UTF-8"));
 				if (string.equals("")) {
 					writer.write(System.getProperty("line.separator"));
 				}
@@ -421,6 +421,7 @@ public class ColorMe extends JavaPlugin {
 					writer.write(time + " [ColorMe Debug] " + string);
 					writer.write(System.getProperty("line.separator"));
 				}
+				writer.flush();
 				writer.close();
 			}
 			catch (IOException e) {
@@ -446,9 +447,9 @@ public class ColorMe extends JavaPlugin {
 
 	// Remove empty lines
 	private void removeEmptyLines(File config) throws IOException, FileNotFoundException {
-		BufferedReader reader = new BufferedReader(new FileReader(config));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(config), "UTF-8"));
 		File tempFile = new File(getDataFolder(), "temp.txt");
-		BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempFile, true), "UTF-8"));
 		String line;
 		try {
 			while ((line = reader.readLine()) != null) {
@@ -476,7 +477,7 @@ public class ColorMe extends JavaPlugin {
 
 	// Load the banned words
 	private void loadBannedWords() throws IOException{
-		BufferedReader reader = new BufferedReader(new FileReader(bannedWordsFile));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(bannedWordsFile), "UTF-8"));
 		String line;
 		while ((line = reader.readLine()) != null) {
 			if (line.isEmpty()) continue;
