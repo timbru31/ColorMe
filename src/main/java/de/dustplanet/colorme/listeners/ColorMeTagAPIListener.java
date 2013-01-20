@@ -96,7 +96,7 @@ public class ColorMeTagAPIListener implements Listener {
 			if (plugin.globalColor && color == null && actions.hasGlobal("color")) color = actions.getGlobal("color");
 			
 			// Additional null check
-			if (color == null || color == "") color = "WHITE";
+			if (color == null || color.equals("")) color = "WHITE";
 			
 			// Check if valid
 			String[] colors = color.split("-");
@@ -126,7 +126,7 @@ public class ColorMeTagAPIListener implements Listener {
 				}
 				name = ChatColor.valueOf(colorActual.toUpperCase()) + name;
 			}
-			if (name != "" && name != null) event.setTag(name);
+			if (name != null && !name.equals("")) event.setTag(name);
 		}
 	}
 }

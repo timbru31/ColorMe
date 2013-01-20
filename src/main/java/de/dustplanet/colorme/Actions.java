@@ -699,7 +699,7 @@ public class Actions {
 					else newDisplayName = ChatColor.valueOf(colorPart.toUpperCase()) + newDisplayName;
 				}
 				// Shorten it, if too long
-				if (!newDisplayName.equals("") && newDisplayName != null) {
+				if (newDisplayName != null && !newDisplayName.equals("")) {
 					if (newDisplayName.length() > 16) {
 						newDisplayName = newDisplayName.substring(0, 12) + ChatColor.WHITE + "..";
 					}

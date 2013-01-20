@@ -217,7 +217,7 @@ public class ColorMe extends JavaPlugin {
 
 		// Check for Vault
 		Plugin vault = getServer().getPluginManager().getPlugin("Vault");
-		if (vault != null & vault instanceof Vault) {
+		if (vault != null && vault instanceof Vault) {
 			// If Vault is enabled, load the economy
 			getLogger().info("Loaded Vault successfully");
 			logDebug("Vault hooked and loaded");
