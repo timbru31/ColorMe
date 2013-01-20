@@ -112,12 +112,12 @@ public class ColorMeTagAPIListener implements Listener {
 					}
 					else {
 						String colorChars = ChatColor.translateAlternateColorCodes('\u0026', plugin.colors.getString(colorActual));
-						// No § or &? Not valid; doesn't start with §? Not valid! Ending without a char? Not valid!
+						// No section sign or ampersand? Not valid; doesn't start with a section sign? Not valid! Ending without a char? Not valid!
 						if (!colorChars.contains("\u00A7") || colorChars.contains("\u0026") || !colorChars.startsWith("\u00A7") || colorChars.endsWith("\u00A7")) colorActual = "white";
 						// Split the color values
 						else {
 							String colorValues[] = colorChars.split(",");
-							// Special here, since we aleady have got the § sign!
+							// Special here, since we already have got the section sign sign!
 							colorActual = colorValues[0];
 							name = colorActual + name;
 							continue;

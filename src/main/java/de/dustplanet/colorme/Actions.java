@@ -456,7 +456,7 @@ public class Actions {
 		// Get color
 		String updatedText = "";
 		String colorChars = ChatColor.translateAlternateColorCodes('\u0026', plugin.colors.getString(color));
-		// No § or &? Not valid; doesn't start with §? Not valid! Ending without a char? Not valid!
+		// No section sign or ampersand? Not valid; doesn't start with section sign? Not valid! Ending without a char? Not valid!
 		if (!colorChars.contains("\u00A7") || colorChars.contains("\u0026") || !colorChars.startsWith("\u00A7") || colorChars.endsWith("\u00A7")) return text;
 		// Split the color values
 		String colorValues[] = colorChars.split(",");
@@ -485,7 +485,7 @@ public class Actions {
 			int i = string.indexOf("\u0026random") + 7;
 			int z = string.length();
 			sub = string.substring(i, z);
-			// Stop if other & or § is found
+			// Stop if other ampersand or section sign is found
 			if (sub.contains("\u0026")) sub = sub.substring(0, sub.indexOf("\u0026"));
 			if (sub.contains("\u00A7")) sub = sub.substring(0, sub.indexOf("\u00A7"));
 			// Replace
@@ -500,7 +500,7 @@ public class Actions {
 			int i = string.indexOf("\u0026ran") + 4;
 			int z = string.length();
 			sub = string.substring(i, z);
-			// Stop if other & or § is found
+			// Stop if other ampersand or ï¿½ is found
 			if (sub.contains("\u0026")) sub = sub.substring(0, sub.indexOf("\u0026"));
 			if (sub.contains("\u00A7")) sub = sub.substring(0, sub.indexOf("\u00A7"));
 			// Replace
@@ -515,7 +515,7 @@ public class Actions {
 			int i = string.indexOf("\u0026rainbow") + 8;
 			int z = string.length();
 			sub = string.substring(i, z);
-			// Stop if other & or § is found
+			// Stop if other ampersand or section sign is found
 			if (sub.contains("\u0026")) sub = sub.substring(0, sub.indexOf("\u0026"));
 			if (sub.contains("\u00A7")) sub = sub.substring(0, sub.indexOf("\u00A7"));
 			// Replace
@@ -530,7 +530,7 @@ public class Actions {
 			int i = string.indexOf("\u0026rai") + 4;
 			int z = string.length();
 			sub = string.substring(i, z);
-			// Stop if other & or § is found
+			// Stop if other ampersand or section sign is found
 			if (sub.contains("\u0026")) sub = sub.substring(0, sub.indexOf("\u0026"));
 			if (sub.contains("\u00A7")) sub = sub.substring(0, sub.indexOf("\u00A7"));
 			// Replace
@@ -598,7 +598,7 @@ public class Actions {
 			}
 			// Case GroupManager
 			else if (plugin.groupManager) {
-				// World data -> then groups (only first) & finally the suffix & prefix!
+				// World data -> then groups (only first) and finally the suffix and prefix!
 				OverloadedWorldHolder groupManager = plugin.groupManagerWorldsHolder.getWorldData(world);
 				String group = groupManager.getUser(name).getGroupName();
 				color = groupManager.getGroup(group).getVariables().getVarString("color");
@@ -623,7 +623,7 @@ public class Actions {
 		updateName(name, color);
 	}
 
-	// Update the displayName, tabName, title, prefix & suffix in a specific world (after setting, removing and onJoin)
+	// Update the displayName, tabName, title, prefix and suffix in a specific world (after setting, removing and onJoin)
 	/**
 	 * Updates the display name, tab list or the name above the head of a player
 	 * @param name - the name of the player

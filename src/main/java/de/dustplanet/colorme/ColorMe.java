@@ -41,6 +41,7 @@ import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 // TagAPI
 import org.kitteh.tag.TagAPI;
+import org.mcstats.Metrics;
 
 
 /**

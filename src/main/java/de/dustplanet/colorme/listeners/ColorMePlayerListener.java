@@ -52,7 +52,7 @@ public class ColorMePlayerListener implements Listener {
 		String world = player.getWorld().getName().toLowerCase();
 		// New color onJoin?
 		if (plugin.newColorOnJoin) {
-			// Normal colors + rainbow & random
+			// Normal colors + rainbow and random
 			int customColors = plugin.colors.getKeys(false).size();
 			int colors = ChatColor.values().length;
 			int color = (int) (Math.random()* ((colors + 2 + customColors)));
@@ -167,7 +167,7 @@ public class ColorMePlayerListener implements Listener {
 				}
 			}
 			else if (plugin.groupManager) {
-				// World data -> then groups (only first) & finally the suffix & prefix!
+				// World data -> then groups (only first) and finally the suffix and prefix!
 				OverloadedWorldHolder groupManager = plugin.groupManagerWorldsHolder.getWorldData(world);
 				String group = groupManager.getUser(nameExact).getGroupName();
 				groupPrefix = actions.replaceThings(groupManager.getGroup(group).getVariables().getVarString("prefix"));
@@ -288,7 +288,7 @@ public class ColorMePlayerListener implements Listener {
 			// Should the chat be auto colored?
 			if (plugin.autoChatColor && !event.getMessage().contains("\u00A7")) {
 				String message = event.getMessage();
-				// Support for random & rainbow
+				// Support for random and rainbow
 				if (player.hasPermission("colorme.autochatcolor.rainbow")) {
 					event.setMessage(actions.rainbowColor(message));
 				}
