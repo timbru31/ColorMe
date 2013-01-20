@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -375,7 +374,9 @@ public class ColorMe extends JavaPlugin {
 			}
 			metrics.start();
 		}
-		catch (IOException e) {}
+		catch (IOException e) {
+			getLogger().warning("Could not start Metrics!");
+		}
 
 		logDebug("ColorMe enabled");
 		logDebug("");
@@ -393,9 +394,10 @@ public class ColorMe extends JavaPlugin {
 			}
 			out.close();
 			in.close();
-		}
-		catch (IOException e) {
-			getLogger().warning("An error occured while copying the default file! IO Exception");
+		} catch (FileNotFoundException e) {
+			getLogger().warning("Failed to copy the default config! (FileNotFound)");
+		} catch (IOException e) {
+			getLogger().warning("Failed to copy the default config! (I/O)");
 		}
 	}
 
@@ -426,7 +428,7 @@ public class ColorMe extends JavaPlugin {
 	// Check if debug is enabled and if a file needs to be created
 	private void checkDebug() {
 		if (debug) {
-			debugFile = new File(Bukkit.getServer().getPluginManager().getPlugin("ColorMe").getDataFolder(), "debug.log");
+			debugFile = new File(getServer().getPluginManager().getPlugin("ColorMe").getDataFolder(), "debug.log");
 			if (!debugFile.exists()) {
 				try {
 					debugFile.createNewFile();
@@ -673,7 +675,7 @@ public class ColorMe extends JavaPlugin {
 			loadBannedWords();
 			checkParts();
 			if (tagAPI && playerTitleWithoutSpout) {
-			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+			for (Player p : getServer().getOnlinePlayers()) {
 					TagAPI.refreshPlayer(p);
 				}
 			}
