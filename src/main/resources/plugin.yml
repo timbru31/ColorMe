@@ -1,6 +1,6 @@
 name: ColorMe
 main: de.dustplanet.colorme.ColorMe
-version: ${project.version}
+version: ${project.version}-b${BUILD_NUMBER}
 author: xGhOsTkiLLeRx
 authors: [Valrix]
 website: http://bit.ly/bukkitdevcolorme
