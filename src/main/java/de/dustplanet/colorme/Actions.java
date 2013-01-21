@@ -656,7 +656,7 @@ public class Actions {
 			player.setDisplayName(cleanDisplayName);
 			// When we set if for the tabList we need to make sure the displayName is not too long (could be changed by other plugins!)
 			if (cleanDisplayName.length() > 16) {
-				String tempDispName = cleanDisplayName.substring(0, 14) + "..";
+				String tempDispName = cleanDisplayName.substring(0, 13) + "...";
 				player.setPlayerListName(tempDispName);
 			}
 			else player.setPlayerListName(cleanDisplayName);
@@ -715,7 +715,7 @@ public class Actions {
 				// Shorten it, if too long
 				if (newDisplayName != null && !newDisplayName.equals("")) {
 					if (newDisplayName.length() > 16) {
-						newDisplayName = newDisplayName.substring(0, 12) + ChatColor.WHITE + "..";
+						newDisplayName = newDisplayName.substring(0, 13) + "...";
 					}
 					player.setPlayerListName(newDisplayName);
 				}
