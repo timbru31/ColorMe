@@ -429,7 +429,6 @@ public class Actions {
 	public String rainbowColor(String name) {
 		plugin.logDebug("Actions -> rainbowColor");
 		plugin.logDebug("Asked to color the string " + name);
-		// Had to store the rainbow manually. Why did Mojang store it so..., forget it
 		// As long as the length of the name isn't reached
 		int z = 0;
 		StringBuffer buf = new StringBuffer();
@@ -657,7 +656,7 @@ public class Actions {
 			player.setDisplayName(cleanDisplayName);
 			// When we set if for the tabList we need to make sure the displayName is not too long (could be changed by other plugins!)
 			if (cleanDisplayName.length() > 16) {
-				String tempDispName = cleanDisplayName.substring(0, 13) + "..";
+				String tempDispName = cleanDisplayName.substring(0, 14) + "..";
 				player.setPlayerListName(tempDispName);
 			}
 			else player.setPlayerListName(cleanDisplayName);
@@ -683,6 +682,8 @@ public class Actions {
 			// Check for Spout
 			if (plugin.spoutEnabled && plugin.playerTitle && player.hasPermission("plugin.nametag")) {
 				SpoutPlayer spoutPlayer = (SpoutPlayer) player;
+				// reset displayName
+				newDisplayName = cleanDisplayName;
 				for (String colorPart : colors) {
 					// Random
 					if (colorPart.equalsIgnoreCase("random")) newDisplayName = randomColor(cleanDisplayName);
@@ -698,6 +699,8 @@ public class Actions {
 			}
 			// Check for playerList
 			if (plugin.tabList) {
+				// reset displayName
+				newDisplayName = cleanDisplayName;
 				for (String colorPart : colors) {
 					// Random
 					if (colorPart.equalsIgnoreCase("random")) newDisplayName = randomColor(cleanDisplayName);
