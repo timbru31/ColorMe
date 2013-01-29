@@ -1,6 +1,7 @@
 package de.dustplanet.colorme.listeners;
 
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import de.dustplanet.colorme.Actions;
@@ -15,7 +16,7 @@ public class ColorMeBlockListener implements Listener {
 		actions = actionsInstance;
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onSignChange(SignChangeEvent event) {
 		if (!plugin.signColors || !event.getPlayer().hasPermission("colorme.sign")) return;
 		// 4 lines a sign
