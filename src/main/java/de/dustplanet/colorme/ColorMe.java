@@ -112,9 +112,9 @@ public class ColorMe extends JavaPlugin {
 		// Config
 		configFile = new File(getDataFolder(), "config.yml");
 		// One file and the folder not existent
-		if (!configFile.exists() && !configFile.getParentFile().exists()) {
+		if (!configFile.exists() && !getDataFolder().exists()) {
 			// Break if no folder can be created!
-			if (!configFile.getParentFile().mkdirs()) {
+			if (!getDataFolder().mkdirs()) {
 				getLogger().severe("The config folder could NOT be created, make sure it's writable!");
 				getLogger().severe("Disabling now!");
 				setEnabled(false);

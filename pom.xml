@@ -153,6 +153,7 @@
 					<include>players.yml</include>
 					<include>localization.yml</include>
 					<include>bannedWords.txt</include>
+					<include>README.txt</include>
 				</includes>
 			</resource>
 		</resources>
