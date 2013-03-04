@@ -699,9 +699,9 @@ public class ColorMe extends JavaPlugin {
 	playerTitleWithoutSpout = config.getBoolean("ColorMe.playerTitleWithoutSpout");
 	signColors = config.getBoolean("ColorMe.signColors");
 	chatColors = config.getBoolean("ColorMe.chatColors");
-	globalPrefix = config.getString("global_default." + "prefix").isEmpty();
-	globalSuffix = config.getString("global_default." + "suffix").isEmpty();
-	globalColor = config.getString("global_default." + "color").isEmpty();
+	globalPrefix = !config.getString("global_default." + "prefix").isEmpty();
+	globalSuffix = !config.getString("global_default." + "suffix").isEmpty();
+	globalColor = !config.getString("global_default." + "color").isEmpty();
 	prefixLengthMin = config.getInt("lengthLimit.Prefixer.min");
 	suffixLengthMin = config.getInt("lengthLimit.Suffixer.min");
 	prefixLengthMax = config.getInt("lengthLimit.Prefixer.max");

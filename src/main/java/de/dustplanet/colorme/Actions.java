@@ -712,69 +712,33 @@ public class Actions {
 	    }
 	    // Support for multiple colors
 	    String[] colors = color.split("-");
+	    for (String colorPart : colors) {
+		// Random
+		if (colorPart.equalsIgnoreCase("random")) {
+		    newDisplayName = randomColor(cleanDisplayName);
+		}
+		// Rainbow
+		else if (colorPart.equalsIgnoreCase("rainbow")) {
+		    newDisplayName = rainbowColor(cleanDisplayName);
+		}
+		// Custom colors
+		else if (plugin.colors.contains(colorPart) && !plugin.colors.getString(colorPart).isEmpty()) {
+		    newDisplayName = updateCustomColor(colorPart, cleanDisplayName);
+		} else {
+		    newDisplayName = ChatColor.valueOf(colorPart.toUpperCase()) + newDisplayName;
+		}
+	    }
 	    // Name color
 	    if (plugin.displayName) {
-		for (String colorPart : colors) {
-		    // Random
-		    if (colorPart.equalsIgnoreCase("random")) {
-			newDisplayName = randomColor(cleanDisplayName);
-		    }
-		    // Rainbow
-		    else if (colorPart.equalsIgnoreCase("rainbow")) {
-			newDisplayName = rainbowColor(cleanDisplayName);
-		    }
-		    // Custom colors
-		    else if (plugin.colors.contains(colorPart) && !plugin.colors.getString(colorPart).isEmpty()) {
-			newDisplayName = updateCustomColor(colorPart, cleanDisplayName);
-		    } else {
-			newDisplayName = ChatColor.valueOf(colorPart.toUpperCase()) + newDisplayName;
-		    }
-		}
 		player.setDisplayName(newDisplayName);
 	    }
 	    // Check for Spout
 	    if (plugin.spoutEnabled && plugin.playerTitle && player.hasPermission("plugin.nametag")) {
 		SpoutPlayer spoutPlayer = (SpoutPlayer) player;
-		// reset displayName
-		newDisplayName = cleanDisplayName;
-		for (String colorPart : colors) {
-		    // Random
-		    if (colorPart.equalsIgnoreCase("random")) {
-			newDisplayName = randomColor(cleanDisplayName);
-		    }
-		    // Rainbow
-		    else if (colorPart.equalsIgnoreCase("rainbow")) {
-			newDisplayName = rainbowColor(cleanDisplayName);
-		    }
-		    // Custom colors
-		    else if (plugin.colors.contains(colorPart) && !plugin.colors.getString(colorPart).isEmpty()) {
-			newDisplayName = updateCustomColor(colorPart, cleanDisplayName);
-		    } else {
-			newDisplayName = ChatColor.valueOf(colorPart.toUpperCase()) + newDisplayName;
-		    }
-		}
 		spoutPlayer.setTitle(newDisplayName);
 	    }
 	    // Check for playerList
 	    if (plugin.tabList) {
-		// reset displayName
-		newDisplayName = cleanDisplayName;
-		for (String colorPart : colors) {
-		    // Random
-		    if (colorPart.equalsIgnoreCase("random")) {
-			newDisplayName = randomColor(cleanDisplayName);
-		    }
-		    // Rainbow
-		    else if (colorPart.equalsIgnoreCase("rainbow")) {
-			newDisplayName = rainbowColor(cleanDisplayName);
-		    }
-		    // Custom colors
-		    else if (plugin.colors.contains(colorPart) && !plugin.colors.getString(colorPart).isEmpty()) {
-			newDisplayName = updateCustomColor(colorPart, cleanDisplayName);
-		    } else {
-			newDisplayName = ChatColor.valueOf(colorPart.toUpperCase()) + newDisplayName;
-		    }
-		}
 		// Shorten it, if too long
 		if (newDisplayName != null && !newDisplayName.equals("")) {
 		    if (newDisplayName.length() > 16) {
