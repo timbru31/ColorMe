@@ -800,12 +800,16 @@ public class ColorMe extends JavaPlugin {
     public void message(CommandSender sender, Player player, String message, String value, String world, String target, Double cost) {
 	if (message != null) {
 	    message = message.replaceAll("%world", world)
-		    .replaceAll("%color", value).replaceAll("%prefix", value)
-		    .replaceAll("%suffix", value).replaceAll("%s", value)
+		    .replaceAll("%color", value)
+		    .replaceAll("%prefix", value)
+		    .replaceAll("%suffix", value)
+		    .replaceAll("%s", value)
 		    .replaceAll("%playerName", world)
 		    .replaceAll("%player", target)
-		    .replaceAll("%groupName", value).replaceAll("%part", value)
-		    .replaceAll("%value", target).replaceAll("%version", "3.7");
+		    .replaceAll("%groupName", value)
+		    .replaceAll("%part", value)
+		    .replaceAll("%value", target)
+		    .replaceAll("%version", "3.8");
 	    message = ChatColor.translateAlternateColorCodes('\u0026', message);
 	    if (cost != null) {
 		message = message.replaceAll("%costs", Double.toString(cost));
