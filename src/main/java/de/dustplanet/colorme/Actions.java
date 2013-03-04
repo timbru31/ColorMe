@@ -3,6 +3,8 @@ package de.dustplanet.colorme;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -24,6 +26,7 @@ import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 
 public class Actions {
     public ColorMe plugin;
+    private Random rand = new Random();
     private static final String RAINBOW[] = { "DARK_RED", "RED", "GOLD", "YELLOW", "GREEN", "DARK_GREEN", "AQUA", "DARK_AQUA", "BLUE", "DARK_BLUE", "LIGHT_PURPLE", "DARK_PURPLE" };
 
     public Actions(ColorMe instance) {
@@ -95,10 +98,7 @@ public class Actions {
 	plugin.logDebug("Actions -> existsGroup");
 	plugin.logDebug("Asked if " + groupName + " exists");
 	groupName = groupName.toLowerCase();
-	if (plugin.group.contains(groupName)) {
-	    return true;
-	}
-	return false;
+	return plugin.group.contains(groupName);
     }
 
     /**
@@ -217,9 +217,7 @@ public class Actions {
 	groupName = groupName.toLowerCase();
 	if (plugin.players.contains(name + ".group")) {
 	    // If the string is the same -> return true
-	    if (groupName.equalsIgnoreCase(plugin.players.getString(name + ".group"))) {
-		return true;
-	    }
+	    return groupName.equalsIgnoreCase(plugin.players.getString(name + ".group"));
 	}
 	return false;
     }
@@ -304,7 +302,7 @@ public class Actions {
 	plugin.logDebug("Actions -> playerGetGroup");
 	plugin.logDebug("Asked for the group of " + name);
 	name = name.toLowerCase();
-	return (plugin.players.getString(name + ".group"));
+	return plugin.players.getString(name + ".group");
     }
 
     /**
@@ -419,8 +417,8 @@ public class Actions {
 	StringBuffer buf = new StringBuffer();
 	// As long as the length of the name isn't reached
 	for (char ch : name.toCharArray()) {
-	    // Roll the dice between 0 and 16 ;)
-	    int x = (int) (Math.random() * ChatColor.values().length);
+	    // Roll the dice between the chat color values
+	    int x = rand.nextInt(ChatColor.values().length);
 	    // Color the character
 	    buf.append(ChatColor.values()[x] + Character.toString(ch));
 	}
@@ -883,7 +881,7 @@ public class Actions {
 	    plugin.logDebug("Color " + color + " is enabled");
 	    return false;
 	}
-	plugin.logDebug("Color " + color + " is enabled");
+	plugin.logDebug("Color " + color + " is disabled");
 	return true;
     }
 
@@ -943,16 +941,10 @@ public class Actions {
 	    // get the name from the integer
 	    String color = value.name().toLowerCase();
 	    String colorChar = Character.toString(value.getChar());
-	    if (colorChar.equalsIgnoreCase("r")) {
-		continue;
-	    }
-	    if (colorChar.equalsIgnoreCase("n")) {
-		continue;
-	    }
-	    if (colorChar.equalsIgnoreCase("m")) {
-		continue;
-	    }
-	    if (colorChar.equalsIgnoreCase("k")) {
+	    if (colorChar.equalsIgnoreCase("r")
+		    || colorChar.equalsIgnoreCase("n")
+		    || colorChar.equalsIgnoreCase("m") 
+		    || colorChar.equalsIgnoreCase("k")) {
 		continue;
 	    }
 	    // color the name of the color

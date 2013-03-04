@@ -283,9 +283,8 @@ public class ColorMeCommands implements CommandExecutor {
 		}
 	    }
 	    // Check for name of the color
-	    // TODO
 	    String colorName = color.toLowerCase();
-	    if (plugin.colors.contains(color) && (plugin.colors.getString(color).trim().length() > 1 ? true : false) == true) {
+	    if (plugin.colors.contains(color) && !plugin.colors.getString(color).isEmpty()) {
 		colorName = "custom";
 	    }
 	    if (color.contains("-")) {
