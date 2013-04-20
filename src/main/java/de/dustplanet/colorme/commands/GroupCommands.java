@@ -260,7 +260,7 @@ public class GroupCommands implements CommandExecutor {
 		// Get the string and message
 		String result = actions.getGroup(groupName, world, part);
 		message = plugin.localization.getString("group_get_value");
-		plugin.message(sender, null, message, result, world, null, null);
+		plugin.message(sender, null, message, groupName, world, result, null);
 	    } else {
 		message = plugin.localization.getString("permission_denied");
 		plugin.message(sender, null, message, null, null, null, null);
