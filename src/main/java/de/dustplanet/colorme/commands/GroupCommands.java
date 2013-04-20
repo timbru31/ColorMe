@@ -154,6 +154,8 @@ public class GroupCommands implements CommandExecutor {
 	else if (args.length > 3 && args[0].equalsIgnoreCase("set")) {
 	    if (sender.hasPermission("groups.set")) {
 		String groupName = args[1].toLowerCase(), part = args[2].toLowerCase(), value = args[3].toLowerCase();
+		// Allow spaces, too
+		value = value.replaceAll("_", " ");
 		if (args.length > 4) {
 		    world = args[4].toLowerCase();
 		}
