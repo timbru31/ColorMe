@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -180,6 +181,7 @@ public class ColorMe extends JavaPlugin {
 	    } catch (IOException e) {
 		getLogger().warning("Failed to load the bannedWords.txt! Please report this! IOException");
 		logDebug("Failed to load the banned words");
+		logDebugException(e);
 	    }
 	}
 
@@ -189,6 +191,7 @@ public class ColorMe extends JavaPlugin {
 		removeEmptyLines(playersFile);
 	    } catch (IOException e) {
 		getLogger().warning("Failed to update the config! Please report this! IOExcpetion");
+		logDebugException(e);
 	    } finally {
 		config.set("updateConfig", false);
 		saveConfig();
@@ -355,6 +358,8 @@ public class ColorMe extends JavaPlugin {
 	    metrics.start();
 	} catch (IOException e) {
 	    getLogger().warning("Could not start Metrics!");
+	    logDebug("Metrics could not be started!");
+	    logDebugException(e);
 	}
 
 	logDebug("ColorMe enabled");
@@ -373,14 +378,17 @@ public class ColorMe extends JavaPlugin {
 	    }
 	} catch (IOException e) {
 	    getLogger().warning("Failed to copy the default config! (I/O)");
+	    logDebugException(e);
 	    e.printStackTrace();
 	} finally {
 	    try {
 		if (out != null) {
+		    out.flush();
 		    out.close();
 		}
 	    } catch (IOException e) {
 		getLogger().warning("Failed to close the streams! (I/O -> Output)");
+		logDebugException(e);
 		e.printStackTrace();
 	    }
 	    try {
@@ -389,6 +397,7 @@ public class ColorMe extends JavaPlugin {
 		}
 	    } catch (IOException e) {
 		getLogger().warning("Failed to close the streams! (I/O -> Input)");
+		logDebugException(e);
 		e.printStackTrace();
 	    }
 	}
@@ -397,8 +406,9 @@ public class ColorMe extends JavaPlugin {
     // Log into the debug file
     public void logDebug(String string) {
 	if (debug) {
+	    BufferedWriter writer = null;
 	    try {
-		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(debugFile, true), "UTF-8"));
+		writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(debugFile, true), "UTF-8"));
 		if (string.equals("")) {
 		    writer.write(System.getProperty("line.separator"));
 		} else {
@@ -409,12 +419,51 @@ public class ColorMe extends JavaPlugin {
 		    writer.write(time + " [ColorMe Debug] " + string);
 		    writer.write(System.getProperty("line.separator"));
 		}
-		writer.flush();
-		writer.close();
 	    } catch (IOException e) {
 		getLogger().warning("An error occurred while writing to the log! IOException");
+		e.printStackTrace();
+	    } finally {
+		if (writer != null) {
+		    try {
+			writer.flush();
+			writer.close();
+		    } catch (IOException e) {
+			getLogger().warning("An error occurred while writing to the log! IOException");
+			e.printStackTrace();
+		    }
+		}
 	    }
 	}
+    }
+
+    // Log a stacktrace
+    public void logDebugException(Exception ex) {
+	FileOutputStream fos = null;
+	PrintStream ps = null;
+	logDebug("-------------------");
+	try {
+	    fos = new FileOutputStream(debugFile, true);
+	    ps = new PrintStream(fos);
+	    ex.printStackTrace(ps);
+	} catch (FileNotFoundException e) {
+	    getLogger().warning("An error occurred while writing to the log! IOException");
+	    e.printStackTrace();
+	} finally {
+	    if (ps != null) {
+		ps.flush();
+		ps.close();
+	    }
+	    if (fos != null) {
+		try {
+		    fos.flush();
+		    fos.close();
+		} catch (IOException e) {
+		    getLogger().warning("An error occurred while writing to the log! IOException");
+		    e.printStackTrace();
+		}
+	    }
+	}
+	logDebug("-------------------");
     }
 
     // Check if debug is enabled and if a file needs to be created
@@ -426,6 +475,7 @@ public class ColorMe extends JavaPlugin {
 		    debugFile.createNewFile();
 		} catch (IOException e) {
 		    getLogger().warning("Failed to create the debug.log! IOException");
+		    e.printStackTrace();
 		}
 	    }
 	}
@@ -449,6 +499,7 @@ public class ColorMe extends JavaPlugin {
 	} catch (IOException e) {
 	    getLogger().warning("An error occurred while updating the config! IOException");
 	    logDebug("Failed to update the config");
+	    logDebugException(e);
 	} finally {
 	    reader.close();
 	    writer.flush();
@@ -654,6 +705,7 @@ public class ColorMe extends JavaPlugin {
 	} catch (IOException e) {
 	    getLogger().warning("Failed to save the localization! Please report this! IOException");
 	    logDebug("Failed to save the default localization");
+	    logDebugException(e);
 	}
     }
 
@@ -682,10 +734,13 @@ public class ColorMe extends JavaPlugin {
 	    logDebug("Configs and files loaded again");
 	} catch (FileNotFoundException e) {
 	    getLogger().warning("Failed to load the configs! Please report this! FileNotFoundException");
+	    logDebugException(e);
 	} catch (IOException e) {
 	    getLogger().warning("Failed to load the configs! Please report this! IOException");
+	    logDebugException(e);
 	} catch (InvalidConfigurationException e) {
 	    getLogger().warning("Failed to load the configs! Please report this! InvalidConfigurationException");
+	    logDebugException(e);
 	}
     }
 

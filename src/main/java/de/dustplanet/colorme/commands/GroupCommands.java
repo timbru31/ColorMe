@@ -196,9 +196,9 @@ public class GroupCommands implements CommandExecutor {
 		message = plugin.localization.getString("memberlist");
 		plugin.message(sender, null, message, groupName, null, null, null);
 		List<String> list = actions.listMembers(groupName);
-		if (list.isEmpty())
+		if (list.isEmpty()) {
 		    sender.sendMessage(actions.replaceThings(plugin.localization.getString("no_members")));
-		else {
+		} else {
 		    String msg = list.toString();
 		    msg = msg.substring(1, (list.size() - 1));
 		    sender.sendMessage(msg);

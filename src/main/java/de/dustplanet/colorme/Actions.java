@@ -952,6 +952,7 @@ public class Actions {
 	} catch (IOException e) {
 	    plugin.getServer().getLogger().warning("Failed to save the " + file + "! Please report this! IOException");
 	    plugin.logDebug("Failed to save");
+	    plugin.logDebugException(e);
 	}
     }
 
