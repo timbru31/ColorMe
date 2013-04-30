@@ -72,8 +72,7 @@ public class ColorMePlayerListener implements Listener {
 		    i++;
 		}
 	    } else {
-		actions.set(name, ChatColor.values()[color].name()
-			.toLowerCase(), world, pluginPart[0]);
+		actions.set(name, ChatColor.values()[color].name().toLowerCase(), world, pluginPart[0]);
 	    }
 	}
 	actions.checkNames(name, world);
@@ -248,7 +247,8 @@ public class ColorMePlayerListener implements Listener {
 			.replace("[GlobalSuffix]", globalSuffix)
 			.replace("[GroupPrefix]", groupPrefix)
 			.replace("[GroupSuffix]", groupSuffix)
-			.replace("[name]", "%1$s").replace("[message]", "%2$s");
+			.replace("[name]", "%1$s")
+			.replace("[message]", "%2$s");
 		format = ChatColor.translateAlternateColorCodes('\u0026', format);
 		if (plugin.factions && !format.contains("[FACTION]")) {
 		    format = "[FACTION]" + format;

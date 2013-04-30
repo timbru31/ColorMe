@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.dustplanet</groupId>
 	<artifactId>ColorMe</artifactId>
-	<version>3.8-SNAPSHOT</version>
+	<version>3.8.1-SNAPSHOT</version>
 	<name>ColorMe</name>
 	<url>http://dev.bukkit.org/server-mods/colorme</url>
 	<description>Allows coloring, prefixing and suffixing in the chat</description>
@@ -54,7 +54,7 @@
 		<dependency>
 			<groupId>net.milkbowl.vault</groupId>
 			<artifactId>Vault</artifactId>
-			<version>1.2.25-SNAPSHOT</version>
+			<version>1.2.26-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
