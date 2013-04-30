@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import de.dustplanet.colorme.Actions;
 import de.dustplanet.colorme.ColorMe;
@@ -83,7 +83,7 @@ public class ColorMePlayerListener implements Listener {
     // Loads the the values and set them to default one if not known
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerChatLowest(AsyncPlayerChatEvent event) {
+    public void onPlayerChatLowest(PlayerChatEvent event) {
 	if (plugin.softMode) {
 	    plugin.logDebug("\t---PlayerChatEvent LowestPriority Begin---");
 	    modifyChat(event);
@@ -93,7 +93,7 @@ public class ColorMePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onPlayerChatLow(AsyncPlayerChatEvent event) {
+    public void onPlayerChatLow(PlayerChatEvent event) {
 	if (plugin.softMode) {
 	    plugin.logDebug("\t---PlayerChatEvent LowPriority Begin---");
 	    modifyChat(event);
@@ -103,7 +103,7 @@ public class ColorMePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerChatNormal(AsyncPlayerChatEvent event) {
+    public void onPlayerChatNormal(PlayerChatEvent event) {
 	if (plugin.softMode) {
 	    plugin.logDebug("\t---PlayerChatEvent NormalPriority Begin---");
 	    modifyChat(event);
@@ -115,7 +115,7 @@ public class ColorMePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerChatHigh(AsyncPlayerChatEvent event) {
+    public void onPlayerChatHigh(PlayerChatEvent event) {
 	if (!plugin.softMode) {
 	    plugin.logDebug("\t---PlayerChatEvent HighPriority Begin---");
 	    modifyChat(event);
@@ -127,7 +127,7 @@ public class ColorMePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerChatHighest(AsyncPlayerChatEvent event) {
+    public void onPlayerChatHighest(PlayerChatEvent event) {
 	if (!plugin.softMode) {
 	    plugin.logDebug("\t---PlayerChatEvent HighestPriority Begin---");
 	    modifyChat(event);
@@ -137,7 +137,7 @@ public class ColorMePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerChatMonitor(AsyncPlayerChatEvent event) {
+    public void onPlayerChatMonitor(PlayerChatEvent event) {
 	if (!plugin.softMode) {
 	    plugin.logDebug("\t---PlayerChatEvent MonitorPriority Begin---");
 	    modifyChat(event);
@@ -146,7 +146,7 @@ public class ColorMePlayerListener implements Listener {
 	}
     }
 
-    private void modifyChat(AsyncPlayerChatEvent event) {
+    private void modifyChat(PlayerChatEvent event) {
 	Player player = event.getPlayer();
 	String name = player.getName().toLowerCase(), nameExact = player.getName();
 	String world = player.getWorld().getName().toLowerCase();
@@ -323,7 +323,7 @@ public class ColorMePlayerListener implements Listener {
 	}
     }
 
-    private void colorChat(AsyncPlayerChatEvent event) {
+    private void colorChat(PlayerChatEvent event) {
 	Player player = event.getPlayer();
 	// Color the message, too?
 	if (plugin.chatColors && player.hasPermission("colorme.chat")) {
