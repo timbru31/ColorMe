@@ -34,7 +34,7 @@
 		</repository>
 		<repository>
 			<id>spout-repo</id>
-			<url>http://repo.spout.org</url>
+			<url>http://nexus.spout.org/content/groups/public</url>
 		</repository>
 		<repository>
 			<id>Plugin Metrics</id>
@@ -71,7 +71,7 @@
 		<dependency>
 			<groupId>org.getspout</groupId>
 			<artifactId>spoutplugin</artifactId>
-			<version>1.5.1-R0.3-SNAPSHOT</version>
+			<version>1.5.2-R0.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de.bananaco</groupId>
