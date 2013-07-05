@@ -42,6 +42,7 @@ import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 // TagAPI
 import org.kitteh.tag.TagAPI;
 import org.mcstats.Metrics;
+import org.mcstats.Metrics.Graph;
 
 /**
  * ColorMe for CraftBukkit/Bukkit
@@ -342,14 +343,11 @@ public class ColorMe extends JavaPlugin {
 	checkStatsStuff();
 	try {
 	    Metrics metrics = new Metrics(this);
+	    Graph graph = metrics.createGraph("Enabled plugin parts");
 	    // Custom plotter for each part
 	    for (final String value : values) {
 		logDebug("Pushed to Metrics: " + value);
-		metrics.addCustomData(new Metrics.Plotter() {
-		    public String getColumnName() {
-			return value;
-		    }
-
+		graph.addPlotter(new Metrics.Plotter(value) {
 		    public int getValue() {
 			return 1;
 		    }
