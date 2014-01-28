@@ -307,6 +307,7 @@ public class ColorMe extends JavaPlugin {
 	    getLogger().info("SoftMode disabled. Trying to override other chat plugins.");
 	}
 
+	// TagAPI
 	if (playerTitle) {
 	    Plugin tagAPIPlugin = getServer().getPluginManager().getPlugin("TagAPI");
 	    if (tagAPIPlugin != null) {
@@ -317,6 +318,13 @@ public class ColorMe extends JavaPlugin {
 		playerTitle = false;
 		getLogger().info("Didn't found TagAPI!");
 		logDebug("TagAPI not found");
+	    }
+	    // Check for new 3.0 Async event
+	    try {
+		Class.forName("org.kitteh.tag.AsyncPlayerReceiveNameTagEvent");
+	    } catch (final ClassNotFoundException e) {
+		getLogger().info("You need a newer version of TagAPI! Get it at http://dev.bukkit.org/server-mods/tag/");
+		playerTitle = false;
 	    }
 	}
 
