@@ -6,7 +6,7 @@ import org.bukkit.event.Listener;
 import de.dustplanet.colorme.Actions;
 import de.dustplanet.colorme.ColorMe;
 // TagAPI
-import org.kitteh.tag.PlayerReceiveNameTagEvent;
+import org.kitteh.tag.AsyncPlayerReceiveNameTagEvent;
 
 /**
  * ColorMe for CraftBukkit/Bukkit
@@ -33,7 +33,7 @@ public class ColorMeTagAPIListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onNameTag(final PlayerReceiveNameTagEvent event) {
+    public void onNameTag(final AsyncPlayerReceiveNameTagEvent event) {
 	if (event.getNamedPlayer().hasPermission("colorme.nametag")) {
 	    if (plugin.removeNameAboveHead) {
 		event.setTag("");

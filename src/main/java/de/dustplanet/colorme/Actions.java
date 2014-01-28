@@ -10,8 +10,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-// Spout
-import org.getspout.spoutapi.player.SpoutPlayer;
 // TagAPI
 import org.kitteh.tag.TagAPI;
 // PermissionsEx
@@ -518,7 +516,7 @@ public class Actions {
 	    int i = string.indexOf("\u0026ran") + 4;
 	    int z = string.length();
 	    sub = string.substring(i, z);
-	    // Stop if other ampersand or � is found
+	    // Stop if other ampersand or section sign is found
 	    if (sub.contains("\u0026")) {
 		sub = sub.substring(0, sub.indexOf("\u0026"));
 	    }
@@ -707,7 +705,7 @@ public class Actions {
 		player.setPlayerListName(cleanDisplayName);
 	    }
 	    // Check for Async
-	    if (plugin.tagAPI && plugin.playerTitleWithoutSpout && Thread.currentThread().equals(plugin.mainThread)) {
+	    if (plugin.playerTitle) {
 		TagAPI.refreshPlayer(player);
 	    }
 	    // Support for multiple colors
@@ -732,11 +730,6 @@ public class Actions {
 	    if (plugin.displayName) {
 		player.setDisplayName(newDisplayName);
 	    }
-	    // Check for Spout
-	    if (plugin.spoutEnabled && plugin.playerTitle && player.hasPermission("plugin.nametag")) {
-		SpoutPlayer spoutPlayer = (SpoutPlayer) player;
-		spoutPlayer.setTitle(newDisplayName);
-	    }
 	    // Check for playerList
 	    if (plugin.tabList) {
 		// Shorten it, if too long
@@ -748,8 +741,8 @@ public class Actions {
 		}
 	    }
 	    // Check if TagAPI should be used -> above the head!
-	    if (plugin.playerTitleWithoutSpout && plugin.tagAPI && player.hasPermission("plugin.nametag")) {
-		if (!color.equalsIgnoreCase("rainbow") && !color.equalsIgnoreCase("random") && Thread.currentThread().equals(plugin.mainThread)) {
+	    if (plugin.playerTitle && player.hasPermission("plugin.nametag")) {
+		if (!color.equalsIgnoreCase("rainbow") && !color.equalsIgnoreCase("random")) {
 		    TagAPI.refreshPlayer(player);
 		}
 	    }
@@ -782,12 +775,8 @@ public class Actions {
 		}
 		player.setPlayerListName(newName);
 	    }
-	    if (plugin.spoutEnabled && plugin.playerTitle && player.hasPermission("plugin.nametag")) {
-		SpoutPlayer spoutPlayer = (SpoutPlayer) player;
-		spoutPlayer.resetTitle();
-	    }
 	    // Check if TagAPI should be used -> above the head!
-	    if (plugin.playerTitleWithoutSpout && plugin.tagAPI && player.hasPermission("plugin.nametag") && Thread.currentThread().equals(plugin.mainThread)) {
+	    if (plugin.playerTitle && player.hasPermission("plugin.nametag")) {
 		TagAPI.refreshPlayer(player);
 	    }
 	}

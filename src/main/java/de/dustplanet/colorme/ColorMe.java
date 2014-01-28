@@ -55,7 +55,7 @@ import org.mcstats.Metrics.Graph;
  * http://bit.ly/bukkitdevcolorme
  * 
  * @author xGhOsTkiLLeRx
- * thanks to Valrix for the original ColorMe plugin!!
+ * thanks to Valrix for the original ColorMe plugin.
  * 
  */
 
@@ -67,8 +67,8 @@ public class ColorMe extends JavaPlugin {
     public Economy economy = null;
     public FileConfiguration config, players, localization, colors, group;
     public File configFile, playersFile, localizationFile, colorsFile, bannedWordsFile, debugFile, groupsFile;
-    public boolean tabList, playerTitle, playerTitleWithoutSpout, displayName, debug, spoutEnabled, prefixer, suffixer, globalSuffix, globalPrefix, globalColor;
-    public boolean chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist, tagAPI, useLegacyFormat, chatBrackets = true;
+    public boolean tabList, playerTitle, displayName, debug, prefixer, suffixer, globalSuffix, globalPrefix, globalColor;
+    public boolean chatColors, signColors, newColorOnJoin, displayAlwaysGlobalPrefix, displayAlwaysGlobalSuffix, blacklist, useLegacyFormat, chatBrackets = true;
     public boolean groups, ownSystem, pex, bPermissions, groupManager, softMode, otherChatPluginFound, autoChatColor, factions, removeNameAboveHead;
     public int prefixLengthMax, suffixLengthMax, prefixLengthMin, suffixLengthMin;
     private ColorMeCommands colorExecutor;
@@ -77,7 +77,6 @@ public class ColorMe extends JavaPlugin {
     private GroupCommands groupExecutor;
     public List<String> values = new ArrayList<String>();
     public List<String> bannedWords = new ArrayList<String>();
-    public Thread mainThread;
     public String format = "[GlobalPrefix]&r[GroupPrefix]&r[Prefix]&r<[name]&r>[Suffix]&r[GroupSuffix]&r[GlobalSuffix]&r: [message]";
     public WorldsHolder groupManagerWorldsHolder = null;
 
@@ -228,20 +227,6 @@ public class ColorMe extends JavaPlugin {
 	    logDebug("Vault not found");
 	}
 
-	// Check for Spout
-	Plugin spout = getServer().getPluginManager().getPlugin("Spout");
-	if (spout != null) {
-	    getLogger().info("Loaded Spout successfully");
-	    logDebug("Spout hooked and loaded");
-	    // Spout is enabled
-	    spoutEnabled = true;
-	} else {
-	    getLogger().info("Running without Spout!");
-	    logDebug("Spout not found");
-	    // Spout is disabled
-	    spoutEnabled = false;
-	}
-
 	// What is enabled?
 	checkParts();
 
@@ -278,8 +263,7 @@ public class ColorMe extends JavaPlugin {
 	// SoftMode
 	if (softMode) {
 	    logDebug("SoftMode enabled");
-	    getLogger()
-	    .info("SoftMode enabled. If other chat plugins are found, the chat won't be affected by ColorMe.");
+	    getLogger().info("SoftMode enabled. If other chat plugins are found, the chat won't be affected by ColorMe.");
 	    Plugin chatManager = getServer().getPluginManager().getPlugin("ChatManager");
 	    Plugin bChatManager = getServer().getPluginManager().getPlugin("bChatManager");
 	    Plugin EssentialsChat = getServer().getPluginManager().getPlugin("EssentialsChat");
@@ -323,21 +307,18 @@ public class ColorMe extends JavaPlugin {
 	    getLogger().info("SoftMode disabled. Trying to override other chat plugins.");
 	}
 
-	if (playerTitleWithoutSpout) {
+	if (playerTitle) {
 	    Plugin tagAPIPlugin = getServer().getPluginManager().getPlugin("TagAPI");
 	    if (tagAPIPlugin != null) {
-		tagAPI = true;
 		getLogger().info("Found TagAPI, will use it for names above the head!");
 		logDebug("Found TagAPI");
 		pm.registerEvents(tagAPIListener, this);
 	    } else {
+		playerTitle = false;
 		getLogger().info("Didn't found TagAPI!");
 		logDebug("TagAPI not found");
 	    }
 	}
-
-	// Prevent ASync calls
-	mainThread = Thread.currentThread();
 
 	// Stats
 	checkStatsStuff();
@@ -541,8 +522,7 @@ public class ColorMe extends JavaPlugin {
 	config.addDefault("Suffixer", true);
 	config.addDefault("ColorMe.displayName", true);
 	config.addDefault("ColorMe.tabList", false);
-	config.addDefault("ColorMe.playerTitle", false);
-	config.addDefault("ColorMe.playerTitleWithoutSpout", true);
+	config.addDefault("ColorMe.playerTitle", true);
 	config.addDefault("ColorMe.signColors", true);
 	config.addDefault("ColorMe.chatColors", true);
 	for (ChatColor value : ChatColor.values()) {
@@ -724,7 +704,7 @@ public class ColorMe extends JavaPlugin {
 	    group.save(groupsFile);
 	    loadBannedWords();
 	    checkParts();
-	    if (tagAPI && playerTitleWithoutSpout) {
+	    if (playerTitle) {
 		for (Player p : getServer().getOnlinePlayers()) {
 		    TagAPI.refreshPlayer(p);
 		}
@@ -749,7 +729,6 @@ public class ColorMe extends JavaPlugin {
 	displayName = config.getBoolean("ColorMe.displayName");
 	tabList = config.getBoolean("ColorMe.tabList");
 	playerTitle = config.getBoolean("ColorMe.playerTitle");
-	playerTitleWithoutSpout = config.getBoolean("ColorMe.playerTitleWithoutSpout");
 	signColors = config.getBoolean("ColorMe.signColors");
 	chatColors = config.getBoolean("ColorMe.chatColors");
 	globalPrefix = !config.getString("global_default." + "prefix").isEmpty();
@@ -777,7 +756,6 @@ public class ColorMe extends JavaPlugin {
 	    logDebug("tabList is " + tabList);
 	    logDebug("displayName is " + displayName);
 	    logDebug("playerTitle is " + playerTitle);
-	    logDebug("playerTitleWithoutSpout is " + playerTitleWithoutSpout);
 	    logDebug("signColors are " + signColors);
 	    logDebug("chatColors are " + chatColors);
 	    logDebug("globalPrefix is " + globalPrefix);
@@ -816,9 +794,6 @@ public class ColorMe extends JavaPlugin {
 	}
 	if (playerTitle) {
 	    values.add("ColorMe - playerTitle");
-	}
-	if (playerTitleWithoutSpout) {
-	    values.add("ColorMe - playerTitleWithoutSpout");
 	}
 	if (chatColors) {
 	    values.add("ColorMe - chatColors");

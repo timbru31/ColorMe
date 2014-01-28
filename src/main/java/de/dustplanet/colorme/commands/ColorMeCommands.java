@@ -59,7 +59,7 @@ public class ColorMeCommands implements CommandExecutor {
 	    return true;
 	}
 	// Stop here if ColorMe is unwanted
-	if (!plugin.displayName && !plugin.tabList && !plugin.playerTitle && !plugin.playerTitleWithoutSpout) {
+	if (!plugin.displayName && !plugin.tabList && !plugin.playerTitle) {
 	    message = plugin.localization.getString("part_disabled");
 	    plugin.message(sender, null, message, null, null, null, null);
 	    return true;
