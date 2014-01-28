@@ -27,18 +27,19 @@ import de.dustplanet.colorme.commands.SuffixCommands;
 import de.dustplanet.colorme.listeners.ColorMeBlockListener;
 import de.dustplanet.colorme.listeners.ColorMePlayerListener;
 import de.dustplanet.colorme.listeners.ColorMeTagAPIListener;
+
 // Economy
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 
-
-
-
 // GroupManager
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
+
 // TagAPI
 import org.kitteh.tag.TagAPI;
+
+// Metrics
 import org.mcstats.Metrics;
 import org.mcstats.Metrics.Graph;
 
