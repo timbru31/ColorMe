@@ -1,21 +1,14 @@
 package de.dustplanet.colorme;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -26,6 +19,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import de.dustplanet.colorme.commands.ColorMeCommands;
 import de.dustplanet.colorme.commands.GroupCommands;
 import de.dustplanet.colorme.commands.PrefixCommands;
@@ -36,6 +30,10 @@ import de.dustplanet.colorme.listeners.ColorMeTagAPIListener;
 // Economy
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
+
+
+
+
 // GroupManager
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
@@ -60,6 +58,7 @@ import org.mcstats.Metrics.Graph;
  */
 
 public class ColorMe extends JavaPlugin {
+    public FileUtils fileUtils;
     private Actions actions;
     private ColorMePlayerListener playerListener;
     private ColorMeBlockListener blockListener;
@@ -86,16 +85,17 @@ public class ColorMe extends JavaPlugin {
 	values.clear();
 	bannedWords.clear();
 	if (debug) {
-	    logDebug("");
-	    logDebug("\t-----END LOG-----");
-	    logDebug("");
-	    logDebug("");
+	    fileUtils.logDebug("");
+	    fileUtils.logDebug("\t-----END LOG-----");
+	    fileUtils.logDebug("");
+	    fileUtils.logDebug("");
 	}
     }
 
     // Start
     public void onEnable() {
 	actions = new Actions(this);
+	fileUtils = new FileUtils(this);
 	playerListener = new ColorMePlayerListener(this, actions);
 	blockListener = new ColorMeBlockListener(this, actions);
 	tagAPIListener = new ColorMeTagAPIListener(this, actions);
@@ -117,23 +117,23 @@ public class ColorMe extends JavaPlugin {
 	    }
 	}
 	if (!configFile.exists()) {
-	    copy(getResource("config.yml"), configFile);
+	    fileUtils.copy(getResource("config.yml"), configFile);
 	}
 	config = getConfig();
 	loadConfig();
 	debug = config.getBoolean("debug");
-	checkDebug();
+	fileUtils.checkDebug();
 	if (debug) {
 	    getLogger().info("Debug is enabled. Will log actions.");
-	    logDebug("\t-----BEGIN LOG------");
+	    fileUtils.logDebug("\t-----BEGIN LOG------");
 	}
 
 	// Player colors config
 	playersFile = new File(getDataFolder(), "players.yml");
 	// Copy if the players.yml doesn't exist
 	if (!playersFile.exists()) {
-	    logDebug("players.yml didn't exist, creating one");
-	    copy(getResource("players.yml"), playersFile);
+	    fileUtils.logDebug("players.yml didn't exist, creating one");
+	    fileUtils.copy(getResource("players.yml"), playersFile);
 	}
 	// Try to load
 	players = YamlConfiguration.loadConfiguration(playersFile);
@@ -142,8 +142,8 @@ public class ColorMe extends JavaPlugin {
 	colorsFile = new File(getDataFolder(), "colors.yml");
 	// Copy if the custom colors doesn't exist
 	if (!colorsFile.exists()) {
-	    logDebug("colors.yml didn't exist, creating one");
-	    copy(getResource("colors.yml"), colorsFile);
+	    fileUtils.logDebug("colors.yml didn't exist, creating one");
+	    fileUtils.copy(getResource("colors.yml"), colorsFile);
 	}
 	// Try to load
 	colors = YamlConfiguration.loadConfiguration(colorsFile);
@@ -151,8 +151,8 @@ public class ColorMe extends JavaPlugin {
 	// Localization
 	localizationFile = new File(getDataFolder(), "localization.yml");
 	if (!localizationFile.exists()) {
-	    logDebug("localization.yml didn't exist, creating one");
-	    copy(getResource("localization.yml"), localizationFile);
+	    fileUtils.logDebug("localization.yml didn't exist, creating one");
+	    fileUtils.copy(getResource("localization.yml"), localizationFile);
 	}
 	// Try to load
 	localization = YamlConfiguration.loadConfiguration(localizationFile);
@@ -162,8 +162,8 @@ public class ColorMe extends JavaPlugin {
 	groupsFile = new File(getDataFolder(), "groups.yml");
 	// Copy if the groups.yml doesn't exist
 	if (!groupsFile.exists()) {
-	    logDebug("groups.yml didn't exist, creating one");
-	    copy(getResource("groups.yml"), groupsFile);
+	    fileUtils.logDebug("groups.yml didn't exist, creating one");
+	    fileUtils.copy(getResource("groups.yml"), groupsFile);
 	}
 	// Try to load
 	group = YamlConfiguration.loadConfiguration(groupsFile);
@@ -172,26 +172,26 @@ public class ColorMe extends JavaPlugin {
 	    // BannedWords file
 	    bannedWordsFile = new File(getDataFolder(), "bannedWords.txt");
 	    if (!bannedWordsFile.exists()) {
-		logDebug("bannedWords.txt didn't exist, creating one");
-		copy(getResource("bannedWords.txt"), bannedWordsFile);
+		fileUtils.logDebug("bannedWords.txt didn't exist, creating one");
+		fileUtils.copy(getResource("bannedWords.txt"), bannedWordsFile);
 	    }
 	    // Try to load
 	    try {
 		loadBannedWords();
 	    } catch (IOException e) {
 		getLogger().warning("Failed to load the bannedWords.txt! Please report this! IOException");
-		logDebug("Failed to load the banned words");
-		logDebugException(e);
+		fileUtils.logDebug("Failed to load the banned words");
+		fileUtils.logDebugException(e);
 	    }
 	}
 
 	// Force to update the config (remove empty lines)
 	if (config.getBoolean("updateConfig")) {
 	    try {
-		removeEmptyLines(playersFile);
+		fileUtils.removeEmptyLines(playersFile);
 	    } catch (IOException e) {
 		getLogger().warning("Failed to update the config! Please report this! IOExcpetion");
-		logDebugException(e);
+		fileUtils.logDebugException(e);
 	    } finally {
 		config.set("updateConfig", false);
 		saveConfig();
@@ -219,12 +219,12 @@ public class ColorMe extends JavaPlugin {
 	if (vault != null && vault instanceof Vault) {
 	    // If Vault is enabled, load the economy
 	    getLogger().info("Loaded Vault successfully");
-	    logDebug("Vault hooked and loaded");
+	    fileUtils.logDebug("Vault hooked and loaded");
 	    setupEconomy();
 	} else {
 	    // Else tell the admin about the missing of Vault
 	    getLogger().info("Vault was not found! Running without economy!");
-	    logDebug("Vault not found");
+	    fileUtils.logDebug("Vault not found");
 	}
 
 	// What is enabled?
@@ -237,32 +237,32 @@ public class ColorMe extends JavaPlugin {
 	    if (pexPlugin != null) {
 		pex = true;
 		getLogger().info("Found PermissionsEx. Will use it for groups!");
-		logDebug("Hooked into PermissionsEx for groups");
+		fileUtils.logDebug("Hooked into PermissionsEx for groups");
 	    } else if (bPermissionsPlugin != null) {
 		bPermissions = true;
 		getLogger().info("Found bPermissions. Will use it for groups!");
-		logDebug("Hooked into bPermissions for groups");
+		fileUtils.logDebug("Hooked into bPermissions for groups");
 	    } else if (groupManagerPlugin != null) {
 		groupManager = true;
 		groupManagerWorldsHolder = ((GroupManager) groupManagerPlugin).getWorldsHolder();
 		getLogger().info("Found GroupManager. Will use it for groups!");
-		logDebug("Hooked into GroupManager for groups");
+		fileUtils.logDebug("Hooked into GroupManager for groups");
 	    } else {
 		getLogger().info("Haven't found any supported group systems. Disabling groups");
-		logDebug("No group system found, disabling groups");
+		fileUtils.logDebug("No group system found, disabling groups");
 		groups = false;
 	    }
 	} else if (groups) {
-	    logDebug("Using own group system");
+	    fileUtils.logDebug("Using own group system");
 	    getLogger().info("Using own group system!");
 	} else {
-	    logDebug("Groups disabled");
+	    fileUtils.logDebug("Groups disabled");
 	    getLogger().info("Groups disabled.");
 	}
 
 	// SoftMode
 	if (softMode) {
-	    logDebug("SoftMode enabled");
+	    fileUtils.logDebug("SoftMode enabled");
 	    getLogger().info("SoftMode enabled. If other chat plugins are found, the chat won't be affected by ColorMe.");
 	    Plugin chatManager = getServer().getPluginManager().getPlugin("ChatManager");
 	    Plugin bChatManager = getServer().getPluginManager().getPlugin("bChatManager");
@@ -273,37 +273,37 @@ public class ColorMe extends JavaPlugin {
 	    if (chatManager != null) {
 		otherChatPluginFound = true;
 		getLogger().info("Found ChatManager. Will use it for chat!");
-		logDebug("Found ChatManager");
+		fileUtils.logDebug("Found ChatManager");
 	    } else if (bChatManager != null) {
 		otherChatPluginFound = true;
 		getLogger().info("Found bChatManager. Will use it for chat!");
-		logDebug("Found bChatManager");
+		fileUtils.logDebug("Found bChatManager");
 	    } else if (EssentialsChat != null) {
 		otherChatPluginFound = true;
 		getLogger().info("Found EssentialsChat. Will use it for chat!");
-		logDebug("Found EssentialsChat");
+		fileUtils.logDebug("Found EssentialsChat");
 	    } else if (mChatSuite != null) {
 		otherChatPluginFound = true;
 		getLogger().info("Found mChatSuite. Will use it for chat!");
-		logDebug("Found mChatSuite");
+		fileUtils.logDebug("Found mChatSuite");
 	    } else if (iChat != null) {
 		otherChatPluginFound = true;
 		getLogger().info("Found iChat. Will use it for chat!");
-		logDebug("Found iChat");
+		fileUtils.logDebug("Found iChat");
 	    } else if (factionsPlugin != null && config.getBoolean("factionsSupport")) {
 		factions = true;
 		getLogger().info("Found Factions, will attempt to support it!");
-		logDebug("Found Factions");
+		fileUtils.logDebug("Found Factions");
 	    } else {
 		Plugin customChatPlugin = getServer().getPluginManager().getPlugin(config.getString("softMode.ownChatPlugin"));
 		if (customChatPlugin != null) {
 		    otherChatPluginFound = true;
 		    getLogger().info("Found " + customChatPlugin.getName() + ". Will use it for chat!");
-		    logDebug("Found " + customChatPlugin.getName());
+		    fileUtils.logDebug("Found " + customChatPlugin.getName());
 		}
 	    }
 	} else {
-	    logDebug("SoftMode disabled");
+	    fileUtils.logDebug("SoftMode disabled");
 	    getLogger().info("SoftMode disabled. Trying to override other chat plugins.");
 	}
 
@@ -312,12 +312,12 @@ public class ColorMe extends JavaPlugin {
 	    Plugin tagAPIPlugin = getServer().getPluginManager().getPlugin("TagAPI");
 	    if (tagAPIPlugin != null) {
 		getLogger().info("Found TagAPI, will use it for names above the head!");
-		logDebug("Found TagAPI");
+		fileUtils.logDebug("Found TagAPI");
 		pm.registerEvents(tagAPIListener, this);
 	    } else {
 		playerTitle = false;
 		getLogger().info("Didn't found TagAPI!");
-		logDebug("TagAPI not found");
+		fileUtils.logDebug("TagAPI not found");
 	    }
 	    // Check for new 3.0 Async event
 	    try {
@@ -335,7 +335,7 @@ public class ColorMe extends JavaPlugin {
 	    Graph graph = metrics.createGraph("Enabled plugin parts");
 	    // Custom plotter for each part
 	    for (final String value : values) {
-		logDebug("Pushed to Metrics: " + value);
+		fileUtils.logDebug("Pushed to Metrics: " + value);
 		graph.addPlotter(new Metrics.Plotter(value) {
 		    public int getValue() {
 			return 1;
@@ -345,160 +345,12 @@ public class ColorMe extends JavaPlugin {
 	    metrics.start();
 	} catch (IOException e) {
 	    getLogger().warning("Could not start Metrics!");
-	    logDebug("Metrics could not be started!");
-	    logDebugException(e);
+	    fileUtils.logDebug("Metrics could not be started!");
+	    fileUtils.logDebugException(e);
 	}
 
-	logDebug("ColorMe enabled");
-	logDebug("");
-    }
-
-    // If no config is found, copy the default one(s)!
-    private void copy(InputStream in, File file) {
-	OutputStream out = null;
-	try {
-	    out = new FileOutputStream(file);
-	    byte[] buf = new byte[1024];
-	    int len;
-	    while ((len = in.read(buf)) > 0) {
-		out.write(buf, 0, len);
-	    }
-	} catch (IOException e) {
-	    getLogger().warning("Failed to copy the default config! (I/O)");
-	    logDebugException(e);
-	    e.printStackTrace();
-	} finally {
-	    try {
-		if (out != null) {
-		    out.flush();
-		    out.close();
-		}
-	    } catch (IOException e) {
-		getLogger().warning("Failed to close the streams! (I/O -> Output)");
-		logDebugException(e);
-		e.printStackTrace();
-	    }
-	    try {
-		if (in != null) {
-		    in.close();
-		}
-	    } catch (IOException e) {
-		getLogger().warning("Failed to close the streams! (I/O -> Input)");
-		logDebugException(e);
-		e.printStackTrace();
-	    }
-	}
-    }
-
-    // Log into the debug file
-    public void logDebug(String string) {
-	if (debug) {
-	    BufferedWriter writer = null;
-	    try {
-		writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(debugFile, true), "UTF-8"));
-		if (string.equals("")) {
-		    writer.write(System.getProperty("line.separator"));
-		} else {
-		    Date dt = new Date();
-		    // Standard date format
-		    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		    String time = df.format(dt);
-		    writer.write(time + " [ColorMe Debug] " + string);
-		    writer.write(System.getProperty("line.separator"));
-		}
-	    } catch (IOException e) {
-		getLogger().warning("An error occurred while writing to the log! IOException");
-		e.printStackTrace();
-	    } finally {
-		if (writer != null) {
-		    try {
-			writer.flush();
-			writer.close();
-		    } catch (IOException e) {
-			getLogger().warning("An error occurred while writing to the log! IOException");
-			e.printStackTrace();
-		    }
-		}
-	    }
-	}
-    }
-
-    // Log a stacktrace
-    public void logDebugException(Exception ex) {
-	FileOutputStream fos = null;
-	PrintStream ps = null;
-	logDebug("-------------------");
-	try {
-	    fos = new FileOutputStream(debugFile, true);
-	    ps = new PrintStream(fos);
-	    ex.printStackTrace(ps);
-	} catch (FileNotFoundException e) {
-	    getLogger().warning("An error occurred while writing to the log! IOException");
-	    e.printStackTrace();
-	} finally {
-	    if (ps != null) {
-		ps.flush();
-		ps.close();
-	    }
-	    if (fos != null) {
-		try {
-		    fos.flush();
-		    fos.close();
-		} catch (IOException e) {
-		    getLogger().warning("An error occurred while writing to the log! IOException");
-		    e.printStackTrace();
-		}
-	    }
-	}
-	logDebug("-------------------");
-    }
-
-    // Check if debug is enabled and if a file needs to be created
-    private void checkDebug() {
-	if (debug) {
-	    debugFile = new File(getDataFolder(), "debug.log");
-	    if (!debugFile.exists()) {
-		try {
-		    debugFile.createNewFile();
-		} catch (IOException e) {
-		    getLogger().warning("Failed to create the debug.log! IOException");
-		    e.printStackTrace();
-		}
-	    }
-	}
-    }
-
-    // Remove empty lines
-    private void removeEmptyLines(File config) throws IOException, FileNotFoundException {
-	BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(config), "UTF-8"));
-	File tempFile = new File(getDataFolder(), "temp.txt");
-	BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempFile, true), "UTF-8"));
-	String line;
-	try {
-	    while ((line = reader.readLine()) != null) {
-		if (line.isEmpty()) {
-		    continue;
-		}
-		writer.write(line);
-		writer.newLine();
-	    }
-	    logDebug("Updated the config");
-	} catch (IOException e) {
-	    getLogger().warning("An error occurred while updating the config! IOException");
-	    logDebug("Failed to update the config");
-	    logDebugException(e);
-	} finally {
-	    reader.close();
-	    writer.flush();
-	    writer.close();
-	    if (config.delete()) {
-		if (!tempFile.renameTo(config)) {
-		    getLogger().warning("The tempFile could not be renamed while updating");
-		}
-	    } else {
-		getLogger().warning("Config could not be deleted while updating!");
-	    }
-	}
+	fileUtils.logDebug("ColorMe enabled");
+	fileUtils.logDebug("");
     }
 
     // Load the banned words
@@ -512,7 +364,7 @@ public class ColorMe extends JavaPlugin {
 	    bannedWords.add(line);
 	}
 	reader.close();
-	logDebug("Loaded the banned words");
+	fileUtils.logDebug("Loaded the banned words");
     }
 
     // Loads the config at the start
@@ -687,11 +539,11 @@ public class ColorMe extends JavaPlugin {
 	localization.options().copyDefaults(true);
 	try {
 	    localization.save(localizationFile);
-	    logDebug("Default localization saved");
+	    fileUtils.logDebug("Default localization saved");
 	} catch (IOException e) {
 	    getLogger().warning("Failed to save the localization! Please report this! IOException");
-	    logDebug("Failed to save the default localization");
-	    logDebugException(e);
+	    fileUtils.logDebug("Failed to save the default localization");
+	    fileUtils.logDebugException(e);
 	}
     }
 
@@ -701,7 +553,7 @@ public class ColorMe extends JavaPlugin {
 	try {
 	    config.load(configFile);
 	    config.save(configFile);
-	    checkDebug();
+	    fileUtils.checkDebug();
 	    players.load(playersFile);
 	    players.save(playersFile);
 	    localization.load(localizationFile);
@@ -717,16 +569,16 @@ public class ColorMe extends JavaPlugin {
 		    TagAPI.refreshPlayer(p);
 		}
 	    }
-	    logDebug("Configs and files loaded again");
+	    fileUtils.logDebug("Configs and files loaded again");
 	} catch (FileNotFoundException e) {
 	    getLogger().warning("Failed to load the configs! Please report this! FileNotFoundException");
-	    logDebugException(e);
+	    fileUtils.logDebugException(e);
 	} catch (IOException e) {
 	    getLogger().warning("Failed to load the configs! Please report this! IOException");
-	    logDebugException(e);
+	    fileUtils.logDebugException(e);
 	} catch (InvalidConfigurationException e) {
 	    getLogger().warning("Failed to load the configs! Please report this! InvalidConfigurationException");
-	    logDebugException(e);
+	    fileUtils.logDebugException(e);
 	}
     }
 
@@ -759,30 +611,30 @@ public class ColorMe extends JavaPlugin {
 	format = config.getString("format");
 	chatBrackets = config.getBoolean("chatBrackets");
 	if (debug) {
-	    logDebug("Suffixer is " + suffixer);
-	    logDebug("Prefixer is " + prefixer);
-	    logDebug("tabList is " + tabList);
-	    logDebug("displayName is " + displayName);
-	    logDebug("playerTitle is " + playerTitle);
-	    logDebug("signColors are " + signColors);
-	    logDebug("chatColors are " + chatColors);
-	    logDebug("globalPrefix is " + globalPrefix);
-	    logDebug("globalSuffix is " + globalSuffix);
-	    logDebug("globalColor is " + globalColor);
-	    logDebug("prefixLengthMin is " + prefixLengthMin);
-	    logDebug("suffixLengthMin is " + suffixLengthMin);
-	    logDebug("prefixLengthMax is " + prefixLengthMax);
-	    logDebug("suffixLengthMax is " + suffixLengthMax);
-	    logDebug("newColorOnJoin is " + newColorOnJoin);
-	    logDebug("displayAlwaysGlobalPrefix is " + displayAlwaysGlobalPrefix);
-	    logDebug("displayAlwaysGlobalSuffix is " + displayAlwaysGlobalSuffix);
-	    logDebug("blacklist is " + blacklist);
-	    logDebug("groups is " + groups);
-	    logDebug("ownSystem is " + ownSystem);
-	    logDebug("autoChatColor is " + autoChatColor);
-	    logDebug("removeNameAboveHead is " + removeNameAboveHead);
-	    logDebug("useLegacyFormat is " + useLegacyFormat);
-	    logDebug("chatBrackets are " + chatBrackets);
+	    fileUtils.logDebug("Suffixer is " + suffixer);
+	    fileUtils.logDebug("Prefixer is " + prefixer);
+	    fileUtils.logDebug("tabList is " + tabList);
+	    fileUtils.logDebug("displayName is " + displayName);
+	    fileUtils.logDebug("playerTitle is " + playerTitle);
+	    fileUtils.logDebug("signColors are " + signColors);
+	    fileUtils.logDebug("chatColors are " + chatColors);
+	    fileUtils.logDebug("globalPrefix is " + globalPrefix);
+	    fileUtils.logDebug("globalSuffix is " + globalSuffix);
+	    fileUtils.logDebug("globalColor is " + globalColor);
+	    fileUtils.logDebug("prefixLengthMin is " + prefixLengthMin);
+	    fileUtils.logDebug("suffixLengthMin is " + suffixLengthMin);
+	    fileUtils.logDebug("prefixLengthMax is " + prefixLengthMax);
+	    fileUtils.logDebug("suffixLengthMax is " + suffixLengthMax);
+	    fileUtils.logDebug("newColorOnJoin is " + newColorOnJoin);
+	    fileUtils.logDebug("displayAlwaysGlobalPrefix is " + displayAlwaysGlobalPrefix);
+	    fileUtils.logDebug("displayAlwaysGlobalSuffix is " + displayAlwaysGlobalSuffix);
+	    fileUtils.logDebug("blacklist is " + blacklist);
+	    fileUtils.logDebug("groups is " + groups);
+	    fileUtils.logDebug("ownSystem is " + ownSystem);
+	    fileUtils.logDebug("autoChatColor is " + autoChatColor);
+	    fileUtils.logDebug("removeNameAboveHead is " + removeNameAboveHead);
+	    fileUtils.logDebug("useLegacyFormat is " + useLegacyFormat);
+	    fileUtils.logDebug("chatBrackets are " + chatBrackets);
 	}
     }
 
@@ -860,10 +712,10 @@ public class ColorMe extends JavaPlugin {
 	else {
 	    if (player != null) {
 		player.sendMessage(ChatColor.DARK_RED + "Somehow this message is not defined. Please check your localization.yml");
-		logDebug("Message is null");
+		fileUtils.logDebug("Message is null");
 	    } else if (sender != null) {
 		sender.sendMessage(ChatColor.DARK_RED + "Somehow this message is not defined. Please check your localization.yml");
-		logDebug("Message is null");
+		fileUtils.logDebug("Message is null");
 	    }
 	}
     }

@@ -54,8 +54,8 @@ public class Actions {
      * @return the string from the config
      */
     public String getGroup(String groupName, String world, String groupPart) {
-	plugin.logDebug("Actions -> get");
-	plugin.logDebug("Asked to get the " + groupPart + " from " + groupName + " in the world " + world);
+	plugin.fileUtils.logDebug("Actions -> get");
+	plugin.fileUtils.logDebug("Asked to get the " + groupPart + " from " + groupName + " in the world " + world);
 	// Group in the config? Yes -> get the config, no -> nothing
 	groupName = groupName.toLowerCase();
 	world = world.toLowerCase();
@@ -73,8 +73,8 @@ public class Actions {
      * @return yes or no
      */
     public boolean hasGroup(String groupName, String world, String groupPart) {
-	plugin.logDebug("Actions -> hasGroup");
-	plugin.logDebug("Asked if " + groupName + " has got a " + groupPart + " in the world " + world);
+	plugin.fileUtils.logDebug("Actions -> hasGroup");
+	plugin.fileUtils.logDebug("Asked if " + groupName + " has got a " + groupPart + " in the world " + world);
 	groupName = groupName.toLowerCase();
 	world = world.toLowerCase();
 	groupPart = groupPart.toLowerCase();
@@ -93,8 +93,8 @@ public class Actions {
      * @return yes or no
      */
     public boolean existsGroup(String groupName) {
-	plugin.logDebug("Actions -> existsGroup");
-	plugin.logDebug("Asked if " + groupName + " exists");
+	plugin.fileUtils.logDebug("Actions -> existsGroup");
+	plugin.fileUtils.logDebug("Asked if " + groupName + " exists");
 	groupName = groupName.toLowerCase();
 	return plugin.group.contains(groupName);
     }
@@ -105,8 +105,8 @@ public class Actions {
      * @param groupName - the group Name
      */
     public void deleteGroup(String groupName) {
-	plugin.logDebug("Actions -> deleteGroup");
-	plugin.logDebug("Asked to delete the group " + groupName);
+	plugin.fileUtils.logDebug("Actions -> deleteGroup");
+	plugin.fileUtils.logDebug("Asked to delete the group " + groupName);
 	groupName = groupName.toLowerCase();
 	List<String> members = plugin.group.getStringList(groupName + ".members");
 	for (String member : members) {
@@ -124,8 +124,8 @@ public class Actions {
      * @return the list of members
      */
     public List<String> listMembers(String groupName) {
-	plugin.logDebug("Actions -> listMembers");
-	plugin.logDebug("Asked to list the members of " + groupName);
+	plugin.fileUtils.logDebug("Actions -> listMembers");
+	plugin.fileUtils.logDebug("Asked to list the members of " + groupName);
 	groupName = groupName.toLowerCase();
 	List<String> members = plugin.group.getStringList(groupName + ".members");
 	return members;
@@ -140,8 +140,8 @@ public class Actions {
      * @param groupPart - the part
      */
     public void setGroup(String groupName, String value, String world, String groupPart) {
-	plugin.logDebug("Actions -> set");
-	plugin.logDebug("Asked to set the " + groupPart + " of " + groupName + " in the world " + world);
+	plugin.fileUtils.logDebug("Actions -> set");
+	plugin.fileUtils.logDebug("Asked to set the " + groupPart + " of " + groupName + " in the world " + world);
 	groupName = groupName.toLowerCase();
 	world = world.toLowerCase();
 	groupPart = groupPart.toLowerCase();
@@ -156,7 +156,7 @@ public class Actions {
      * @param groupName - the group name
      */
     public void createGroup(String groupName) {
-	plugin.logDebug("Actions -> Asked to create the group " + groupName);
+	plugin.fileUtils.logDebug("Actions -> Asked to create the group " + groupName);
 	groupName = groupName.toLowerCase();
 	plugin.group.set(groupName + ".colors.default", "");
 	plugin.group.set(groupName + ".prefix.default", "");
@@ -172,7 +172,7 @@ public class Actions {
      * @param name - the player name
      */
     public void addMember(String groupName, String name) {
-	plugin.logDebug("Actions -> Add member " + name + " to the group " + groupName);
+	plugin.fileUtils.logDebug("Actions -> Add member " + name + " to the group " + groupName);
 	name = name.toLowerCase();
 	groupName = groupName.toLowerCase();
 	plugin.players.set(name + ".group", groupName);
@@ -190,7 +190,7 @@ public class Actions {
      * @param name - the name of the player
      */
     public void removeMember(String groupName, String name) {
-	plugin.logDebug("Actions -> Remove member " + name + " from the group " + groupName);
+	plugin.fileUtils.logDebug("Actions -> Remove member " + name + " from the group " + groupName);
 	plugin.players.set(name + ".group", "");
 	name = name.toLowerCase();
 	groupName = groupName.toLowerCase();
@@ -209,8 +209,8 @@ public class Actions {
      * @return true or false, yes or no
      */
     public boolean isMember(String groupName, String name) {
-	plugin.logDebug("Actions -> isMember");
-	plugin.logDebug("Asked if " + name + " is a member of the group " + groupName);
+	plugin.fileUtils.logDebug("Actions -> isMember");
+	plugin.fileUtils.logDebug("Asked if " + name + " is a member of the group " + groupName);
 	name = name.toLowerCase();
 	groupName = groupName.toLowerCase();
 	if (plugin.players.contains(name + ".group")) {
@@ -232,8 +232,8 @@ public class Actions {
      * @return the string from the config
      */
     public String getGlobal(String pluginPart) {
-	plugin.logDebug("Actions -> getGlobal");
-	plugin.logDebug("Asked to get the global " + pluginPart);
+	plugin.fileUtils.logDebug("Actions -> getGlobal");
+	plugin.fileUtils.logDebug("Asked to get the global " + pluginPart);
 	pluginPart = pluginPart.toLowerCase();
 	String string = plugin.config.getString("global_default." + pluginPart);
 	String updatedString = replaceThings(string);
@@ -248,8 +248,8 @@ public class Actions {
      * @return yes or no
      */
     public boolean hasGlobal(String pluginPart) {
-	plugin.logDebug("Actions -> hasGlobal");
-	plugin.logDebug("Asked if the global value of " + pluginPart + " is set");
+	plugin.fileUtils.logDebug("Actions -> hasGlobal");
+	plugin.fileUtils.logDebug("Asked if the global value of " + pluginPart + " is set");
 	pluginPart = pluginPart.toLowerCase();
 	return !plugin.config.getString("global_default." + pluginPart).isEmpty();
     }
@@ -260,8 +260,8 @@ public class Actions {
      * @param pluginPart - color/prefix or suffix
      */
     public void removeGlobal(String pluginPart) {
-	plugin.logDebug("Actions -> removeGlobal");
-	plugin.logDebug("Asked to remove the global part of " + pluginPart);
+	plugin.fileUtils.logDebug("Actions -> removeGlobal");
+	plugin.fileUtils.logDebug("Asked to remove the global part of " + pluginPart);
 	pluginPart = pluginPart.toLowerCase();
 	plugin.config.set("global_default." + pluginPart, "");
 	saveFile(plugin.configFile, plugin.config);
@@ -279,8 +279,8 @@ public class Actions {
      * @return yes or not
      */
     public boolean playerHasGroup(String name) {
-	plugin.logDebug("Actions -> playerHasGroup");
-	plugin.logDebug("Asked if " + name + " has got a group");
+	plugin.fileUtils.logDebug("Actions -> playerHasGroup");
+	plugin.fileUtils.logDebug("Asked if " + name + " has got a group");
 	name = name.toLowerCase();
 	if (plugin.players.contains(name + ".group")) {
 	    // if longer than 1 it's valid, return true - otherwise (means '')
@@ -297,8 +297,8 @@ public class Actions {
      * @return the name of the group
      */
     public String playerGetGroup(String name) {
-	plugin.logDebug("Actions -> playerGetGroup");
-	plugin.logDebug("Asked for the group of " + name);
+	plugin.fileUtils.logDebug("Actions -> playerGetGroup");
+	plugin.fileUtils.logDebug("Asked for the group of " + name);
 	name = name.toLowerCase();
 	return plugin.players.getString(name + ".group");
     }
@@ -311,7 +311,7 @@ public class Actions {
      * @return yes or no!
      */
     public boolean self(CommandSender sender, String name) {
-	plugin.logDebug("Actions -> self");
+	plugin.fileUtils.logDebug("Actions -> self");
 	return sender.equals(plugin.getServer().getPlayerExact(name));
     }
 
@@ -324,8 +324,8 @@ public class Actions {
      * @return the string out of the config! "" if not set!
      */
     public String get(String name, String world, String pluginPart) {
-	plugin.logDebug("Actions -> get");
-	plugin.logDebug("Asked to get the " + pluginPart + " from " + name + " in the world " + world);
+	plugin.fileUtils.logDebug("Actions -> get");
+	plugin.fileUtils.logDebug("Asked to get the " + pluginPart + " from " + name + " in the world " + world);
 	// Player in the config? Yes -> get the config, no -> nothing
 	name = name.toLowerCase();
 	world = world.toLowerCase();
@@ -342,8 +342,8 @@ public class Actions {
      * @param pluginPart - colors/prefix/suffix
      */
     public void set(String name, String value, String world, String pluginPart) {
-	plugin.logDebug("Actions -> set");
-	plugin.logDebug("Asked to set the " + pluginPart + " from " + name + " in the world " + world);
+	plugin.fileUtils.logDebug("Actions -> set");
+	plugin.fileUtils.logDebug("Asked to set the " + pluginPart + " from " + name + " in the world " + world);
 	name = name.toLowerCase();
 	world = world.toLowerCase();
 	pluginPart = pluginPart.toLowerCase();
@@ -361,8 +361,8 @@ public class Actions {
      * @return true if the player has it or false if not
      */
     public boolean has(String name, String world, String pluginPart) {
-	plugin.logDebug("Actions -> has");
-	plugin.logDebug("Asked if " + name + " has got (a) " + pluginPart + " in the world " + world);
+	plugin.fileUtils.logDebug("Actions -> has");
+	plugin.fileUtils.logDebug("Asked if " + name + " has got (a) " + pluginPart + " in the world " + world);
 	name = name.toLowerCase();
 	world = world.toLowerCase();
 	pluginPart = pluginPart.toLowerCase();
@@ -382,8 +382,8 @@ public class Actions {
      * @param pluginPart - the plugin part
      */
     public void remove(String name, String world, String pluginPart) {
-	plugin.logDebug("Actions -> remove");
-	plugin.logDebug("Asked to remove the " + pluginPart + " from " + name + " in the world " + world);
+	plugin.fileUtils.logDebug("Actions -> remove");
+	plugin.fileUtils.logDebug("Asked to remove the " + pluginPart + " from " + name + " in the world " + world);
 	name = name.toLowerCase();
 	world = world.toLowerCase();
 	pluginPart = pluginPart.toLowerCase();
@@ -392,7 +392,7 @@ public class Actions {
 	    plugin.players.set(name + "." + pluginPart + "." + world, "");
 	    saveFile(plugin.playersFile, plugin.players);
 	    checkNames(name, world);
-	    plugin.logDebug("Removed");
+	    plugin.fileUtils.logDebug("Removed");
 	}
     }
 
@@ -410,8 +410,8 @@ public class Actions {
      * @return the updated name
      */
     public String randomColor(String name) {
-	plugin.logDebug("Actions -> randomColor");
-	plugin.logDebug("Asked to color the string " + name);
+	plugin.fileUtils.logDebug("Actions -> randomColor");
+	plugin.fileUtils.logDebug("Asked to color the string " + name);
 	StringBuffer buf = new StringBuffer();
 	// As long as the length of the name isn't reached
 	for (char ch : name.toCharArray()) {
@@ -432,8 +432,8 @@ public class Actions {
      * @return the updated name
      */
     public String rainbowColor(String name) {
-	plugin.logDebug("Actions -> rainbowColor");
-	plugin.logDebug("Asked to color the string " + name);
+	plugin.fileUtils.logDebug("Actions -> rainbowColor");
+	plugin.fileUtils.logDebug("Asked to color the string " + name);
 	// As long as the length of the name isn't reached
 	int z = 0;
 	StringBuffer buf = new StringBuffer();
@@ -457,8 +457,8 @@ public class Actions {
      * @return the updated text
      */
     public String updateCustomColor(String color, String text) {
-	plugin.logDebug("Actions -> updateCustomColor");
-	plugin.logDebug("Asked to color the string " + text + " with the color " + color);
+	plugin.fileUtils.logDebug("Actions -> updateCustomColor");
+	plugin.fileUtils.logDebug("Asked to color the string " + text + " with the color " + color);
 	// Get color
 	String colorChars = ChatColor.translateAlternateColorCodes('\u0026', plugin.colors.getString(color));
 	// No section sign or ampersand? Not valid; doesn't start with section
@@ -486,7 +486,7 @@ public class Actions {
      * @return the colored message
      */
     public String replaceThings(String string) {
-	plugin.logDebug("Actions -> replaceThings");
+	plugin.fileUtils.logDebug("Actions -> replaceThings");
 	if (string == null) {
 	    return "";
 	}
@@ -584,8 +584,8 @@ public class Actions {
      * @param world - the world
      */
     public void checkNames(String name, String world) {
-	plugin.logDebug("Actions -> checkNames");
-	plugin.logDebug("Asked to check the color of the player " + name + " in the world " + world);
+	plugin.fileUtils.logDebug("Actions -> checkNames");
+	plugin.fileUtils.logDebug("Asked to check the color of the player " + name + " in the world " + world);
 	name = name.toLowerCase();
 	world = world.toLowerCase();
 	String color = null;
@@ -682,8 +682,8 @@ public class Actions {
      * @param color - the color
      */
     public void updateName(String name, String color) {
-	plugin.logDebug("Actions -> updateName");
-	plugin.logDebug("Asked to update the color of " + name + " to the color " + color);
+	plugin.fileUtils.logDebug("Actions -> updateName");
+	plugin.fileUtils.logDebug("Asked to update the color of " + name + " to the color " + color);
 	// We always work with lowercase
 	name = name.toLowerCase();
 	Player player = plugin.getServer().getPlayerExact(name);
@@ -755,14 +755,14 @@ public class Actions {
      * @param name - the name of the player
      */
     public void restoreName(String name) {
-	plugin.logDebug("Actions -> restoreName");
-	plugin.logDebug("Asked to restore the name " + name);
+	plugin.fileUtils.logDebug("Actions -> restoreName");
+	plugin.fileUtils.logDebug("Asked to restore the name " + name);
 	// We always work with lowercase
 	name = name.toLowerCase();
 	// Make sure player is online/valid
 	Player player = plugin.getServer().getPlayerExact(name);
 	if (player != null) {
-	    plugin.logDebug("Player found and valid");
+	    plugin.fileUtils.logDebug("Player found and valid");
 	    String displayName = player.getDisplayName();
 	    // Strip color out
 	    String cleanDisplayName = ChatColor.stripColor(displayName);
@@ -791,15 +791,15 @@ public class Actions {
      * @return the result - yes or no
      */
     public boolean validColor(String color) {
-	plugin.logDebug("Actions -> validColor");
+	plugin.fileUtils.logDebug("Actions -> validColor");
 	// If it's random or rainbow -> possible
 	if (color.equalsIgnoreCase("rainbow") || color.equalsIgnoreCase("random")) {
-	    plugin.logDebug("Color " + color + " is valid");
+	    plugin.fileUtils.logDebug("Color " + color + " is valid");
 	    return true;
 	}
 	// Custom color? (Must contain something!!! NOT '' or null)
 	if (plugin.colors.contains(color) && !plugin.colors.getString(color).isEmpty()) {
-	    plugin.logDebug("Color " + color + " is valid");
+	    plugin.fileUtils.logDebug("Color " + color + " is valid");
 	    return true;
 	}
 	// Third place, cause random and rainbow aren't possible normally and
@@ -808,11 +808,11 @@ public class Actions {
 	    for (ChatColor value : ChatColor.values()) {
 		// Check if the color is one of the 17
 		if (color.equalsIgnoreCase(value.name().toLowerCase())) {
-		    plugin.logDebug("Color " + color + " is valid");
+		    plugin.fileUtils.logDebug("Color " + color + " is valid");
 		    return true;
 		}
 	    }
-	    plugin.logDebug("Color " + color + " is invalid");
+	    plugin.fileUtils.logDebug("Color " + color + " is invalid");
 	    return false;
 	}
     }
@@ -824,17 +824,17 @@ public class Actions {
      * @return yes or no - disabled or not
      */
     public boolean isDisabled(String color) {
-	plugin.logDebug("Actions -> isDisabled");
+	plugin.fileUtils.logDebug("Actions -> isDisabled");
 	if (plugin.config.getBoolean("colors." + color.toLowerCase())) {
-	    plugin.logDebug("Color " + color + " is enabled");
+	    plugin.fileUtils.logDebug("Color " + color + " is enabled");
 	    return false;
 	}
 	// Custom color? (Must contain something!!! NOT '' or null)
 	else if (plugin.colors.contains(color) && !plugin.colors.getString(color).isEmpty() && plugin.config.getBoolean("colors.custom")) {
-	    plugin.logDebug("Color " + color + " is enabled");
+	    plugin.fileUtils.logDebug("Color " + color + " is enabled");
 	    return false;
 	}
-	plugin.logDebug("Color " + color + " is disabled");
+	plugin.fileUtils.logDebug("Color " + color + " is disabled");
 	return true;
     }
 
@@ -845,7 +845,7 @@ public class Actions {
      * @return yes or no - whether the color is standard or not
      */
     public boolean isStandard(String color) {
-	plugin.logDebug("Actions -> isStandard");
+	plugin.fileUtils.logDebug("Actions -> isStandard");
 	color = color.toUpperCase();
 	for (ChatColor chatColor : ChatColor.values()) {
 	    if (chatColor.name().equalsIgnoreCase(color)) {
@@ -862,7 +862,7 @@ public class Actions {
 
     // Displays the specific help
     public void help(CommandSender sender, String pluginPart) {
-	plugin.logDebug("Actions -> help");
+	plugin.fileUtils.logDebug("Actions -> help");
 	// Help variable, currently we have 9 sites
 	int z = 9;
 	// Groups? Then 12 sites
@@ -877,7 +877,7 @@ public class Actions {
 
     // Reloads the plugin
     public void reload(CommandSender sender) {
-	plugin.logDebug("Actions -> reload");
+	plugin.fileUtils.logDebug("Actions -> reload");
 	plugin.loadConfigsAgain();
 	String message = plugin.localization.getString("reload");
 	plugin.message(sender, null, message, null, null, null, null);
@@ -885,7 +885,7 @@ public class Actions {
 
     // The list of colors
     public void listColors(CommandSender sender) {
-	plugin.logDebug("Actions -> listColors");
+	plugin.fileUtils.logDebug("Actions -> listColors");
 	String message = plugin.localization.getString("color_list");
 	plugin.message(sender, null, message, null, null, null, null);
 	StringBuffer buf = new StringBuffer();
@@ -937,11 +937,11 @@ public class Actions {
     private void saveFile(File file, FileConfiguration config) {
 	try {
 	    config.save(file);
-	    plugin.logDebug("Saved to the " + file);
+	    plugin.fileUtils.logDebug("Saved to the " + file);
 	} catch (IOException e) {
 	    plugin.getServer().getLogger().warning("Failed to save the " + file + "! Please report this! IOException");
-	    plugin.logDebug("Failed to save");
-	    plugin.logDebugException(e);
+	    plugin.fileUtils.logDebug("Failed to save");
+	    plugin.fileUtils.logDebugException(e);
 	}
     }
 

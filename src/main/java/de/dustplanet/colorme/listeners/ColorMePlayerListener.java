@@ -43,7 +43,7 @@ public class ColorMePlayerListener implements Listener {
     // Loads the the values and set them to default one if not known
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
-	plugin.logDebug("\t---PlayerJoinEvent Begin---");
+	plugin.fileUtils.logDebug("\t---PlayerJoinEvent Begin---");
 	Player player = event.getPlayer();
 	String name = player.getName().toLowerCase();
 	String world = player.getWorld().getName().toLowerCase();
@@ -76,8 +76,8 @@ public class ColorMePlayerListener implements Listener {
 	    }
 	}
 	actions.checkNames(name, world);
-	plugin.logDebug("\t---PlayerJoinEvent End---");
-	plugin.logDebug("");
+	plugin.fileUtils.logDebug("\t---PlayerJoinEvent End---");
+	plugin.fileUtils.logDebug("");
     }
 
     // Loads the the values and set them to default one if not known
@@ -85,64 +85,64 @@ public class ColorMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerChatLowest(AsyncPlayerChatEvent event) {
 	if (plugin.softMode) {
-	    plugin.logDebug("\t---PlayerChatEvent LowestPriority Begin---");
+	    plugin.fileUtils.logDebug("\t---PlayerChatEvent LowestPriority Begin---");
 	    modifyChat(event);
-	    plugin.logDebug("\t---PlayerChatEvent LowestPriority End---");
-	    plugin.logDebug("");
+	    plugin.fileUtils.logDebug("\t---PlayerChatEvent LowestPriority End---");
+	    plugin.fileUtils.logDebug("");
 	}
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerChatLow(AsyncPlayerChatEvent event) {
 	if (plugin.softMode) {
-	    plugin.logDebug("\t---PlayerChatEvent LowPriority Begin---");
+	    plugin.fileUtils.logDebug("\t---PlayerChatEvent LowPriority Begin---");
 	    modifyChat(event);
-	    plugin.logDebug("\t---PlayerChatEvent LowPriority End---");
-	    plugin.logDebug("");
+	    plugin.fileUtils.logDebug("\t---PlayerChatEvent LowPriority End---");
+	    plugin.fileUtils.logDebug("");
 	}
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerChatNormal(AsyncPlayerChatEvent event) {
 	if (plugin.softMode) {
-	    plugin.logDebug("\t---PlayerChatEvent NormalPriority Begin---");
+	    plugin.fileUtils.logDebug("\t---PlayerChatEvent NormalPriority Begin---");
 	    modifyChat(event);
 	    // Just call the chat coloring event once
 	    colorChat(event);
-	    plugin.logDebug("\t---PlayerChatEvent NormalPriority End---");
-	    plugin.logDebug("");
+	    plugin.fileUtils.logDebug("\t---PlayerChatEvent NormalPriority End---");
+	    plugin.fileUtils.logDebug("");
 	}
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerChatHigh(AsyncPlayerChatEvent event) {
 	if (!plugin.softMode) {
-	    plugin.logDebug("\t---PlayerChatEvent HighPriority Begin---");
+	    plugin.fileUtils.logDebug("\t---PlayerChatEvent HighPriority Begin---");
 	    modifyChat(event);
 	    // Just call the chat coloring event once
 	    colorChat(event);
-	    plugin.logDebug("\t---PlayerChatEvent HighPriority End---");
-	    plugin.logDebug("");
+	    plugin.fileUtils.logDebug("\t---PlayerChatEvent HighPriority End---");
+	    plugin.fileUtils.logDebug("");
 	}
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerChatHighest(AsyncPlayerChatEvent event) {
 	if (!plugin.softMode) {
-	    plugin.logDebug("\t---PlayerChatEvent HighestPriority Begin---");
+	    plugin.fileUtils.logDebug("\t---PlayerChatEvent HighestPriority Begin---");
 	    modifyChat(event);
-	    plugin.logDebug("\t---PlayerChatEvent HighestPriorityEnd---");
-	    plugin.logDebug("");
+	    plugin.fileUtils.logDebug("\t---PlayerChatEvent HighestPriorityEnd---");
+	    plugin.fileUtils.logDebug("");
 	}
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChatMonitor(AsyncPlayerChatEvent event) {
 	if (!plugin.softMode) {
-	    plugin.logDebug("\t---PlayerChatEvent MonitorPriority Begin---");
+	    plugin.fileUtils.logDebug("\t---PlayerChatEvent MonitorPriority Begin---");
 	    modifyChat(event);
-	    plugin.logDebug("\t---PlayerChatEvent MonitorPriority End---");
-	    plugin.logDebug("");
+	    plugin.fileUtils.logDebug("\t---PlayerChatEvent MonitorPriority End---");
+	    plugin.fileUtils.logDebug("");
 	}
     }
 
