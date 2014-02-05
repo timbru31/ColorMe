@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.dustplanet</groupId>
 	<artifactId>ColorMe</artifactId>
-	<version>3.8.2-SNAPSHOT</version>
+	<version>4.0-SNAPSHOT</version>
 	<name>ColorMe</name>
 	<url>http://dev.bukkit.org/server-mods/colorme</url>
 	<description>Allows coloring, prefixing and suffixing in the chat</description>
@@ -160,7 +160,7 @@
 	<!-- Github information -->
 	<scm>
 		<url>https://github.com/xGhOsTkiLLeRx/ColorMe</url>
-		<tag>master</tag>
+		<tag>recode</tag>
 		<connection>scm:git:git://github.com/xGhOsTkiLLeRx/ColorMe.git</connection>
 		<developerConnection>scm:git:git@github.com:xGhOsTkiLLeRx/ColorMe.git</developerConnection>
 	</scm>
