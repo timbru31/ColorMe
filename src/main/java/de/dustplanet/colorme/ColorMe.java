@@ -29,7 +29,6 @@ import de.dustplanet.colorme.listeners.ColorMePlayerListener;
 import de.dustplanet.colorme.listeners.ColorMeTagAPIListener;
 
 // Economy
-import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 
 // GroupManager
@@ -217,7 +216,7 @@ public class ColorMe extends JavaPlugin {
 
 	// Check for Vault
 	Plugin vault = getServer().getPluginManager().getPlugin("Vault");
-	if (vault != null && vault instanceof Vault) {
+	if (vault != null) {
 	    // If Vault is enabled, load the economy
 	    getLogger().info("Loaded Vault successfully");
 	    fileUtils.logDebug("Vault hooked and loaded");
@@ -678,11 +677,17 @@ public class ColorMe extends JavaPlugin {
 
     // Initialized to work with Vault
     private Boolean setupEconomy() {
-	RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-	if (economyProvider != null) {
-	    economy = economyProvider.getProvider();
-	}
-	return (economy != null);
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            getLogger().severe("Vault seems to be missing. Make sure to install the latest version of Vault!");
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null || rsp.getProvider() == null) {
+            getLogger().severe("There is no economy provider installed for Vault! Make sure to install an economy plugin!");
+            return false;
+        }
+        economy = rsp.getProvider();
+        return economy != null;
     }
 
     // Message sender
